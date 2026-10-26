@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    "types": [
+      "node",
+      "react"
+    ],
+    "noEmit": true,
+    "paths": {
+      "dsh-research-agent/client": [
+        "./packages/research-agent/src/client/index.ts"
+      ],
+      "dsh-research-agent/types": [
+        "./packages/research-agent/src/types.ts"
+      ],
+      "dsh-research-agent/remote": [
+        "./packages/research-agent/lib/typert.remote-client.d.ts"
+      ]
+    },
+    "noUncheckedIndexedAccess": true
+  },
+  "files": []
+}

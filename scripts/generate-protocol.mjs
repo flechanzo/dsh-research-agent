@@ -1,0 +1,3 @@
+import fs from 'node:fs';import {WorkspaceTypertGenerator} from '@deepseek-ai/dsh-typert-generator';
+const g=new WorkspaceTypertGenerator(process.cwd());console.log('discovered',g.discover(['host']));const artifacts=g.generate(['dsh-research-agent'],['host']);
+for(const a of artifacts){const dir='packages/research-agent/lib';fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(dir+'/typert.host.js',a.js);fs.writeFileSync(dir+'/typert.host.d.ts',a.dts);if(a.remote){fs.writeFileSync(dir+'/typert.remote-client.js',a.remote.js);fs.writeFileSync(dir+'/typert.remote-client.d.ts',a.remote.dts);}console.log({package:a.package,remote:!!a.remote});}

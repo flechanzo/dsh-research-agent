@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/research-agent/tsconfig.host.json"
+    },
+    {
+      "path": "./packages/.protocol-sdk/tsconfig.host.json"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@deepseek-ai/dsh-typert-protocol": [
+        "./packages/.protocol-sdk/src/index.ts"
+      ],
+      "@deepseek-ai/dsh-typert-protocol/*": [
+        "./packages/.protocol-sdk/src/*.ts"
+      ]
+    }
+  }
+}

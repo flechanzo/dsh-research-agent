@@ -1,0 +1,3 @@
+packages:
+  - 'packages/research-agent'
+autoInstallPeers: true

@@ -1,0 +1,9 @@
+{
+  "package": "dsh-research-agent@0.1.4",
+  "files": 33,
+  "bytes": 176110,
+  "unpackedBytes": 1239878,
+  "forbiddenFiles": [],
+  "runtimeLocalPaths": false,
+  "dependencies": "Declared npm dependencies; official runtime packages are exact-version peers."
+}

@@ -1,0 +1,1632 @@
+.root {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  max-height: none;
+  box-sizing: border-box;
+  padding: 16px;
+  overflow: auto;
+  color: var(--dsw-alias-label-primary);
+}
+
+.header,
+.section,
+.card,
+.transcript,
+.finalPlan,
+.mainTranscript {
+  min-width: 0;
+  border-radius: var(--dsw-radius-xl);
+  background: var(--dsw-alias-bg-module-platform);
+  box-shadow: var(--dsw-elevation-soft);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+}
+
+.headerIdentity,
+.headerMeta,
+.headerCopy,
+.sectionHeader,
+.cardHeader,
+.cardIdentity,
+.actionRow,
+.choiceRow,
+.reviewerRow {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.headerIdentity {
+  gap: 10px;
+}
+
+.headerIcon {
+  display: inline-flex;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--dsw-radius-md);
+  background: var(--dsw-alias-interactive-bg-hover-accent);
+  color: var(--dsw-alias-state-business-primary);
+}
+
+.headerCopy {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.title {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--dsw-alias-label-primary);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.headerStage,
+.workspace,
+.subtle,
+.sectionHint {
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.headerStage {
+  overflow: hidden;
+  max-width: 260px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.headerMeta {
+  flex: 0 1 48%;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 10px;
+}
+
+.workspace {
+  overflow: hidden;
+  max-width: 220px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statusPill,
+.sectionBadge {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  min-height: 20px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  corner-shape: round;
+  padding: 2px 8px;
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.statusPill[data-status='active'],
+.statusPill[data-status='pending'] {
+  background: var(--dsw-alias-state-business-tertiary);
+  color: var(--dsw-alias-state-business-primary);
+}
+
+.statusPill[data-status='awaiting-confirmation'] {
+  background: var(--dsw-alias-state-warn-tertiary);
+  color: var(--dsw-alias-state-warn-label);
+}
+
+.statusPill[data-status='confirmed'],
+.statusPill[data-status='completed'] {
+  background: var(--dsw-alias-state-success-tertiary);
+  color: var(--dsw-alias-state-success-primary);
+}
+
+.statusPill[data-status='rejected'] {
+  background: var(--dsw-alias-state-error-secondary);
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+}
+
+.sectionHeader {
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sectionTools,
+.viewToggle {
+  display: inline-flex;
+  align-items: center;
+}
+
+.sectionTools {
+  flex: none;
+  gap: 8px;
+}
+
+.viewToggle {
+  gap: 2px;
+  padding: 2px;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  background: var(--dsw-alias-bg-layer-1);
+}
+
+.viewToggleButton {
+  display: inline-flex;
+  width: auto;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 7px;
+  border: 0.5px solid transparent;
+  border-radius: var(--dsw-radius-sm);
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+  cursor: pointer;
+}
+
+.viewToggleLabel {
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.viewToggleButton:hover,
+.viewToggleButton:focus-visible {
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+.viewToggleButtonActive {
+  border-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-interactive-bg-hover-accent);
+  color: var(--dsw-alias-state-business-primary);
+}
+
+.sectionTitle {
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.sectionHint {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sectionBadge {
+  min-width: 22px;
+  justify-content: center;
+  padding-inline: 6px;
+  background: var(--dsw-alias-bg-layer-1);
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.branchTree,
+.timeline {
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-color: var(--dsw-alias-scrollbar-bg-l2) transparent;
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+}
+
+.branchTree {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-self: stretch;
+  width: 100%;
+  max-height: none;
+  min-width: 0;
+  padding: 4px 2px 6px 1px;
+  overflow: visible;
+}
+
+.branchTreeSection {
+  min-height: 600px;
+}
+
+.branchTreeBranch {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  margin-left: 16px;
+  padding-left: 16px;
+}
+
+.branchTreeBranch::before {
+  position: absolute;
+  top: 0;
+  bottom: 12px;
+  left: 6px;
+  width: 0.5px;
+  background: var(--dsw-alias-border-l2);
+  content: '';
+}
+
+.branchTreeBranch::after {
+  position: absolute;
+  top: 18px;
+  left: 6px;
+  width: 10px;
+  height: 0.5px;
+  background: var(--dsw-alias-border-l2);
+  content: '';
+}
+
+.branchTreeBranchRoot {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.branchTreeBranchRoot::before,
+.branchTreeBranchRoot::after {
+  display: none;
+}
+
+.branchTreeHeader {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  box-sizing: border-box;
+  padding: 6px 8px 6px 7px;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  background: var(--dsw-alias-bg-layer-1);
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: border-color .16s ease, background .16s ease, color .16s ease;
+}
+
+.branchTreeHeader:hover,
+.branchTreeHeader:focus-visible {
+  border-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+.branchTreeHeaderActive {
+  border-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-interactive-bg-hover-accent);
+  color: var(--dsw-alias-label-primary);
+}
+
+.branchTreeMarker {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--dsw-radius-sm);
+  background: var(--dsw-alias-interactive-bg-hover-accent);
+  color: var(--dsw-alias-state-business-primary);
+}
+
+.branchTreeHeaderCopy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1px;
+}
+
+.branchTreeHeaderTitle,
+.branchTreeHeaderMeta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.branchTreeHeaderTitle {
+  color: var(--dsw-alias-label-primary);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.branchTreeHeaderMeta,
+.branchTreeCurrent {
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.branchTreeCurrent {
+  padding: 1px 5px;
+  border-radius: 999px;
+  corner-shape: round;
+  background: var(--dsw-alias-state-business-tertiary);
+  color: var(--dsw-alias-state-business-primary);
+}
+
+.branchTreeOrigin {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 5px;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0 0 0 12px;
+  padding: 1px 5px;
+  border: 0.5px solid transparent;
+  border-radius: var(--dsw-radius-sm);
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  line-height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.branchTreeOrigin:hover,
+.branchTreeOrigin:focus-visible {
+  border-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+.branchTreeOriginLine {
+  width: 8px;
+  height: 0.5px;
+  flex: none;
+  background: var(--dsw-alias-border-l2);
+}
+
+.branchMap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-self: stretch;
+  width: 100%;
+  max-height: 320px;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 1px 2px 3px 1px;
+  scrollbar-color: var(--dsw-alias-scrollbar-bg-l2) transparent;
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+}
+
+.branchMapLane {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 8px 8px 8px 10px;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-left: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  background: var(--dsw-alias-bg-layer-1);
+}
+
+.branchMapLaneActive {
+  border-left-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-interactive-bg-hover-accent);
+}
+
+.branchMapLaneHeader,
+.branchMapLaneSteps,
+.branchMapLaneStep {
+  display: flex;
+  align-items: center;
+}
+
+.branchMapLaneHeader {
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 26px;
+}
+
+.branchMapLaneIdentity {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.branchMapLaneSteps {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  width: 100%;
+  box-sizing: border-box;
+  align-self: stretch;
+  margin-left: 5px;
+  padding-left: 8px;
+  border-left: 0.5px solid var(--dsw-alias-border-l2);
+}
+
+.branchMapLaneStep {
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.branchMapLaneArrow {
+  flex: none;
+  color: var(--dsw-alias-label-tertiary);
+  width: 11px;
+  height: 11px;
+}
+
+.branchMapCurrent,
+.branchMapCount {
+  flex: none;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.branchMapCount {
+  padding: 1px 5px;
+  border-radius: 999px;
+  corner-shape: round;
+  background: var(--dsw-alias-bg-layer-2);
+}
+
+.branchMapCurrent {
+  padding: 1px 5px;
+  border-radius: 999px;
+  corner-shape: round;
+  background: var(--dsw-alias-interactive-bg-hover-accent);
+  color: var(--dsw-alias-state-business-primary);
+}
+
+.branchMapLabel,
+.branchMapOrigin {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  border: 0.5px solid transparent;
+  border-radius: var(--dsw-radius-sm);
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color .16s ease, background .16s ease, color .16s ease;
+  white-space: nowrap;
+}
+
+.branchMapLabel {
+  flex: 1 1 auto;
+  justify-content: flex-start;
+  padding: 3px 5px;
+  text-align: left;
+}
+
+.branchMapOrigin {
+  align-self: flex-start;
+  gap: 4px;
+  padding: 1px 4px 1px 5px;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.branchMapLabel:hover,
+.branchMapLabel:focus-visible,
+.branchMapOrigin:hover,
+.branchMapOrigin:focus-visible {
+  border-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+.branchMapLabelActive {
+  border-color: transparent;
+  color: var(--dsw-alias-label-primary);
+}
+
+.branchMapNode {
+  display: grid;
+  position: relative;
+  z-index: 1;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  align-self: stretch;
+  min-width: 0;
+  min-height: 42px;
+  box-sizing: border-box;
+  padding: 5px 6px;
+  border: 0.5px solid transparent;
+  border-radius: var(--dsw-radius-md);
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  text-align: left;
+  transition: border-color .16s ease, background .16s ease, color .16s ease;
+}
+
+.branchMapNode:hover,
+.branchMapNode:focus-visible {
+  border-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+.branchMapNodeMarker {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 18px;
+}
+
+.branchMapNodeCopy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1px;
+}
+
+.branchMapNodeTitle,
+.branchMapNodeArtifact,
+.branchMapNodeMeta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.branchMapNodeTitle {
+  color: var(--dsw-alias-label-primary);
+}
+
+.branchMapNodeMeta {
+  justify-self: end;
+  padding: 1px 5px;
+  border-radius: 999px;
+  corner-shape: round;
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.branchMapNodeMeta[data-status='active'],
+.branchMapNodeMeta[data-status='pending'] {
+  background: var(--dsw-alias-state-business-tertiary);
+  color: var(--dsw-alias-state-business-primary);
+}
+
+.branchMapNodeMeta[data-status='awaiting-confirmation'] {
+  background: var(--dsw-alias-state-warn-tertiary);
+  color: var(--dsw-alias-state-warn-label);
+}
+
+.branchMapNodeMeta[data-status='confirmed'],
+.branchMapNodeMeta[data-status='completed'] {
+  background: var(--dsw-alias-state-success-tertiary);
+  color: var(--dsw-alias-state-success-primary);
+}
+
+.branchMapNodeMeta[data-status='rejected'] {
+  background: var(--dsw-alias-state-error-secondary);
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.branchMapNodeArtifact {
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.branchMapNode.nodeSelected .branchMapNodeMarker {
+  background: var(--dsw-alias-state-business-primary);
+  color: var(--dsw-alias-label-on-business-primary);
+}
+
+.branchMapNode.nodeSelected {
+  border-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-interactive-bg-hover-accent);
+  box-shadow: inset 2px 0 0 var(--dsw-alias-state-business-primary);
+}
+
+.branchTreeNodes {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0 0 2px 12px;
+  padding: 3px 0 3px 10px;
+  border-left: 0.5px dashed var(--dsw-alias-border-l2);
+}
+
+.node {
+  flex: none;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  background: var(--dsw-alias-bg-layer-1);
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  transition: border-color .16s ease, background .16s ease, color .16s ease;
+}
+
+.treeNode:hover,
+.node:hover,
+.treeNode:focus-visible,
+.node:focus-visible {
+  border-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+.treeNode {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  box-sizing: border-box;
+  padding: 5px 7px 5px 5px;
+  border: 0.5px solid transparent;
+  border-radius: var(--dsw-radius-sm);
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+}
+
+.treeNode:hover,
+.treeNode:focus-visible {
+  border-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.treeNodeMarker {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 20px;
+}
+
+.treeNodeTitle {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.treeNodeArtifact {
+  overflow: hidden;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.treeNodeStatus {
+  justify-self: end;
+  padding: 1px 5px;
+  border-radius: 999px;
+  corner-shape: round;
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.treeNodeStatus[data-status='active'],
+.treeNodeStatus[data-status='pending'] {
+  background: var(--dsw-alias-state-business-tertiary);
+  color: var(--dsw-alias-state-business-primary);
+}
+
+.treeNodeStatus[data-status='awaiting-confirmation'] {
+  background: var(--dsw-alias-state-warn-tertiary);
+  color: var(--dsw-alias-state-warn-label);
+}
+
+.treeNodeStatus[data-status='confirmed'],
+.treeNodeStatus[data-status='completed'] {
+  background: var(--dsw-alias-state-success-tertiary);
+  color: var(--dsw-alias-state-success-primary);
+}
+
+.treeNodeStatus[data-status='rejected'] {
+  background: var(--dsw-alias-state-error-secondary);
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.treeNodeSelected {
+  border-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-interactive-bg-hover-accent);
+  color: var(--dsw-alias-label-primary);
+}
+
+.treeNodeSelected .treeNodeMarker {
+  border-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-state-business-primary);
+  color: var(--dsw-alias-label-on-business-primary);
+}
+
+.branchTreePathNode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.branchTreeChildren {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  margin: 1px 0 4px;
+}
+
+.timeline {
+  display: flex;
+  gap: 8px;
+}
+
+.node {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 124px;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.nodeStage {
+  overflow: hidden;
+  max-width: 150px;
+  color: var(--dsw-alias-label-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nodeStatus {
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.cardHeader {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cardIdentity {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cardKicker {
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.cardTitle {
+  overflow: hidden;
+  color: var(--dsw-alias-label-primary);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detailActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.detailGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding-top: 10px;
+  border-top: 0.5px solid var(--dsw-alias-border-l2);
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 12px;
+  margin: 0;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.detailItem dt,
+.detailItem dd {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detailItem dt,
+.detailMeta {
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.detailItem dd {
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.detailSummary {
+  margin: 0;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.content {
+  max-height: 300px;
+  overflow: auto;
+  margin: 0;
+  padding: 12px;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  background: var(--dsw-alias-bg-layer-2);
+  white-space: pre-wrap;
+  color: var(--dsw-alias-label-secondary);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.6;
+  scrollbar-color: var(--dsw-alias-scrollbar-bg-l2) transparent;
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+}
+
+.notice,
+.successNotice {
+  padding: 8px 10px;
+  border: 0.5px solid currentcolor;
+  border-radius: var(--dsw-radius-md);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.notice {
+  color: var(--dsw-alias-state-danger);
+  background: var(--dsw-alias-state-error-secondary);
+}
+
+.successNotice {
+  color: var(--dsw-alias-state-success-primary);
+  background: var(--dsw-alias-state-success-tertiary);
+}
+
+.actionRow,
+.choiceRow {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.button,
+.primaryButton,
+.dangerButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 30px;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  transition: background .16s ease, border-color .16s ease, color .16s ease, opacity .16s ease;
+}
+
+.button:hover:not(:disabled),
+.button:focus-visible,
+.dangerButton:hover:not(:disabled),
+.dangerButton:focus-visible {
+  border-color: var(--dsw-alias-border-l3);
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+.primaryButton {
+  border-color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-state-business-primary);
+  color: var(--dsw-alias-label-on-business-primary);
+}
+
+.primaryButton:hover:not(:disabled),
+.primaryButton:focus-visible {
+  background: var(--dsw-alias-button-primary-hover);
+}
+
+.dangerButton {
+  color: var(--dsw-alias-state-danger);
+}
+
+.button:disabled,
+.primaryButton:disabled,
+.dangerButton:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.feedback {
+  width: 100%;
+  min-height: 76px;
+  box-sizing: border-box;
+  resize: vertical;
+  padding: 9px 10px;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  outline: none;
+  background: var(--dsw-alias-bg-base);
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.feedback:focus {
+  border-color: var(--dsw-alias-state-business-primary);
+  box-shadow: 0 0 0 2px var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));
+}
+
+.uploadPanel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px;
+  border: 0.5px dashed var(--dsw-alias-border-l3);
+  border-radius: var(--dsw-radius-md);
+  background: var(--dsw-alias-bg-layer-1);
+}
+
+.uploadCopy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.uploadTitle {
+  overflow: hidden;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.directionControls {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 12px;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  background: var(--dsw-alias-bg-layer-1);
+}
+
+.weightRow {
+  display: grid;
+  grid-template-columns: minmax(80px, 1fr) minmax(90px, 2fr) 28px;
+  align-items: center;
+  gap: 8px;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+}
+
+.weightRow input {
+  accent-color: var(--dsw-alias-state-business-primary);
+}
+
+.weightRow output {
+  color: var(--dsw-alias-label-tertiary);
+  text-align: right;
+}
+
+.reviewerRow {
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.reviewer {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.reviewer input {
+  accent-color: var(--dsw-alias-state-business-primary);
+}
+
+.fileInput {
+  display: none;
+}
+
+.transcript,
+.finalPlan {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14px;
+}
+
+.transcriptItem {
+  min-width: 0;
+  padding-top: 9px;
+  border-top: 0.5px solid var(--dsw-alias-border-l2);
+}
+
+.transcriptTitle {
+  overflow: hidden;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mainTranscript {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 16px;
+  padding: 14px;
+}
+
+.mainTranscriptHeader,
+.mainTranscriptMessageHeader,
+.mainTranscriptMessageMeta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mainTranscriptMessageMeta {
+  flex: none;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 7px;
+}
+
+.mainTranscriptToggle {
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.mainTranscriptMessages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mainTranscriptMessage {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-lg);
+  background: var(--dsw-alias-bg-base);
+  cursor: pointer;
+}
+
+.mainTranscriptMessage:focus-visible {
+  outline: var(--dsw-focus-ring-width) solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));
+  outline-offset: 2px;
+}
+
+.mainTranscriptMessageSelected {
+  border-color: var(--dsw-alias-state-business-primary);
+  box-shadow: inset 3px 0 0 var(--dsw-alias-state-business-primary);
+}
+
+.mainTranscriptMessage[data-expanded='false'] .mainTranscriptContent {
+  max-height: 360px;
+  overflow: auto;
+}
+
+.mainTranscriptMessage[data-expanded='true'] .mainTranscriptContent {
+  max-height: none;
+  overflow: visible;
+}
+
+.mainTranscriptArtifact {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.mainTranscriptArtifactTitle {
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.mainTranscriptContent {
+  max-height: 360px;
+  overflow: auto;
+  margin: 0;
+  cursor: pointer;
+  color: var(--dsw-alias-label-secondary);
+  font: inherit;
+  scrollbar-color: var(--dsw-alias-scrollbar-bg-l2) transparent;
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+}
+
+.mainTranscriptEmpty {
+  margin: 0;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 12px;
+}
+
+.branchSelector {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+}
+
+.branchSelectorLabel {
+  white-space: nowrap;
+}
+
+.branchSelector select {
+  max-width: 180px;
+  min-height: 28px;
+  padding: 3px 24px 3px 8px;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  outline: none;
+  background: var(--dsw-alias-bg-module-platform);
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
+}
+
+.branchSelector select:focus {
+  border-color: var(--dsw-alias-state-business-primary);
+}
+
+@media (max-width: 560px) {
+  .root {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .headerMeta {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .workspace {
+    max-width: 100%;
+  }
+
+  .card,
+  .transcript,
+  .finalPlan,
+  .mainTranscript {
+    padding: 12px;
+  }
+
+  .uploadPanel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .uploadPanel .primaryButton {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewToggleButton,
+  .branchMapLabel,
+  .branchMapNode,
+  .branchTreeHeader,
+  .branchTreeOrigin,
+  .treeNode,
+  .node,
+  .button,
+  .primaryButton,
+  .dangerButton,
+  .mainTranscriptMessage {
+    transition: none;
+  }
+}
+
+/* The alternate view is an expanded, horizontally navigable branch tree. */
+.branchTreeCanvas {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: flex-start;
+  width: 100%;
+  min-width: 0;
+  height: clamp(520px, 68vh, 760px);
+  min-height: 520px;
+  box-sizing: border-box;
+  overflow: auto;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-lg);
+  background: var(--dsw-alias-bg-layer-1);
+  padding: 22px 28px 34px;
+  scrollbar-color: var(--dsw-alias-scrollbar-bg-l2) transparent;
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+}
+
+.treeControls {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  background: var(--dsw-alias-bg-layer-1);
+}
+
+.treeZoomValue {
+  min-width: 38px;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  text-align: center;
+}
+
+.branchTreeCanvasDragging {
+  cursor: grabbing;
+}
+
+.branchTreeViewport {
+  flex: none;
+  min-width: 100%;
+  min-height: 100%;
+  transition: transform .16s ease;
+}
+
+.treeMinimap {
+  position: sticky;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  width: 88px;
+  min-height: 34px;
+  margin: auto 0 0 auto;
+  padding: 6px;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  background: color-mix(in srgb, var(--dsw-alias-bg-layer-2) 92%, transparent);
+  box-shadow: var(--dsw-elevation-soft);
+  pointer-events: none;
+}
+
+.treeMinimapBranch {
+  display: block;
+  width: 22px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--dsw-alias-border-l3);
+}
+
+.treeMinimapBranch[data-active='true'] {
+  background: var(--dsw-alias-state-business-primary);
+}
+
+.branchTreeCanvas .branchTree {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  min-width: 100%;
+  min-height: 100%;
+  max-height: none;
+  box-sizing: border-box;
+  gap: 0;
+  overflow: visible;
+  padding: 12px 48px 40px;
+}
+
+.branchTreeCanvas .branchTreeBranch {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.branchTreeCanvas .branchTreeBranch::before,
+.branchTreeCanvas .branchTreeBranch::after {
+  display: none;
+}
+
+.branchTreeCanvas .branchTreeHeader {
+  width: 248px;
+  min-height: 64px;
+  border-radius: 12px;
+  box-shadow: var(--dsw-elevation-soft);
+}
+
+.branchTreeCanvas .branchTreeBranchRoot > .branchTreeHeader {
+  border-width: 1px;
+}
+
+.branchTreeCanvas .branchTreeOrigin {
+  align-self: center;
+  margin: 10px 0 0;
+}
+
+.branchTreeCanvas .branchTreeNodes {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: max-content;
+  min-width: 0;
+  margin: 28px 0 0;
+  padding: 0 0 24px;
+  border: 0;
+}
+
+.branchTreeCanvas .branchTreeNodes::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 0.5px;
+  height: auto;
+  background: var(--dsw-alias-border-l2);
+  content: '';
+}
+
+.branchTreeCanvas .branchTreePathNode {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: max-content;
+}
+
+.branchTreeCanvas .branchTreePathNode > .treeNode {
+  position: relative;
+  flex: 0 0 248px;
+  width: 248px;
+  min-height: 72px;
+  border: 0.5px solid var(--dsw-alias-border-l2);
+  border-radius: 10px;
+  background: var(--dsw-alias-bg-layer-1);
+  box-shadow: var(--dsw-elevation-soft);
+}
+
+.branchTreeCanvas .branchTreePathNode + .branchTreePathNode::before {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  width: 0.5px;
+  height: 20px;
+  background: var(--dsw-alias-border-l2);
+  content: '';
+}
+
+.branchTreeCanvas .branchTreeChildren {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 28px;
+  width: max-content;
+  min-width: 0;
+  margin: 28px 0 0;
+  padding: 32px 12px 0;
+}
+
+.branchTreeCanvas .branchTreeChildren::before {
+  position: absolute;
+  top: 0;
+  left: 108px;
+  right: 108px;
+  height: 0.5px;
+  background: var(--dsw-alias-border-l2);
+  content: '';
+}
+
+.branchTreeCanvas .branchTreeChildren::after {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  width: 0.5px;
+  height: 28px;
+  background: var(--dsw-alias-border-l2);
+  content: '';
+}
+
+.branchTreeCanvas .branchTreeChildren > .branchTreeBranch {
+  position: relative;
+  flex: 0 0 220px;
+  width: 220px;
+}
+
+.branchTreeCanvas .branchTreeChildren > .branchTreeBranch::before {
+  display: block;
+  top: -32px;
+  bottom: auto;
+  left: 50%;
+  width: 0.5px;
+  height: 32px;
+  background: var(--dsw-alias-border-l2);
+}
+
+.branchTreeCanvas .branchTreeChildren > .branchTreeBranch > .branchTreeHeader {
+  width: 220px;
+}
+
+.branchTreeCanvas .treeNodeSelected {
+  box-shadow: var(--dsw-elevation-soft), inset 2px 0 0 var(--dsw-alias-state-business-primary);
+}
+
+@media (max-width: 560px) {
+  .detailGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .branchTreeSection {
+    min-height: 560px;
+  }
+
+  .branchTreeCanvas {
+    height: 520px;
+    min-height: 520px;
+    padding-inline: 16px;
+  }
+
+  .branchTreeCanvas .branchTree {
+    justify-content: flex-start;
+    padding-inline: 32px;
+  }
+}

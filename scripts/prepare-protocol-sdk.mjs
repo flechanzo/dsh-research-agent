@@ -1,0 +1,5 @@
+import fs from 'node:fs';import path from 'node:path';
+const root=process.cwd(),source=path.join(root,'node_modules/@deepseek-ai/dsh-typert-protocol'),dest=path.join(root,'packages/.protocol-sdk');
+fs.mkdirSync(dest,{recursive:true});
+function copy(a,b){fs.mkdirSync(b,{recursive:true});for(const f of fs.readdirSync(a)){if(fs.statSync(path.join(a,f)).isDirectory())copy(path.join(a,f),path.join(b,f));else if(f.endsWith('.d.ts'))fs.writeFileSync(path.join(b,f.replace(/\.d\.ts$/,'.ts')),fs.readFileSync(path.join(a,f)))}}
+copy(source+'/lib/types',dest+'/src');const pkg=JSON.parse(fs.readFileSync(source+'/package.json','utf8'));pkg.exports={'.':{types:'./lib/types/public.d.ts',default:'./lib/public.js'}};fs.writeFileSync(dest+'/package.json',JSON.stringify(pkg,null,2));fs.writeFileSync(dest+'/src/public.ts',"export { Remote, RemoteError, TypertRemoteService } from './index.ts'\n");fs.writeFileSync(dest+'/tsconfig.host.json',JSON.stringify({extends:'../../tsconfig.json',files:['src/index.ts','src/public.ts']},null,2));

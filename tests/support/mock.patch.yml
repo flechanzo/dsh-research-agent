@@ -1,0 +1,23 @@
+- id: llm-deepseek
+  disabled: true
+- id: llm-deepseek-account
+  disabled: true
+- id: llm-pi-ai
+  disabled: true
+- id: session-title-llm
+  disabled: true
+- id: agent-default-model
+  config:
+    provider: research-mock
+    model: research-fixture
+- id: web
+  config:
+    fetchProvider: research-fixture
+- id: ui-settings-account
+  config:
+    version: 1
+    step: done
+    completion: api-key
+- insert:
+    - id: research-offline-fixture
+      name: '__RESEARCH_MOCK__'

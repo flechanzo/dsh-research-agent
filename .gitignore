@@ -1,0 +1,11 @@
+node_modules/
+.target-sdk/
+.isolated/
+.local/
+dist/
+*.tgz
+*.log
+.env
+packages/*/lib/
+packages/.protocol-sdk/
+.local-pack.json
