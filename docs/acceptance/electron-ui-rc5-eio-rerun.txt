@@ -1,0 +1,189 @@
+IDENTITY {"version":"0.2.1-rc.3","userData":"D:\\dsh-research-agent\\.acceptance\\run-20261027-RV7z7X\\electron-user","appPath":"F:\\deepseek\\resources\\app.asar"}
+MOCK CHAT PASSED dsh-app://app/
+MODEL SWITCH A -> B
+UPLOAD PASSED
+STAGE 0 node-2
+STAGE 1 node-3
+FAIL Error: 自动科研操作失败：ReplaceFileW EIO (Win32 1175): D:\dsh-research-agent\.acceptance\run-20261027-RV7z7X\workspace\deepseek-harness\default-workspace\research-projects\session-750cdafe-3a99-45cb-9caa-292665d3ba75\research-state.json
+    at file:///D:/dsh-research-agent/tests/acceptance/electron-ui-rc5.mjs:61:56
+FAIL BODY 新会话
+Ctrl
++
+N
+插件
+自动化任务
+更多
+工作区
+默认工作区
+隔离最终验收：只输出合成响
+刚刚
+隔离最终验收：只输出合成响
+10分钟
+隔离最终验收：只输出合成响
+19分钟
+隔离最终验收：只输出合成响
+26分钟
+隔离最终验收：只输出合成响
+1天
+展开其余 6 个会话
+缘
+隔离最终验收：只输出合成响
+2 个子智能体
+自动科研流程
+对话
+轨迹
+隔离最终验收：只输出合成响应，不执行工具。
+16:24
+已完成
+已完成，用时 1秒
+合成科研输出
+
+创新点：通过可复现的校准机制研究分布偏移。
+
+方法：固定五点数值样例。基线：普通最小二乘。指标：均方误差。风险：此内容仅用于离线验收，不能作为真实科研结论。
+
+16:24
+发消息或创建任务, / 调用指令, @ 文件或对话
+科研合成夹具 B
+1 轮 1 步
+自动科研流程
+自动科研流程
+联网检索
+等待确认
+方案 A
+项目工作区：research-projects/session-750cdafe-3a99-45cb-9caa-292665d3ba75
+联网检索
+当前路径：上传论文 › 读取与摘要 › 问题提炼 › 联网检索
+科研内容
+分支关系
+节点详情
+1. 上传论文
+›
+2. 读取与摘要
+›
+3. 问题提炼
+›
+4. 联网检索
+当前阶段操作
+联网检索
+上传补充文献
+确认并进入下一步
+科研内容
+方案分支: 方案 A
+上传论文
+进行中
+收起
+
+该节点还没有输出内容。
+
+读取与摘要
+已确认
+收起
+论文摘要（1 篇）
+synthetic-paper.txt
+
+读取方式：plain-text；检查页数：不适用
+
+合成科研输出
+
+创新点：通过可复现的校准机制研究分布偏移。
+
+方法：固定五点数值样例。基线：普通最小二乘。指标：均方误差。风险：此内容仅用于离线验收，不能作为真实科研结论。
+
+问题提炼
+已确认
+收起
+待确认的研究问题
+合成科研输出
+
+创新点：通过可复现的校准机制研究分布偏移。
+
+方法：固定五点数值样例。基线：普通最小二乘。指标：均方误差。风险：此内容仅用于离线验收，不能作为真实科研结论。
+
+联网检索
+等待确认
+收起
+相关论文与证据
+
+Synthetic baseline Fixture only
+
+Synthetic baseline Fixture only
+
+Synthetic baseline Fixture only
+
+Synthetic baseline
+
+Synthetic baseline Fixture
+
+方案分支
+对话顺序与历史节点
+树状视图
+列表视图
+1
+＋
+100%
+−
+⌖
+↺
+↗
+↘
+4 个节点
+1
+上传论文
+进行中
+该节点还没有输出内容。
+上传论文
+方案 A
+当前
+−
+2
+读取与摘要
+已确认
+论文摘要（1 篇）
+读取与摘要
+3
+问题提炼
+已确认
+待确认的研究问题
+问题提炼
+4
+联网检索
+等待确认
+相关论文与证据
+联网检索
+对话顺序与历史节点
+联网检索
+上传论文
+进行中
+读取与摘要
+已确认
+问题提炼
+已确认
+联网检索
+等待确认
+节点详情
+相关论文与证据
+等待确认
+查看完整科研内容
+从这里继续（新分支）
+节点信息
+节点 ID
+node-4
+所属方案
+方案 A
+节点类型
+联网检索
+父节点
+node-3
+子节点数
+0
+输出数量
+1
+内容概览
+
+1. [Synthetic baseline](https://arxiv.org/abs/2601.00001) Fixture only 2. [Synthetic baseline](https://openreview.net/forum?id=fixture) Fixture only 3. [Synthetic baseline](https://example.test/baseline) Fixture only 4. [Synthetic baseline…
+
+生成时间: 2026/10/28 16:24:11
+自动科研操作失败：ReplaceFileW EIO (Win32 1175): D:\dsh-research-agent\.acceptance\run-20261027-RV7z7X\workspace\deepseek-harness\default-workspace\research-projects\session-750cdafe-3a99-45cb-9caa-292665d3ba75\research-state.json
+上传补充文献
+文献调研完成后可继续上传 PDF、TXT，摘要会追加到当前调研节点

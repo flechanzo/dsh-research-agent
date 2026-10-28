@@ -1,0 +1,23 @@
+IDENTITY {"version":"0.2.1-rc.3","userData":"D:\\dsh-research-agent\\.acceptance\\run-20261027-RV7z7X\\electron-user","appPath":"F:\\deepseek\\resources\\app.asar"}
+MOCK CHAT PASSED dsh-app://app/
+MODEL SWITCH A -> B
+UPLOAD PASSED
+STAGE 0 node-2
+STAGE 1 node-3
+STAGE 2 node-4
+STAGE 3 node-5
+STAGE 4 node-6
+STAGE 5 node-7
+STAGE 6 node-8
+STAGE 7 node-9
+STAGE 8 node-10
+PLAN D:\dsh-research-agent\.acceptance\run-20261027-RV7z7X\workspace\deepseek-harness\default-workspace\research-projects\session-91a98fca-ec00-48a4-8d43-3b995ccd5029\plans\branch-1\revision-10\research-plan.md BYTES 2704
+PASS complete workflow with Mock services
+MODEL TRACE [{"model":"research-fixture","provider":"research-mock","role":"chat"},{"model":"research-fixture-b","provider":"research-mock","role":"chat"},{"model":"research-fixture-b","provider":"research-mock","role":"research"},{"model":"research-fixture-b","provider":"research-mock","role":"research"},{"model":"research-fixture-b","provider":"research-mock","role":"innovation-reviewer"},{"model":"research-fixture-b","provider":"research-mock","role":"research"},{"model":"research-fixture-b","provider":"research-mock","role":"innovation-reviewer"},{"model":"research-fixture-b","provider":"research-mock","role":"research"},{"model":"research-fixture-b","provider":"research-mock","role":"research"},{"model":"research-fixture-b","provider":"research-mock","role":"research"}]
+PASS F02 actual subagents inherit B; provider is Mock
+PASS F01 commit survives real export filesystem failure and UI refreshes 11 12
+PASS F01 subsequent command succeeds without revision loop
+PASS F12 separate branch plan files preserve the first plan ["deepseek-harness\\default-workspace\\research-projects\\session-91a98fca-ec00-48a4-8d43-3b995ccd5029\\plans\\branch-1\\revision-10\\research-plan.md","deepseek-harness\\default-workspace\\research-projects\\session-91a98fca-ec00-48a4-8d43-3b995ccd5029\\plans\\branch-3\\revision-15\\research-plan.md"]
+PASS F08 frontend reload restores committed plan
+SCREENSHOT saved
+PASS formal installed Electron, mock model and literature, isolated workspace

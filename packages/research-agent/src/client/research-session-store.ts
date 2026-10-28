@@ -97,7 +97,6 @@ export async function loadResearchSession(
   _signal?: AbortSignal,
 ): Promise<RemoteResult<ResearchSessionSnapshot>> {
   const entry = entryOf(sessionId)
-  if (entry.snapshot !== undefined) return { ok: true, value: entry.snapshot }
   const readPromise = entry.readPromise ?? (async (): Promise<RemoteResult<ResearchSessionSnapshot>> => {
     const result = await research.read({ sessionId })
     if (!result.ok) {
@@ -110,7 +109,8 @@ export async function loadResearchSession(
       state: result.value.state,
       ...(result.value.simulationAvailable === undefined ? {} : { simulationAvailable: result.value.simulationAvailable }),
     }
-    publish(entry, snapshot)
+    entry.failure = undefined
+    if (!publish(entry, snapshot)) notify(entry)
     return { ok: true, value: entry.snapshot ?? snapshot }
   })()
   entry.readPromise = readPromise
@@ -138,7 +138,10 @@ export function useResearchSession(
     () => researchSessionSnapshot(sessionId),
   )
   useEffect(() => {
-    void loadResearchSession(research, sessionId, signal)
+    const refresh = (): void => { void loadResearchSession(research, sessionId, signal) }
+    refresh()
+    window.addEventListener('focus', refresh)
+    return () => { window.removeEventListener('focus', refresh) }
   }, [research, sessionId, signal])
   return snapshot
 }

@@ -1,2 +1,3 @@
 import { defineConfig } from 'vitest/config'
-export default defineConfig({test:{include:['tests/**/*.spec.ts'],testTimeout:15000}})
+import {fileURLToPath} from 'node:url'
+export default defineConfig({resolve:{alias:{'@deepseek-ai/dsh-client-ui-primitives':fileURLToPath(new URL('./tests/support/ui-primitives.tsx',import.meta.url))}},test:{include:['tests/**/*.spec.{ts,tsx}'],testTimeout:15000}})

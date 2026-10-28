@@ -2,6 +2,8 @@ import { startResearchRun } from './subagent-adapter.ts'
 import { parentAgentOptionsForDelegation } from '@deepseek-ai/dsh-subagent'
 /** Host-side execution coordinator for the human-confirmed research DAG. */
 
+import type {} from '@deepseek-ai/dsh-api-session-controller'
+import { ReasoningEffortId } from '@deepseek-ai/dsh-llm'
 import type { Agent, AgentOptions } from '@deepseek-ai/dsh-agent'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
@@ -48,8 +50,10 @@ export interface ResearchPaperDocument {
   readonly byteLength: number
   /** Extraction path used for this document. */
   readonly extractionMethod: ResearchPaperExtractionMethod
-  /** Number of PDF pages inspected, when the upload was a PDF. */
+  /** Total number of pages in the uploaded PDF. */
   readonly pageCount?: number
+  /** Number of pages inspected; a smaller value than pageCount indicates truncation. */
+  readonly processedPageCount?: number
 }
 
 /** Extraction path reported to the user and research-session log. */
@@ -374,7 +378,7 @@ export class ResearchCoordinator {
       documents.push(await this.adapters.papers.read(paperRef, request.signal, { parent: request.parent }))
     }
     const prompt = documents.map(paper =>
-      `File: ${paper.fileName}\nExtraction method: ${paper.extractionMethod}\nInspected pages: ${paper.pageCount ?? 'not applicable'}\n\n${paper.text}`,
+      `File: ${paper.fileName}\nExtraction method: ${paper.extractionMethod}\nInspected pages: ${paper.pageCount === undefined ? 'not applicable' : `${paper.processedPageCount ?? paper.pageCount} / ${paper.pageCount}`}\n\n${paper.text}`,
     ).join('\n\n---\n\n')
     const summary = await this.adapters.agents.run(
       'paper-summarizer',
@@ -387,7 +391,7 @@ export class ResearchCoordinator {
       stage: 'paper-read',
       kind: 'summary',
       title: `论文摘要（${String(documents.length)} 篇）`,
-      content: `${documents.map(paper => `### ${paper.fileName}\n\n读取方式：${paper.extractionMethod}；检查页数：${paper.pageCount ?? '不适用'}`).join('\n\n')}\n\n${summary}`,
+      content: `${documents.map(paper => `### ${paper.fileName}\n\n读取方式：${paper.extractionMethod}；检查页数：${paper.pageCount === undefined ? '不适用' : `${paper.processedPageCount ?? paper.pageCount} / ${paper.pageCount}（仅前者页数已检查）`}`).join('\n\n')}\n\n${summary}`,
       source: fileNames,
     }, Date.now())
     return this.withLatestArtifact(state)
@@ -430,7 +434,7 @@ export class ResearchCoordinator {
     return this.generateEvaluatedIdea(request, {
       stage: 'idea-generation',
       title: '候选改进想法',
-      problem: problem.content,
+      problem: `${problem.content}\n\nUser feedback:\n${selectedResearchNode(request.state).memorySnapshot.feedback.join('\n')}`,
       literature: this.researchEvidence(request.state),
     })
   }
@@ -483,7 +487,7 @@ export class ResearchCoordinator {
       }
       assertInnovationClaim(candidate)
       const candidateSources = await this.adapters.literature.search(
-        `候选创新点专项查重检索。请检索已发表且可以直接比较的工作，重点寻找与以下研究问题、机制、训练目标、数据或实验设置高度相似的论文。研究问题：\n${compactSearchText(input.problem, 2400)}\n\n候选创新点：\n${compactSearchText(idea, 3600)}`,
+        `候选创新点专项查重检索 ${decodeURIComponent(encodeLiteratureQuery(idea, 800))} ${decodeURIComponent(encodeLiteratureQuery(input.problem, 250))}`,
         request.signal,
         { sources: memory.literatureSources },
       )
@@ -700,6 +704,7 @@ export function createAttachmentPaperReader(
           byteLength,
           extractionMethod: 'embedded-text',
           pageCount: pdf.pageCount,
+          processedPageCount: pdf.processedPageCount,
         }
       }
       if (resolved.ocr === undefined) {
@@ -721,6 +726,7 @@ export function createAttachmentPaperReader(
         byteLength,
         extractionMethod: 'ocr',
         pageCount: pdf.pageCount,
+        processedPageCount: pdf.processedPageCount,
       }
     },
   }
@@ -735,9 +741,12 @@ export function createAttachmentPaperReader(
 export function createWebLiteratureSearcher(web: WebRuntime, maxResults: number): ResearchLiteratureSearcher {
   return {
     async search(query, signal, options) {
-      const sources = options?.sources === undefined || options.sources.length === 0
+      const requested = options?.sources === undefined || options.sources.length === 0
         ? ['arxiv', 'openreview', 'semantic-scholar', 'acl-anthology', 'openalex'] as const
         : options.sources
+      const sources = [...new Set(requested.flatMap(source => source === 'web'
+        ? ['arxiv', 'openreview', 'semantic-scholar', 'acl-anthology', 'openalex'] as const
+        : [source]))]
       const limit = options?.maxResults ?? maxResults
       const outcomes = await Promise.all(sources.map(source => searchLiteratureSource(web, source, query, signal, limit)))
       const failures = outcomes.filter((outcome): outcome is LiteratureSourceFailure => 'error' in outcome)
@@ -791,7 +800,7 @@ interface LiteratureErrorDiagnostic {
 /** Search one explicit paper index while retaining diagnostics for unavailable indexes. */
 async function searchLiteratureSource(
   web: WebRuntime,
-  source: ResearchLiteratureSourceId,
+  source: Exclude<ResearchLiteratureSourceId, 'web'>,
   query: string,
   signal: AbortSignal | undefined,
   maxResults: number,
@@ -841,7 +850,7 @@ function waitForLiteratureRetry(signal: AbortSignal | undefined, attempt: number
   return new Promise((resolve, reject) => {
     const onAbort = () => {
       clearTimeout(timer)
-      reject(signal?.reason)
+      reject(signal?.reason instanceof Error ? signal.reason : new Error('Literature retry aborted', { cause: signal?.reason }))
     }
     const timer = setTimeout(() => {
       signal?.removeEventListener('abort', onAbort)
@@ -896,7 +905,11 @@ function literatureErrorText(error: unknown): string {
       continue
     }
     if (typeof current !== 'object' || current === null) {
-      parts.push(String(current))
+      switch (typeof current) {
+        case 'string': parts.push(current); break
+        case 'number': case 'boolean': case 'bigint': case 'symbol': parts.push(current.toString()); break
+        default: parts.push(current === null ? 'null' : typeof current)
+      }
       break
     }
     if (seen.has(current)) break
@@ -912,7 +925,7 @@ function literatureErrorText(error: unknown): string {
 /** Keep explicit index requests below the HTTP fetch provider's URL limit. */
 const MAX_ENCODED_LITERATURE_QUERY_LENGTH = 1200
 
-function encodeLiteratureQuery(query: string): string {
+function encodeLiteratureQuery(query: string, budget = MAX_ENCODED_LITERATURE_QUERY_LENGTH): string {
   const normalized = query
     .replace(/https?:\/\/\S+/gu, ' ')
     .replace(/[\[\]()`*_#]/gu, ' ')
@@ -926,7 +939,7 @@ function encodeLiteratureQuery(query: string): string {
     const middle = Math.floor((low + high) / 2)
     const candidate = characters.slice(0, middle).join('')
     const encoded = encodeURIComponent(candidate)
-    if (encoded.length <= MAX_ENCODED_LITERATURE_QUERY_LENGTH) {
+    if (encoded.length <= budget) {
       best = encoded
       low = middle + 1
     } else {
@@ -1205,7 +1218,15 @@ export function createSubagentResearchOcr(
 const CHINESE_OUTPUT_INSTRUCTION = '除论文标题、URL、代码、公式和 JSON 字段名外，所有模型可见输出必须使用简体中文。'
 
 function inheritedAgentOptions(parent: Agent): AgentOptions | undefined {
-  const options = parentAgentOptionsForDelegation(parent)
+  const previous = parentAgentOptionsForDelegation(parent)
+  const pending = parent.ctx.get('sessionProjections')?.stateOf(parent.session, 'modelSelection')?.pending
+  const { provider: _provider, model: _model, reasoningEffort: _effort, ...limits } = previous
+  const options: AgentOptions = pending == null ? previous : {
+    ...limits,
+    provider: pending.provider,
+    model: pending.model,
+    ...(pending.reasoningEffort === undefined ? {} : { reasoningEffort: ReasoningEffortId(pending.reasoningEffort) }),
+  }
   const inherited: AgentOptions = {
     ...(options.provider === undefined ? {} : { provider: options.provider }),
     ...(options.model === undefined ? {} : { model: options.model }),
@@ -1315,6 +1336,7 @@ interface PdfExtraction {
   readonly text: string
   readonly embeddedPages: readonly PdfTextPage[]
   readonly pageCount: number
+  readonly processedPageCount: number
   readonly pages: readonly ResearchPaperOcrPage[]
 }
 
@@ -1402,7 +1424,7 @@ async function openPdf(
       await page.render({ canvas: null, canvasContext: context as never, viewport }).promise
       pages.push({ pageNumber, data: canvas.toBuffer('image/png') })
     }
-    return { text: renderPdfTextPages(embeddedPages), embeddedPages, pageCount, pages }
+    return { text: renderPdfTextPages(embeddedPages), embeddedPages, pageCount, processedPageCount: pagesToRead, pages }
   } catch (error) {
     signal?.throwIfAborted()
     const detail = error instanceof Error ? error.message : String(error)
@@ -1467,12 +1489,6 @@ function formatLiteratureSources(sources: readonly ResearchLiteratureSource[]): 
     const snippet = source.snippet === undefined ? '' : `\n摘要或检索片段：${source.snippet}`
     return `${index + 1}. ${title}\n来源：${provider}\nURL：${source.url}${publishedAt}${snippet}`
   }).join('\n\n')
-}
-
-/** Keep index query URLs bounded while retaining the candidate's defining terms. */
-function compactSearchText(value: string, maxLength: number): string {
-  const compact = value.replace(/\s+/gu, ' ').trim()
-  return compact.length <= maxLength ? compact : `${compact.slice(0, maxLength)}…`
 }
 
 function unreachableStage(stage: never): never {

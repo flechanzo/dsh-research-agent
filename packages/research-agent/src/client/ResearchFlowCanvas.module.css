@@ -26,8 +26,8 @@
 
 .toolButton {
   display: inline-flex;
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   align-items: center;
   justify-content: center;
   border: 1px solid transparent;
@@ -73,8 +73,8 @@
 .canvas {
   position: relative;
   min-width: 0;
-  height: clamp(420px, 62vh, 680px);
-  min-height: 420px;
+  height: clamp(320px, 48vh, 520px);
+  min-height: 320px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--dsw-alias-border-l2) 92%, transparent);
   border-radius: 12px;
@@ -84,6 +84,18 @@
   background-size: 20px 20px;
   cursor: grab;
   touch-action: none;
+}
+
+@media (max-width: 560px) {
+  .canvas {
+    height: 360px;
+    min-height: 300px;
+  }
+
+  .toolbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
 }
 
 .canvas,

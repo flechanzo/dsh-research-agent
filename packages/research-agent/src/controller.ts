@@ -111,18 +111,12 @@ const researchMemoryInput = zod.object({
   directionFocuses: zod.array(researchDirectionFocus).optional(),
 })
 const researchMemory = researchMemoryInput.transform((memory): ResearchMemorySnapshot => {
-  // `web` was accepted by the first released research snapshot. Treat that
-  // legacy value as the new explicit-index defaults so it can never invoke
-  // the removed native Web Search operation after a Session is reopened.
-  const literatureSources = memory.literatureSources?.filter((source): source is ResearchLiteratureSourceId => source !== 'web')
   return {
     artifactIds: memory.artifactIds,
     feedback: memory.feedback,
     reviewerRoles: memory.reviewerRoles,
     directionWeights: memory.directionWeights ?? { novelty: 30, impact: 25, feasibility: 25, reproducibility: 20 },
-    literatureSources: literatureSources === undefined || literatureSources.length === 0
-      ? ['arxiv', 'openreview', 'semantic-scholar', 'acl-anthology', 'openalex']
-      : literatureSources,
+    literatureSources: memory.literatureSources ?? ['arxiv', 'openreview', 'semantic-scholar', 'acl-anthology', 'openalex'],
     directionFocuses: memory.directionFocuses ?? ['method', 'data', 'theory', 'efficiency', 'application'],
   }
 })
@@ -216,7 +210,7 @@ export interface Config {
   /** Maximum indexed paper sources included in one literature step. */
   readonly maxLiteratureResults?: number
   /** Literature backends enabled by default for new research Sessions. */
-  readonly literatureSources?: ResearchLiteratureSourceId[]
+  readonly literatureSources?: Exclude<ResearchLiteratureSourceId, 'web'>[]
   /** Minimum isolated expert score required before an idea is shown. */
   readonly innovationScoreThreshold?: number
   /** Maximum fresh candidates tried before reporting that all were rejected. */
@@ -481,7 +475,8 @@ export class ResearchController extends TypertRemoteService {
     const prepared = prepare(current.state)
     const agent = await this.agent(sessionId)
     const project = this.ensureProject(agent, sessionId)
-    const planPath = project === undefined ? this.config.planPath : join(project.path, this.config.planPath)
+    const branchLeaf = prepared.state.activeBranchId.replace(/[^a-zA-Z0-9._-]/g, '_')
+    const planPath = join(project?.path ?? '.', 'plans', branchLeaf, `revision-${current.revision + 1}`, this.config.planPath)
     const fs = agent.ctx.get('fs') ?? this.ctx.fs
     const sandboxPolicy = this.resolveSandboxPolicy(agent)
     const coordinator = createHostResearchCoordinator({
@@ -560,6 +555,7 @@ export class ResearchController extends TypertRemoteService {
       ? []
       : papers.map(paper => `- ${paper.name} (${paper.bytes} bytes, ${paper.attachmentId})`)
     const paperEntries = [...new Set([...previousEntries, ...newEntries])]
+    const exportedArtifactIds = new Set<string>()
     const manifest = [
       '# 自动科研项目',
       '',
@@ -576,6 +572,11 @@ export class ResearchController extends TypertRemoteService {
         .sort((left, right) =>
           (left.sessionSeq ?? Number.MAX_SAFE_INTEGER) - (right.sessionSeq ?? Number.MAX_SAFE_INTEGER))
         .flatMap(node => node.artifactRefs
+          .filter((id) => {
+            if (exportedArtifactIds.has(id)) return false
+            exportedArtifactIds.add(id)
+            return true
+          })
           .map(id => state.artifacts[id])
           .filter((artifact): artifact is ResearchArtifact => artifact !== undefined)
           .map(artifact => `### ${artifact.title}\n\n${artifact.content}`)),

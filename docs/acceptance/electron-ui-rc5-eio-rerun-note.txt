@@ -1,0 +1,1 @@
+The final package rerun reached the real Electron UI, rendered the new status error banner, and then hit the previously observed intermittent ReplaceFileW EIO (Win32 1175) while persisting research-state.json at stage node-4. The earlier complete rc.5 run is recorded in electron-ui-rc5-final.txt and passed all workflow assertions.

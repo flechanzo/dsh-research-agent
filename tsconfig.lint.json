@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "packages/research-agent/src/**/*.ts",
+    "packages/research-agent/src/**/*.tsx"
+  ]
+}

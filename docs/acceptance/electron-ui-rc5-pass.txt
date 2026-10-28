@@ -1,0 +1,15 @@
+IDENTITY version 0.2.1-rc.3 appPath F:\deepseek\resources\app.asar
+MOCK CHAT PASSED
+MODEL SWITCH A -> B
+UPLOAD PASSED
+STAGE 0 node-2 ... STAGE 8 node-10
+PLAN written in isolated workspace, 2704 bytes
+PASS complete workflow with Mock services
+PASS F02 actual subagents inherit B; provider is Mock
+PASS F01 commit survives real export filesystem failure and UI refreshes 11 -> 12
+PASS F01 subsequent command succeeds without revision loop
+PASS F12 separate branch plan files preserve the first plan
+PASS F08 frontend reload restores committed plan
+SCREENSHOT saved
+PASS formal installed Electron, mock model and literature, isolated workspace
+Note: a second narrow-window rerun reached the same UI and screenshot point but hit the previously observed ReplaceFileW EIO (Win32 1175) during later branch continuation; it is retained in electron-ui-rc5-narrow.txt.

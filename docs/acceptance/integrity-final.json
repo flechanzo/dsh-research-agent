@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-10-27T01:43:38.438Z",
+  "protectedFiles": [
+    {
+      "file": "D:/DeepSeekHarness/data/storages/research.json",
+      "sha256": "ed17833ae3abdad8340954c4d3122b188fa2a62773707da46f8efbe0c0d4e2be",
+      "after": "ed17833ae3abdad8340954c4d3122b188fa2a62773707da46f8efbe0c0d4e2be",
+      "unchanged": true
+    },
+    {
+      "file": "D:/DeepSeekHarness/data/profiles/desktop/cordis.patch.yml",
+      "sha256": "8cb3495379284aba3d99ef9cd1ed6a348d34199b8be675fcb972e8dc14d50a19",
+      "after": "8cb3495379284aba3d99ef9cd1ed6a348d34199b8be675fcb972e8dc14d50a19",
+      "unchanged": true
+    },
+    {
+      "file": "F:/deepseek/DeepSeek Harness.exe",
+      "sha256": "fd7d298f4ba03ee9bab1719a892afeaef5c09bf50c574a592a64c85f64574c0c",
+      "after": "fd7d298f4ba03ee9bab1719a892afeaef5c09bf50c574a592a64c85f64574c0c",
+      "unchanged": true
+    },
+    {
+      "file": "F:/deepseek/resources/app.asar",
+      "sha256": "04b32e3a872826ba15cfb2081c6a929a8d4ecaa65e09a2543e5a6b30e2eff1f0",
+      "after": "04b32e3a872826ba15cfb2081c6a929a8d4ecaa65e09a2543e5a6b30e2eff1f0",
+      "unchanged": true
+    }
+  ],
+  "oldSourceFilesChecked": 296,
+  "oldSourceChanges": [],
+  "oldGitStatusUnchanged": true,
+  "baseline014ArchiveUnchanged": true,
+  "formalInstalledVersion": "0.1.4"
+}

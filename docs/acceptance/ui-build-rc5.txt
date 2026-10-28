@@ -1,0 +1,18 @@
+
+> dsh-research-agent-workspace@0.1.0 build
+> node scripts/build.mjs
+
+discovered [
+  {
+    package: '@deepseek-ai/dsh-typert-protocol',
+    root: 'packages/.protocol-sdk',
+    faces: [ 'host' ]
+  },
+  {
+    package: 'dsh-research-agent',
+    root: 'packages/research-agent',
+    faces: [ 'host' ]
+  }
+]
+{ package: 'dsh-research-agent', remote: true }
+Research host, client, declarations, and current RPC schemas built.

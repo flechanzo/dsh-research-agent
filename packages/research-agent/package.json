@@ -1,6 +1,6 @@
 {
   "name": "dsh-research-agent",
-  "version": "0.1.4",
+  "version": "0.1.5-rc.5",
   "description": "自动科研：保留人工确认、文献检索、多角色评审、分支状态和研究计划",
   "type": "module",
   "license": "MIT",

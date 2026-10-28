@@ -23,19 +23,19 @@ export async function apply(ctx: Context): Promise<void> {
   const disposeRemote = await ctx.remote.$mount(TYPERT_REMOTE)
   ctx.effect(() => disposeRemote)
   ctx.inject(['remote.research'], (ctx) => {
-  ctx.effect(() => ctx.locale.register(NS, { zh, en }))
-  const t = ctx.locale.bind(NS)
-  ctx.effect(() => ctx.sidebarRightTabs.register(researchDefinition(t)))
-  ctx.effect(() => ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register({
-    name: 'sidebar.right.pane.tab', key: RESEARCH_ID, locale: NS,
-    inject: () => ({ research: ctx.remote.research, fileUpload: ctx.fileUpload }),
-  }, ResearchPanel)))
-  ctx.effect(() => ctx.slots.inject('sidebar.right.pane.tab.title', () => ctx.slots.register({
-    name: 'sidebar.right.pane.tab.title', key: RESEARCH_ID, locale: NS,
-  }, ResearchTitle)))
-  ctx.effect(() => ctx.slots.inject('conversation.session.header.actions', () => ctx.slots.register({
-    name: 'conversation.session.header.actions', id: 'research-agent-open', order: 30, locale: NS,
-    inject: (sessionId) => ({ open: () => ctx.sidebarRight.openTab(RESEARCH_KIND, { params: { sessionId } }) }),
-  }, ResearchAction)))
+    ctx.effect(() => ctx.locale.register(NS, { zh, en }))
+    const t = ctx.locale.bind(NS)
+    ctx.effect(() => ctx.sidebarRightTabs.register(researchDefinition(t)))
+    ctx.effect(() => ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register({
+      name: 'sidebar.right.pane.tab', key: RESEARCH_ID, locale: NS,
+      inject: () => ({ research: ctx.remote.research, fileUpload: ctx.fileUpload }),
+    }, ResearchPanel)))
+    ctx.effect(() => ctx.slots.inject('sidebar.right.pane.tab.title', () => ctx.slots.register({
+      name: 'sidebar.right.pane.tab.title', key: RESEARCH_ID, locale: NS,
+    }, ResearchTitle)))
+    ctx.effect(() => ctx.slots.inject('conversation.session.header.actions', () => ctx.slots.register({
+      name: 'conversation.session.header.actions', id: 'research-agent-open', order: 30, locale: NS,
+      inject: sessionId => ({ open: () => { ctx.sidebarRight.openTab(RESEARCH_KIND, { params: { sessionId } }) } }),
+    }, ResearchAction)))
   })
 }

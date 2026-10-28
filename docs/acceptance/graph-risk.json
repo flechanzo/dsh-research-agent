@@ -1,0 +1,6 @@
+{
+  "scope": "Parser only; synthetic isolated row; no graph traversal or real data writes",
+  "missingSelectionAccepted": true,
+  "selfCycleAccepted": true,
+  "status": "FAIL F19 validation remains incomplete"
+}

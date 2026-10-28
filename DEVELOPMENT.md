@@ -1,60 +1,60 @@
 # 独立开发
 
-使用 D:\dsh-research-agent 开发，不修改 D:\deepseek-harness 或 F:\deepseek。工程已初始化 Git，没有远程仓库。把 .isolated、.target-sdk、node_modules、.env、dist 和本地备份留在 Git 外；科研数据不进入源码仓库。
+使用 D:\dsh-research-agent 开发。旧仓库 D:\deepseek-harness 和 F:\deepseek 安装文件只读。源码不包含科研数据、模型凭据或正式 profile；.acceptance、.isolated、.target-sdk、node_modules、.env、dist 和本地备份不进入 Git。
 
 ## 构建与测试
 
-需要 PowerShell 7、Node 22.19+ 和 pnpm。依赖锁定于 pnpm-lock.yaml，官方 DSH 包均为目标 0.2.1-rc.3。
+需要 Node 22.19+ 和 pnpm，目标 DSH SDK 精确为 0.2.1-rc.3。未获网络许可时只能使用已安装依赖或离线缓存，不能静默联网补包。
 
 ```powershell
 Set-Location D:\dsh-research-agent
-pnpm install --frozen-lockfile
-pnpm run build
-pnpm run typecheck
-pnpm test
-pnpm run pack
+node scripts/build.mjs
+npm run typecheck
+node node_modules/vitest/vitest.mjs run
+npm run lint
+npm pack ./packages/research-agent --pack-destination dist --offline --json
 ```
 
-本次实测构建命令为 node scripts/build.mjs，测试命令为 node node_modules/vitest/vitest.mjs run --reporter=dot，打包命令为 npm pack ./packages/research-agent --pack-destination dist --json。pnpm scripts 映射到同一实现。测试依赖先构建：控制器测试导入 lib，协议声明由构建生成。
+测试必须先构建：controller、migration 和兼容性测试导入 lib。build 生成临时 packages/.protocol-sdk、Typert 协议和声明，再输出 Host ESM 与目标 ModuleLoader 客户端 bundle；不依赖旧仓库。最终验收运行 13 个文件、89 项测试，具体状态以 TEST_REPORT.md 为准。当前 lint 因缺失目标 dockkit SDK 声明失败，不要关闭类型规则掩盖它。
 
-build 从公开 npm 协议声明生成临时 packages/.protocol-sdk 镜像，让目标 WorkspaceTypertGenerator 发现 Remote/RemoteError 符号，然后严格检查 Host/Client 并生成声明，输出 Host ESM 和目标 ModuleLoader 客户端 bundle。镜像和 .target-sdk 都不发布；当前构建不依赖安装目录或旧仓库。
+UI 单测的宿主 primitives 是明确的替身，插件组件实际运行。真实宿主 UI 由 tests/acceptance/electron-candidate.mjs 验证。旧 74 项、新 54 项与当前断言对照可由 tests/acceptance/coverage-map.mjs 重新生成；该工具只读取旧仓库和独立仓库的 4245985 提交。
 
 ## 代码导航
 
 | 位置 | 职责 |
 | --- | --- |
-| packages/research-agent/src/workflows/research.ts | 不可变 DAG、阶段、分支、记忆 |
-| research-coordinator.ts | PDF/OCR、五索引、模型角色、评分和计划 |
-| research-simulation.ts | 固定 OLS 示例 |
-| subagent-adapter.ts | 0.2 activation 与取消清理 |
+| packages/research-agent/src/workflows/research.ts | 不可变 DAG、阶段、分支、反馈 |
+| research-coordinator.ts | PDF/OCR、五索引、模型角色、评分、计划 |
+| research-simulation.ts | 固定五点 OLS 示例 |
+| subagent-adapter.ts | 0.2 activation、取消与清理 |
 | src/controller.ts、types.ts | 配置、RPC、revision、存储和导出 |
-| src/client/ | 面板、图、正文、locale |
-| presets/research.patch.yml | 原研究 Prompt 和工具组成 |
-| scripts/manage-plugin.ps1 | 官方 CLI 的事务备份、安装和回滚 |
-| scripts/migrate-data.mjs | 幂等科研 sidecar 复制 |
-| tests/ | 54 项行为、PDF、存储、取消、迁移测试及 Mock |
+| src/client/ | 面板、图、正文、共享缓存、locale |
+| tests/legacy-ui/ | 恢复及适配的旧 UI/样式回归 |
+| tests/acceptance/ | 正式 Electron、五条 v1 副本、基线与覆盖证据工具 |
+| scripts/manage-plugin.ps1 | 官方 CLI 的备份、安装和回滚 |
+| scripts/migrate-data.mjs | 默认 dry-run 的科研 sidecar 复制 |
 
-本次提取审计工具 extract-source.mjs、extract-target-sdk.mjs、backup-initial.mjs 是迁移记录工具，含本机审计路径，不属于日常构建。不要用 extract-source 覆盖继续开发的源码。
+## 隔离验收
 
-## 开发部署
+本轮目录为 .acceptance/run-20261027-RV7z7X。home、electron-user、workspace 分离；home/profiles/desktop/cordis.patch.yml 禁用真实模型与标题生成，加载 tests/support/mock.mjs，使用 research-mock 模型和 research-fixture 文献 provider。workspace-controller.documentsDirectory 显式指向专用 workspace，不能只设 DSH_HOME 就假定 Session cwd 已隔离。
 
-优先将预构建包安装到独立的 .isolated/home，使用目标内置 CLI。管理脚本的 -PackagePath 也可以传构建后的 packages/research-agent 本地目录，交由官方 CLI 处理本地包；本次已实际验证的是 tgz 方式。修改源码后必须 build，发布新 tgz 时增加 package.json version，随后运行 update.ps1。没有为独立包承诺 HMR；可靠方式是更新后重启该隔离 Host，再刷新浏览器。
-
-scripts/start-isolated.ps1 从 tests/support 生成 Mock overlay，禁用真实模型提供者、删除本进程中的常见凭据环境变量，使用本地合成模型/五索引数据和浏览器目录选择器。先给 .isolated/home/profiles/web 安装插件再启动；本机验收 home 已配置好。不要把真实 profile 的 .env 或凭据复制进去。它会把带访问令牌的本地 URL 写入被忽略的 .isolated/url.txt，不要共享该文件。
+当前可在已准备的隔离环境重跑：
 
 ```powershell
-.\update.ps1 -InstallDir F:\deepseek -DshHome D:\dsh-research-agent\.isolated\home -Profile web -PackagePath D:\dsh-research-agent\dist\dsh-research-agent-0.1.4.tgz
-.\scripts\start-isolated.ps1
-# 在另一个 PowerShell 中执行：
-node scripts/full-flow.mjs
-node scripts/stage-flow.mjs
-node scripts/branch-flow.mjs
+$c = Get-Content .acceptance/current.json -Raw | ConvertFrom-Json
+$env:DSH_HOME = $c.home
+$env:npm_config_offline = 'true'
+& 'F:\deepseek\resources\runtime\cli\bin\dsh.cmd' plugin --profile desktop add D:\dsh-research-agent\dist\dsh-research-agent-0.1.5-rc.3.tgz --ignore-scripts
+node tests/acceptance/electron-candidate.mjs
+node tests/acceptance/legacy-records.mjs
 ```
 
-浏览器脚本使用 Playwright + 已安装 Edge 的临时上下文，不读取用户浏览器资料。full-flow 创建新任务；stage-flow 推进其检查点并明确点击写入；branch-flow 对该计划执行恢复和分支仿真。分支脚本针对这套合成流程的节点编号，不适用于任意用户任务。测试输出工作区以实际 Session cwd 为准，不等于 DSH_HOME；给新隔离实例指定专用工作区后再做新验收。
+这些脚本仅针对本机隔离布局和合成节点编号。Electron 脚本清除凭据环境变量，使用独立 userData，退出时关闭自己启动的实例；F01 只临时遮挡新建合成 Session 的导出文件，并在 finally 恢复。真实 v1 测试只修改新建副本。路径与前提见 tests/acceptance/README.md；不得将 current.json 改指向正式 home 或现有用户工作区。
 
-## 使用 Codex 继续开发
+早期 scripts/start-isolated.ps1 及 Web 流程是上一轮迁移工具，不能直接作为本轮隔离保证：它们未显式固定 Session 工作区。新的验收使用上述正式 Electron 路径。extract-source.mjs、extract-target-sdk.mjs、backup-initial.mjs 也是一次性迁移工具，不要用它们覆盖持续开发的源码。
 
-可给 Codex 这样的任务：“在这个独立工程中修改某个科研阶段，先读 MIGRATION_REPORT.md 和对应测试，保持 research v1 兼容，不改旧仓库或 Desktop ASAR。增加与行为匹配的测试，构建新的版本包，在隔离 profile 验证后更新实际 desktop。”
+## 持久化与发布
 
-改持久化字段时保留已有 v1 记录兼容并增加迁移测试；改 Remote 后重生成 Typert；改 UI 同时更新 locales.ts；改子代理必须测试模型继承、取消和清理；改 PDF/索引要保留混合页和部分来源失败处理。真实模型验收应使用明确允许的测试材料，不能将私人论文或凭据放入测试包。
+改持久化值域时同步 Host、Remote 声明及兼容文档；research v1 的历史 web 值必须读后保留，在搜索执行层展开。改子代理要覆盖 pending 模型选择、OCR、取消和清理；改 PDF/索引要保留混合页、检查页数和部分来源失败测试。固定 OLS 不等于科研验证。
+
+新版本先构建、测试、生成 tgz，再用官方 CLI 安装到隔离 profile。验收结果与当前候选对应，不自动更新正式 profile。本次 0.1.5-rc.3 仍有 lint、F19 和外部服务验证缺口；保持正式 0.1.4 的现状不代表它已经通过最终验收。后续部署应在这些缺口得到明确处理后单独决定。

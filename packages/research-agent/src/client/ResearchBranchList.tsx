@@ -177,10 +177,10 @@ function buildRows(
       })
       const nextAncestors = new Set(ancestors)
       nextAncestors.add(node.nodeId)
-      childNodes.forEach((child, index) => walk(child, depth + 1, `${path}.${index + 1}`, nextAncestors))
+      childNodes.forEach((child, index) => { walk(child, depth + 1, `${path}.${index + 1}`, nextAncestors) })
     }
   }
-  roots.forEach((root, index) => walk(root, 0, String(index + 1), new Set()))
+  roots.forEach((root, index) => { walk(root, 0, String(index + 1), new Set()) })
   // A corrupt or future DAG may contain a cycle or an orphan that was not a root.
   // Keep the row visible without inventing a parent relationship.
   for (const node of Object.values(state.nodes)) {

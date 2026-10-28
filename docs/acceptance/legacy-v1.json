@@ -1,0 +1,48 @@
+{
+  "domainVersion": 1,
+  "realSourceUnchanged": true,
+  "realSourceSha256": "ed17833ae3abdad8340954c4d3122b188fa2a62773707da46f8efbe0c0d4e2be",
+  "records": [
+    {
+      "record": 1,
+      "read": "PASS",
+      "branchCopy": "PASS",
+      "revisionBefore": 51,
+      "revisionAfter": 52,
+      "ancestorsUnchanged": true
+    },
+    {
+      "record": 2,
+      "read": "PASS",
+      "branchCopy": "PASS",
+      "revisionBefore": 209,
+      "revisionAfter": 210,
+      "ancestorsUnchanged": true
+    },
+    {
+      "record": 3,
+      "read": "PASS",
+      "branchCopy": "PASS",
+      "revisionBefore": 15,
+      "revisionAfter": 16,
+      "ancestorsUnchanged": true
+    },
+    {
+      "record": 4,
+      "read": "PASS",
+      "branchCopy": "PASS",
+      "revisionBefore": 13,
+      "revisionAfter": 14,
+      "ancestorsUnchanged": true
+    },
+    {
+      "record": 5,
+      "read": "PASS",
+      "branchCopy": "PASS",
+      "revisionBefore": 7,
+      "revisionAfter": 8,
+      "ancestorsUnchanged": true
+    }
+  ],
+  "scope": "Target JSON backend and plugin controller; no model, no private text exported"
+}

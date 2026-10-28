@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { IconBranchOutlineRegular, Tooltip } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
 import type {
   ResearchNode,
   ResearchRemote,

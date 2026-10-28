@@ -1,0 +1,3 @@
+
+> dsh-research-agent-workspace@0.1.0 typecheck
+> tsc --noEmit -p packages/research-agent/tsconfig.host.json && tsc --noEmit -p packages/research-agent/tsconfig.client.json

@@ -1,0 +1,36 @@
+{
+  "version": "0.1.5-rc.3",
+  "archiveSha256": "254d151e9157ee3f8e35ff8e092d56c37d9956617f3c982cddefa2a1a52f8bd6",
+  "files": 33,
+  "bytes": 178689,
+  "runtime": [
+    {
+      "file": "lib/index.js",
+      "final": "917b405f2c522860d14c17c1775bbbd87843013637e917473b91c0f6d7f07b87",
+      "electronTested": "917b405f2c522860d14c17c1775bbbd87843013637e917473b91c0f6d7f07b87"
+    },
+    {
+      "file": "lib/client.js",
+      "final": "ae741cdc9f62f70d03ce7f9ccea3236d404eff65f5e11b8e5e7b6bc7976e4470",
+      "electronTested": "ae741cdc9f62f70d03ce7f9ccea3236d404eff65f5e11b8e5e7b6bc7976e4470"
+    },
+    {
+      "file": "lib/types.js",
+      "final": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "electronTested": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "lib/typert.host.js",
+      "final": "91d1443a736c09e623a1fd30ced7dd88e44ca18db60326b4e43af37fbf14b1fd",
+      "electronTested": "91d1443a736c09e623a1fd30ced7dd88e44ca18db60326b4e43af37fbf14b1fd"
+    },
+    {
+      "file": "lib/typert.remote-client.js",
+      "final": "0177a2269475bd56f0631a10f61e627d26546be7174d8fe6ea4f678265ce61af",
+      "electronTested": "0177a2269475bd56f0631a10f61e627d26546be7174d8fe6ea4f678265ce61af"
+    }
+  ],
+  "runtimeMatchesElectronTested": true,
+  "forbiddenPackageEntries": [],
+  "note": "Exact final archive checked against the isolated installation; no real external services used."
+}

@@ -9,3 +9,4 @@ dist/
 packages/*/lib/
 packages/.protocol-sdk/
 .local-pack.json
+.acceptance/

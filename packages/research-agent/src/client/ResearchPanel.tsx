@@ -26,6 +26,7 @@ import type { RemoteResult } from '@deepseek-ai/dsh-typert-protocol'
 import type { WorkflowRunKey } from './locales.ts'
 import {
   publishResearchSession,
+  loadResearchSession,
   useResearchSessionFailure,
   useResearchSession,
 } from './research-session-store.ts'
@@ -188,7 +189,9 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
   const [reviewers, setReviewers] = useState<readonly string[]>(REVIEWER_ROLES.map(item => item.role))
   const simulationAvailable = snapshot?.simulationAvailable === true
   const inputRef = useRef<HTMLInputElement>(null)
-  const displayState = state ?? initialResearchState(t('research.defaultBranch'))
+  const defaultBranch = t('research.defaultBranch')
+  const initialState = useMemo(() => initialResearchState(defaultBranch), [defaultBranch])
+  const displayState = state ?? initialState
   const selected = selectedResearchNode(displayState)
   const branch = displayState.branches[displayState.activeBranchId]
   const selectedBranch = displayState.branches[selected.branchId] ?? branch
@@ -221,6 +224,14 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
       .find(element => element.dataset.researchMainNode === selected.nodeId)
     if (target !== undefined && typeof target.scrollIntoView === 'function') {
       target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
+
+  const focusSection = (selector: string): void => {
+    if (typeof document === 'undefined') return
+    const target = document.querySelector<HTMLElement>(selector)
+    if (target !== null && typeof target.scrollIntoView === 'function') {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }
 
@@ -262,6 +273,7 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
       const result = await operation()
       if (!result.ok) {
         setError(failureText(result.error, t))
+        await loadResearchSession(research, workflowSessionId)
         return undefined
       }
       // A historical continuation stays in this Session so the panel can keep
@@ -272,6 +284,7 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
       return result.value
     } catch {
       setError(t('research.error.request'))
+      await loadResearchSession(research, workflowSessionId)
       return undefined
     } finally {
       setBusy(false)
@@ -334,6 +347,13 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
     void execute(() => research.continueFromNode({ sessionId: workflowSessionId, expectedRevision: revision, nodeId }))
   }
 
+  const needsConfirm = canMutate && ((selected.status === 'awaiting-confirmation' || selected.status === 'confirmed')
+    || (selected.status === 'active' && selected.stage !== 'paper-upload'))
+  const isUploadStage = selected.stage === 'paper-upload' || selected.stage === 'literature-search' || selected.stage === 'targeted-literature-search'
+  const actionLabel = selected.stage === 'final-plan' && artifact?.kind === 'plan' && artifact.source === undefined
+    ? t('research.writePlan')
+    : t('research.confirm')
+
   return (
     <div
       className={css.root}
@@ -354,13 +374,67 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
         </div>
         <div className={css.headerMeta}>
           <span className={css.statusPill} data-status={selected.status}>{statusText(selected.status, t)}</span>
+          <span className={css.branchMeta}>{selectedBranch?.label ?? branch?.label ?? selected.branchId}</span>
           <span className={css.workspace}>{t('research.workspace', { path: `research-projects/${String(workflowSessionId)}` })}</span>
         </div>
       </header>
+      <div className={css.statusBanner} role="status" aria-live="polite">
+        <span className={css.statusBannerLabel}>{loading ? t('research.loading') : busy ? t('research.working') : stageText(selected.stage, t)}</span>
+        <span className={css.statusBannerText}>{loading ? t('research.loadingHint') : t('research.currentPath', { path: nodeLineage(displayState, selected.nodeId).map(node => stageText(node.stage, t)).join(' › ') })}</span>
+      </div>
+      {error !== undefined && <div className={css.statusError} role="alert">{error}</div>}
+      <nav className={css.workspaceNav} aria-label={t('research.workspaceNav')}>
+        <button type="button" className={css.workspaceNavButton} onClick={() => { focusResearchContent() }}>{t('research.navContent')}</button>
+        <button type="button" className={css.workspaceNavButton} onClick={() => { focusSection('[data-research-branch-section]') }}>{t('research.navBranches')}</button>
+        <button type="button" className={css.workspaceNavButton} onClick={() => { focusSection(`[data-research-node-detail="${selected.nodeId}"]`) }}>{t('research.navDetails')}</button>
+      </nav>
+      <div className={css.stagePath} aria-label={t('research.currentPath', { path: '' })}>
+        {nodeLineage(displayState, selected.nodeId).map((node, index, path) => (
+          <span key={node.nodeId} className={css.stagePathItem}>
+            <button
+              type="button"
+              className={node.nodeId === selected.nodeId ? `${css.stagePathButton} ${css.stagePathButtonActive}` : css.stagePathButton}
+              onClick={() => { selectNode(node.nodeId) }}
+              disabled={busy || node.nodeId === selected.nodeId}
+              aria-current={node.nodeId === selected.nodeId ? 'step' : undefined}
+            >
+              {index + 1}. {stageText(node.stage, t)}
+            </button>
+            {index < path.length - 1 && <span className={css.stagePathSeparator} aria-hidden="true">›</span>}
+          </span>
+        ))}
+      </div>
+      <div className={css.actionDock} data-research-action-dock aria-label={t('research.currentAction')}>
+        <div className={css.actionDockCopy}>
+          <span className={css.actionDockTitle}>{t('research.currentAction')}</span>
+          <span className={css.actionDockHint}>{busy ? t('research.workingHint') : stageText(selected.stage, t)}</span>
+        </div>
+        <div className={css.actionDockButtons}>
+          {isUploadStage && (
+            <button type="button" className={css.primaryButton} disabled={busy || loading} onClick={() => { inputRef.current?.click() }}>
+              {selected.stage === 'paper-upload' ? t('research.upload') : t('research.uploadSupplemental')}
+            </button>
+          )}
+          {needsConfirm && (
+            <button type="button" className={css.primaryButton} disabled={busy || loading} onClick={confirm}>
+              <IconCheckOutlineRegular size={14} /> {actionLabel}
+            </button>
+          )}
+          {canMutate && ideaNeedsReview && (
+            <>
+              <button type="button" className={css.button} disabled={busy || loading || feedback.trim() === ''} onClick={submitFeedback}>{t('research.feedback')}</button>
+              <button type="button" className={css.dangerButton} disabled={busy || loading} onClick={reject}>{t('research.reject')}</button>
+            </>
+          )}
+          {!isUploadStage && !needsConfirm && !(canMutate && ideaNeedsReview) && (
+            <button type="button" className={css.button} disabled={busy} onClick={() => { focusSection(`[data-research-node-detail="${selected.nodeId}"]`) }}>{t('research.viewNode')}</button>
+          )}
+        </div>
+      </div>
       <ResearchBranchSelector sessionId={sessionId} viewId="chat" research={research} t={t} />
       <ResearchTranscriptMain sessionId={sessionId} research={research} t={t} />
 
-      <section className={branchView === 'list' ? `${css.section} ${css.branchTreeSection}` : css.section}>
+      <section data-research-branch-section className={branchView === 'list' ? `${css.section} ${css.branchTreeSection}` : css.section}>
         <div className={css.sectionHeader}>
           <div>
             <div className={css.sectionTitle}>{t('research.branch')}</div>
@@ -527,7 +601,6 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
         {artifact?.kind === 'plan' && artifact.source === undefined && (
           <div className={css.notice}>{t('research.planPreview')}</div>
         )}
-        {error !== undefined && <div className={css.notice} role="alert">{error}</div>}
         {canMutate && selected.stage === 'problem-summary' && (
           <div className={css.directionControls}>
             <div className={css.subtle}>{t('research.directionTitle')}</div>
@@ -591,30 +664,13 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
                 <span className={css.subtle}>{selected.stage === 'paper-upload' ? t('research.uploadHint') : t('research.uploadSupplementalHint')}</span>
               </div>
               <input ref={inputRef} className={css.fileInput} type="file" multiple accept=".pdf,.txt,application/pdf,text/plain" onChange={upload} />
-              <button type="button" className={css.primaryButton} disabled={busy || loading} onClick={() => inputRef.current?.click()}>
-                {selected.stage === 'paper-upload' ? t('research.upload') : t('research.uploadSupplemental')}
-              </button>
             </div>
           </>
-        )}
-        {canMutate && ((selected.status === 'awaiting-confirmation' || selected.status === 'confirmed')
-          || (selected.status === 'active' && selected.stage !== 'paper-upload')) && (
-          <div className={css.actionRow}>
-            <button type="button" className={css.primaryButton} disabled={busy || loading} onClick={confirm}>
-              <IconCheckOutlineRegular size={14} /> {selected.stage === 'final-plan' && artifact?.kind === 'plan' && artifact.source === undefined
-                ? t('research.writePlan')
-                : t('research.confirm')}
-            </button>
-          </div>
         )}
         {canMutate && ideaNeedsReview && (
           <>
             <div className={css.subtle}>{t('research.innovation')}</div>
             <textarea className={css.feedback} value={feedback} placeholder={t('research.feedbackPlaceholder')} onChange={(event) => { setFeedback(event.target.value) }} />
-            <div className={css.actionRow}>
-              <button type="button" className={css.button} disabled={busy || loading} onClick={submitFeedback}>{t('research.feedback')}</button>
-              <button type="button" className={css.dangerButton} disabled={busy || loading} onClick={reject}>{t('research.reject')}</button>
-            </div>
             {selected.stage === 'idea-generation' && (
               <span className={css.subtle}>{t('research.innovationCheck')}{innovationClaimPasses(artifact) ? t('research.pass') : t('research.needsWork')}</span>
             )}

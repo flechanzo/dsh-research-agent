@@ -1,0 +1,622 @@
+{
+  "oldCount": 74,
+  "newCount": 54,
+  "oldExpects": 250,
+  "newExpects": 181,
+  "cases": [
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "keeps generated branch labels unique beyond the alphabet",
+      "expects": 6,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 6,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "keeps stage outputs visible and confirms them before continuation",
+      "expects": 2,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "marks the displayed final plan as written only after a valid path is returned",
+      "expects": 5,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 5,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "stores at least one selected research focus in branch memory",
+      "expects": 2,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "rejects an idea into a new branch while preserving the original branch",
+      "expects": 5,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 5,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "continues from history without mutating the source node",
+      "expects": 3,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 3,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "records feedback and enforces an explicit innovation claim",
+      "expects": 3,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 3,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "preserves feedback as the decision when confirming a refinement",
+      "expects": 2,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "keeps the source status when continuing from history",
+      "expects": 2,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "continues any selected node without rewriting the source branch",
+      "expects": 9,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 9,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "selects a historical node without changing the active branch",
+      "expects": 2,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "copies a recorded Session boundary into a continuation branch",
+      "expects": 5,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 5,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research.spec.ts",
+      "name": "keeps a copied future node bound to its source Session",
+      "expects": 3,
+      "migrated": "tests/research.spec.ts",
+      "newExpects": 3,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "runs the built-in numerical adapter and reports computed metrics",
+      "expects": 5,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 5,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "rejects an empty idea before computing any result",
+      "expects": 1,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 1,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "honors cancellation before the fixed experiment starts",
+      "expects": 1,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 1,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "reads several uploaded papers in one comparative stage",
+      "expects": 5,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 5,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "asks the problem extractor to retain every distinct question",
+      "expects": 3,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 3,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "executes every confirmed stage and renders a final plan",
+      "expects": 24,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 24,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "gives the isolated innovation reviewer all branch evidence and candidate search results",
+      "expects": 6,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 6,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "passes the resolved sandbox policy to the final plan writer",
+      "expects": 2,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "mounts the fixed numerical adapter in the Host factory",
+      "expects": 4,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 4,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "leaves research state untouched when a simulation adapter fails",
+      "expects": 2,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "refuses to run a stage whose output is still awaiting confirmation",
+      "expects": 1,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 1,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "requires an innovation claim before multi-agent review",
+      "expects": 1,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 1,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "generates a new idea from a rejected branch while retaining literature evidence",
+      "expects": 4,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 4,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "appends uploaded supplemental papers to either literature checkpoint",
+      "expects": 3,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 3,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "discards low-score or overlapping candidates before exposing a passing idea",
+      "expects": 2,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "reports the innovation threshold when every candidate is rejected",
+      "expects": 1,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 1,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "fails closed when candidate-specific literature search has no results",
+      "expects": 1,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 1,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "queries arXiv machine-learning categories and merges duplicate URLs",
+      "expects": 3,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 3,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "does not call the native Web Search capability",
+      "expects": 2,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "retries transient timeouts once and keeps the successful source result",
+      "expects": 2,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "does not retry a non-public address block and reports failure categories",
+      "expects": 2,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "keeps index results when another index is unavailable",
+      "expects": 1,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 1,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "reports the selected indexes when every fetch fails",
+      "expects": 1,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 1,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "classifies a proxied connection failure separately from DNS and address blocks",
+      "expects": 1,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 1,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "bounds encoded queries so long problem summaries reach the indexes",
+      "expects": 2,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "parses explicit conference and citation indexes without native search",
+      "expects": 3,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 3,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "inherits the selected parent model route and Chinese output instruction",
+      "expects": 2,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "extracts a PDF text layer with PDF.js",
+      "expects": 3,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 3,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "renders a scanned PDF and delegates the pages to OCR",
+      "expects": 3,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 3,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "OCRs sparse pages in a mixed PDF while retaining embedded page text order",
+      "expects": 3,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 3,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+      "name": "reports a clear error when a scanned PDF has no OCR adapter",
+      "expects": 1,
+      "migrated": "tests/research-coordinator.spec.ts",
+      "newExpects": 1,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/api/research-controller/tests/continue-from-node.host.spec.ts",
+      "name": "advertises the fixed numerical simulation adapter",
+      "expects": 1,
+      "migrated": "tests/controller.spec.ts",
+      "newExpects": 1,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/api/research-controller/tests/continue-from-node.host.spec.ts",
+      "name": "creates a same-Session branch, commits a revision, and reloads it",
+      "expects": 11,
+      "migrated": "tests/controller.spec.ts",
+      "newExpects": 11,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/api/research-controller/tests/continue-from-node.host.spec.ts",
+      "name": "rejects stale continuation without changing the durable row",
+      "expects": 2,
+      "migrated": "tests/controller.spec.ts",
+      "newExpects": 2,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/api/research-controller/tests/continue-from-node.host.spec.ts",
+      "name": "rejects a repeated continuation with the old revision",
+      "expects": 3,
+      "migrated": "tests/controller.spec.ts",
+      "newExpects": 3,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/api/research-controller/tests/continue-from-node.host.spec.ts",
+      "name": "keeps history mutation errors separate from continuation",
+      "expects": 3,
+      "migrated": "tests/controller.spec.ts",
+      "newExpects": 3,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/api/research-controller/tests/continue-from-node.host.spec.ts",
+      "name": "commits the durable state before a project projection failure",
+      "expects": 4,
+      "migrated": "tests/controller.spec.ts",
+      "newExpects": 4,
+      "bodyEqual": true
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-session-store.client.spec.tsx",
+      "name": "keeps the newest revision when an older read completes later",
+      "expects": 3,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-session-store.client.spec.tsx",
+      "name": "does not replace a snapshot with a different state at the same revision",
+      "expects": 2,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-session-store.client.spec.tsx",
+      "name": "publishes a remote read to every projection and returns the shared snapshot",
+      "expects": 3,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-session-store.client.spec.tsx",
+      "name": "keeps completed ancestors visible while viewing a historical node",
+      "expects": 12,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-session-store.client.spec.tsx",
+      "name": "keeps every completed stage visible after the final plan is selected",
+      "expects": 4,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-session-store.client.spec.tsx",
+      "name": "uses the research DAG branch action without opening a Conversation fork",
+      "expects": 1,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-panel.client.spec.tsx",
+      "name": "shows and calls continueFromNode for the current branch tail",
+      "expects": 2,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-panel.client.spec.tsx",
+      "name": "shows and calls continueFromNode for historical and final-plan nodes",
+      "expects": 3,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-panel.client.spec.tsx",
+      "name": "keeps the action after a continue request fails",
+      "expects": 3,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-panel.client.spec.tsx",
+      "name": "disables simulation when the Host does not advertise an adapter",
+      "expects": 3,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-flow-canvas.client.spec.tsx",
+      "name": "lays out shared ancestors once and connects every dynamic branch",
+      "expects": 3,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-flow-canvas.client.spec.tsx",
+      "name": "keeps the branch root and hides descendants when a branch is collapsed",
+      "expects": 3,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-flow-canvas.client.spec.tsx",
+      "name": "pans the canvas without selecting a node",
+      "expects": 3,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-flow-canvas.client.spec.tsx",
+      "name": "keeps a node click intact until the drag threshold is crossed",
+      "expects": 3,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-flow-canvas.client.spec.tsx",
+      "name": "moves a node and suppresses selection for a drag while keeping clicks selectable",
+      "expects": 4,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-flow-canvas.client.spec.tsx",
+      "name": "restores automatic positions after a manual node move",
+      "expects": 1,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-branch-list.client.spec.tsx",
+      "name": "renders parent-child rows from node relationships and keeps shared ancestors",
+      "expects": 3,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-branch-list.client.spec.tsx",
+      "name": "supports independent collapse, search, status filtering, and node actions",
+      "expects": 8,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-panel-styles.client.spec.ts",
+      "name": "lets the DockKit pane body measure the full workflow before scrolling",
+      "expects": 1,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-panel-styles.client.spec.ts",
+      "name": "makes only the research tab body content-sized so confirmation stays reachable",
+      "expects": 1,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-panel-styles.client.spec.ts",
+      "name": "gives tab bodies a definite vertical flex track inside DockKit",
+      "expects": 3,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-panel-styles.client.spec.ts",
+      "name": "keeps the relationship view readable inside the narrow sidebar",
+      "expects": 3,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-panel-styles.client.spec.ts",
+      "name": "uses full-width step controls with a readable marker and copy column",
+      "expects": 2,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    },
+    {
+      "file": "packages/client/ui-workflow-run/tests/research-panel-styles.client.spec.ts",
+      "name": "renders the alternate view as a connected node tree",
+      "expects": 8,
+      "migrated": null,
+      "newExpects": 0,
+      "bodyEqual": false
+    }
+  ],
+  "newOnly": [
+    {
+      "file": "tests/adapters.spec.ts",
+      "name": "persists an explicit data directory across controller disposal without opening the shared route",
+      "expects": 3
+    },
+    {
+      "file": "tests/adapters.spec.ts",
+      "name": "cancels a published activation once and observes teardown failures",
+      "expects": 3
+    },
+    {
+      "file": "tests/migration.spec.ts",
+      "name": "dry-runs, copies once, and rejects conflicting research state",
+      "expects": 5
+    },
+    {
+      "file": "tests/migration.spec.ts",
+      "name": "refuses non-research data before creating a destination",
+      "expects": 2
+    }
+  ]
+}

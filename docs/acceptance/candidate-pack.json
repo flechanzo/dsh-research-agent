@@ -1,0 +1,181 @@
+[
+  {
+    "id": "dsh-research-agent@0.1.5-rc.3",
+    "name": "dsh-research-agent",
+    "version": "0.1.5-rc.3",
+    "size": 178689,
+    "unpackedSize": 1243554,
+    "shasum": "7f4067aff5469819cae7a9122833bb25fff4619a",
+    "integrity": "sha512-UgNC0qVBP5x6nvFnJq7uTu1M2oh/QF0SMRgYRdcWIkquZWnDbgYuF1nHox2PTewIOhA+5DHxj50jvV9xqpcMBQ==",
+    "filename": "dsh-research-agent-0.1.5-rc.3.tgz",
+    "files": [
+      {
+        "path": "COMPATIBILITY.md",
+        "size": 1173,
+        "mode": 420
+      },
+      {
+        "path": "LICENSE",
+        "size": 1065,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 1758,
+        "mode": 420
+      },
+      {
+        "path": "cordis.patch.yml",
+        "size": 77,
+        "mode": 420
+      },
+      {
+        "path": "lib/client.js",
+        "size": 848039,
+        "mode": 420
+      },
+      {
+        "path": "lib/index.js",
+        "size": 101745,
+        "mode": 420
+      },
+      {
+        "path": "lib/typert.host.d.ts",
+        "size": 123,
+        "mode": 420
+      },
+      {
+        "path": "lib/typert.host.js",
+        "size": 104419,
+        "mode": 420
+      },
+      {
+        "path": "lib/typert.remote-client.d.ts",
+        "size": 3944,
+        "mode": 420
+      },
+      {
+        "path": "lib/typert.remote-client.js",
+        "size": 91677,
+        "mode": 420
+      },
+      {
+        "path": "lib/types.js",
+        "size": 0,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/client/index.d.ts",
+        "size": 618,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/client/locales.d.ts",
+        "size": 5912,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/client/remote-types.d.ts",
+        "size": 175,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/client/research-definition.d.ts",
+        "size": 1024,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/client/research-session-store.d.ts",
+        "size": 3186,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/client/ResearchAction.d.ts",
+        "size": 593,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/client/ResearchBranchList.d.ts",
+        "size": 1798,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/client/ResearchBranchSelector.d.ts",
+        "size": 791,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/client/ResearchFlowCanvas.d.ts",
+        "size": 2805,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/client/ResearchPanel.d.ts",
+        "size": 987,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/client/ResearchTitle.d.ts",
+        "size": 270,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/client/ResearchTranscriptMain.d.ts",
+        "size": 767,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/controller.d.ts",
+        "size": 16484,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/index.d.ts",
+        "size": 118,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/types.d.ts",
+        "size": 9136,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/workflows/index.d.ts",
+        "size": 189,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/workflows/research-coordinator.d.ts",
+        "size": 15549,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/workflows/research-simulation.d.ts",
+        "size": 823,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/workflows/research.d.ts",
+        "size": 14470,
+        "mode": 420
+      },
+      {
+        "path": "lib/types/workflows/subagent-adapter.d.ts",
+        "size": 627,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 3000,
+        "mode": 420
+      },
+      {
+        "path": "presets/research.patch.yml",
+        "size": 10212,
+        "mode": 420
+      }
+    ],
+    "entryCount": 33,
+    "bundled": []
+  }
+]

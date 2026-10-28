@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
 import type {
   ResearchArtifact,
   ResearchNode,
@@ -56,7 +56,8 @@ function statusText(status: ResearchNodeStatus, t: ResearchTranscriptMainProps['
 }
 
 function latestArtifacts(state: ResearchState, node: ResearchNode): readonly ResearchArtifact[] {
-  return node.artifactRefs.flatMap((id) => {
+  const inherited = new Set(lineage(state, node.nodeId).slice(0, -1).flatMap(ancestor => ancestor.artifactRefs))
+  return node.artifactRefs.filter(id => !inherited.has(id)).flatMap((id) => {
     const artifact = state.artifacts[id]
     return artifact === undefined ? [] : [artifact]
   })

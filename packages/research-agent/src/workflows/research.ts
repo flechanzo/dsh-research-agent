@@ -39,10 +39,10 @@ export type ResearchDecision = 'confirm' | 'reject' | 'feedback'
 /** Search backends available to the research literature stages.
  *
  * These are explicit paper indexes. The generic DeepSeek Web Search tool is
- * deliberately absent so a literature step never silently broadens its
- * search to an unrelated web provider.
+ * unavailable at execution. The legacy web value is retained for v1 records
+ * and resolves to explicit indexes when a search is requested.
  */
-export type ResearchLiteratureSourceId = 'arxiv' | 'openreview' | 'semantic-scholar' | 'acl-anthology' | 'openalex'
+export type ResearchLiteratureSourceId = 'web' | 'arxiv' | 'openreview' | 'semantic-scholar' | 'acl-anthology' | 'openalex'
 
 /** User-selectable research emphasis areas shown as a multi-select. */
 export type ResearchDirectionFocusId =
@@ -510,7 +510,8 @@ export function researchSourceSessionId(
  * @returns The state with a new active idea branch.
  */
 export function rejectIdea(state: ResearchState, reason = ''): ResearchState {
-  let source = selectedResearchNode(state)
+  const rejected = selectedResearchNode(state)
+  let source = rejected
   while (source.stage !== 'problem-summary' && source.parentNodeId !== undefined) {
     const parent = state.nodes[source.parentNodeId]
     if (parent === undefined) break
@@ -537,7 +538,7 @@ export function rejectIdea(state: ResearchState, reason = ''): ResearchState {
     ...(reason.trim() === '' ? {} : { userNote: reason.trim() }),
     memorySnapshot: {
       artifactIds: visibleArtifactIds,
-      feedback: [],
+      feedback: [...rejected.memorySnapshot.feedback, ...(reason.trim() === '' ? [] : [reason.trim()])],
       reviewerRoles: [],
       directionWeights: { ...source.memorySnapshot.directionWeights },
       literatureSources: [...source.memorySnapshot.literatureSources],
@@ -546,7 +547,12 @@ export function rejectIdea(state: ResearchState, reason = ''): ResearchState {
   }
   return {
     ...state,
-    nodes: { ...state.nodes, [nodeId]: node },
+    nodes: {
+      ...state.nodes,
+      [rejected.nodeId]: { ...rejected, status: 'rejected', userDecision: 'reject',
+        ...(reason.trim() === '' ? {} : { userNote: reason.trim() }) },
+      [nodeId]: node,
+    },
     branches: {
       ...state.branches,
       [branchId]: {

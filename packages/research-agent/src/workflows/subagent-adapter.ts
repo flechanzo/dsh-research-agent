@@ -7,7 +7,11 @@ import type { SubagentRuntime, SubagentStartRequest, SubagentActivation } from '
  * @param request - Research task and lifetime cancellation.
  * @returns Activation whose disposal awaits cancellation cleanup.
  */
-export async function startResearchRun(runtime: SubagentRuntime, provider: string, request: SubagentStartRequest): Promise<SubagentActivation> {
+export async function startResearchRun(
+  runtime: SubagentRuntime,
+  provider: string,
+  request: SubagentStartRequest,
+): Promise<SubagentActivation> {
   const { signal, label = 'research', ...task } = request
   const run = await runtime.startActivation({ provider, label, request: task, signal, delivery: 'caller' })
   let disposal: Promise<void> | undefined
@@ -18,7 +22,7 @@ export async function startResearchRun(runtime: SubagentRuntime, provider: strin
   }
   signal.addEventListener('abort', abort, { once: true })
   if (signal.aborted) abort()
-  return { ...run, result: run.result.finally(() => signal.removeEventListener('abort', abort)), async dispose() {
+  return { ...run, result: run.result.finally(() => { signal.removeEventListener('abort', abort) }), async dispose() {
     signal.removeEventListener('abort', abort)
     await dispose()
   } }

@@ -164,7 +164,9 @@ function nodeNumber(nodes: readonly ResearchNode[], nodeId: string): number {
 function nodeDepth(state: ResearchState, node: ResearchNode): number {
   let depth = 1
   let parentId = node.parentNodeId
-  while (parentId !== undefined) {
+  const visited = new Set<string>([node.nodeId])
+  while (parentId !== undefined && !visited.has(parentId)) {
+    visited.add(parentId)
     depth += 1
     parentId = state.nodes[parentId]?.parentNodeId
   }
@@ -177,12 +179,15 @@ function isHiddenByCollapse(
   collapsed: ReadonlySet<string>,
 ): boolean {
   const ownBranch = state.branches[node.branchId]
-  const ownFirstNode = ownBranch?.nodeIds[0]
+  const ownFirstNode = ownBranch?.nodeIds.find(id => state.nodes[id]?.branchId === node.branchId)
   if (collapsed.has(node.branchId) && ownFirstNode !== undefined && node.nodeId !== ownFirstNode) return true
   let ancestor = node.parentNodeId === undefined ? undefined : state.nodes[node.parentNodeId]
-  while (ancestor !== undefined) {
+  const visited = new Set<string>([node.nodeId])
+  while (ancestor !== undefined && !visited.has(ancestor.nodeId)) {
+    visited.add(ancestor.nodeId)
     const branch = state.branches[ancestor.branchId]
-    if (collapsed.has(ancestor.branchId) && branch?.nodeIds[0] === ancestor.nodeId) return true
+    const firstNode = branch?.nodeIds.find(id => state.nodes[id]?.branchId === ancestor?.branchId)
+    if (collapsed.has(ancestor.branchId) && firstNode === ancestor.nodeId) return true
     ancestor = ancestor.parentNodeId === undefined ? undefined : state.nodes[ancestor.parentNodeId]
   }
   return false
@@ -202,9 +207,16 @@ function calculateLayout(state: ResearchState, collapsed: ReadonlySet<string>): 
   const roots = nodes.filter(node => node.parentNodeId === undefined || !visibleIds.has(node.parentNodeId))
   const positions = new Map<string, Point>()
   let leafIndex = 0
-  const place = (node: ResearchNode, depth: number): number => {
+  const place = (node: ResearchNode, depth: number, ancestors: ReadonlySet<string> = new Set()): number => {
+    if (ancestors.has(node.nodeId)) {
+      const y = leafIndex++ * (NODE_HEIGHT + VERTICAL_GAP)
+      positions.set(node.nodeId, { x: depth * (NODE_WIDTH + HORIZONTAL_GAP), y })
+      return y
+    }
+    const nextAncestors = new Set(ancestors)
+    nextAncestors.add(node.nodeId)
     const descendants = children.get(node.nodeId) ?? []
-    const childYs = descendants.map(child => place(child, depth + 1))
+    const childYs = descendants.map(child => place(child, depth + 1, nextAncestors))
     const y = childYs.length === 0
       ? leafIndex++ * (NODE_HEIGHT + VERTICAL_GAP)
       : childYs.reduce((total, value) => total + value, 0) / childYs.length
@@ -238,7 +250,9 @@ function pathBetween(parent: Point, child: Point): string {
 
 function isOnSelectedPath(state: ResearchState, nodeId: string, selectedNodeId: string): boolean {
   let current = state.nodes[selectedNodeId]
-  while (current !== undefined) {
+  const visited = new Set<string>()
+  while (current !== undefined && !visited.has(current.nodeId)) {
+    visited.add(current.nodeId)
     if (current.nodeId === nodeId) return true
     current = current.parentNodeId === undefined ? undefined : state.nodes[current.parentNodeId]
   }
@@ -545,7 +559,7 @@ export function ResearchFlowCanvas({
             if (point === undefined) return null
             const branch = state.branches[node.branchId]
             if (branch === undefined) return null
-            const branchFirst = branch.nodeIds[0] === node.nodeId
+            const branchFirst = branch.nodeIds.find(id => state.nodes[id]?.branchId === node.branchId) === node.nodeId
             const childCount = Object.values(state.nodes).filter(candidate => candidate.parentNodeId === node.nodeId).length
             const selectedNode = node.nodeId === selectedNodeId
             const selectedPath = isOnSelectedPath(state, node.nodeId, selectedNodeId)

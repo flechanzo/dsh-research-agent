@@ -4,7 +4,7 @@
 
 ## 当前安装
 
-正式安装包：D:\dsh-research-agent\dist\dsh-research-agent-0.1.4.tgz。已安装到 D:\DeepSeekHarness\data\profiles\desktop。用户已确认重启 F:\deepseek\DeepSeek Harness.exe 后，新会话 Agent 菜单能看到“自动科研”。完整离线流程由该安装目录内置的同版本运行时执行，结果见 TEST_REPORT.md。
+正式 profile 仍安装 0.1.4，用户已确认 Agent 菜单可见。2026-10-27 最终验收发现 0.1.4 的多项缺陷；修复候选 dist/dsh-research-agent-0.1.5-rc.3.tgz 仅在隔离 desktop profile 验证，未覆盖正式安装。候选 89 项测试和正式 Electron 的 Mock 完整流程通过，lint、损坏数据校验和外部服务验证仍存在缺口。请先阅读 TEST_REPORT.md 与 MIGRATION_REPORT.md；不要把候选当作全部验收通过的发布版。
 
 新建会话，在 Agent 选择菜单选择“自动科研”，发送任务后点击会话标题旁的“自动科研流程”。上传 PDF 或 TXT，查看摘要并逐步确认；在问题提炼处调整研究方向、权重和索引，在后续节点查看创新评分、补充文献、选择评审角色。最后先预览计划，再点击“确认并写入 Markdown 文件”。旧会话也可通过标题按钮查看对应科研状态。
 
@@ -33,7 +33,7 @@ Set-Location D:\dsh-research-agent
 
 ## 数据和配置
 
-默认继续读取 D:\DeepSeekHarness\data\storages\research.json，已有 5 条科研记录无需复制。聊天在独立 sessions 目录，未迁移或重建。计划及 DAG 导出位于该会话工作目录的 research-projects/<sessionId>/。备份清单见 docs/backup-location.json；完整性结果见 docs/data-integrity.json。
+默认继续读取 D:\DeepSeekHarness\data\storages\research.json，已有 5 条科研记录。0.1.4 会在解析时丢弃历史 web 来源；候选已修复，并在副本中验证全部历史节点、分支和成果不变。最终验收不改真实数据。聊天在独立 sessions 目录，未迁移或重建。计划及 DAG 导出位于该会话工作目录的 research-projects/<sessionId>/。候选的新计划另按 plans/<branchId>/revision-<revision>/<planPath> 保存，避免覆盖其他分支；旧路径不搬移。备份清单见 docs/backup-location.json；完整性结果见 docs/data-integrity.json。
 
 如需单独保存科研数据，先迁移再配置。迁移默认 dry-run，不合并或覆盖不同目标文件；重复运行相同快照为 unchanged。
 

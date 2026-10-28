@@ -1,0 +1,80 @@
+{
+  "tests": 53,
+  "passed": 41,
+  "failed": 12,
+  "cases": [
+    {
+      "name": "preserves the legacy v1 web alias and ancestors when parsing a durable row",
+      "failures": [
+        "AssertionError: expected { revision: 7, state: { …(8) }, …(1) } to deeply equal { revision: 7, updatedAt: 1, …(1) }"
+      ]
+    },
+    {
+      "name": "F06 exports a shared artifact once and F12 preserves plans from two branches",
+      "failures": [
+        "AssertionError: expected [ 'UNIQUE_PLAN', 'UNIQUE_PLAN' ] to have a length of 1 but got 2",
+        "AssertionError: expected [ Array(1) ] to have a length of 2 but got 1"
+      ]
+    },
+    {
+      "name": "F01/F08 refreshes a cached revision after a committed command fails during export",
+      "failures": [
+        "AssertionError: expected \"vi.fn()\" to be called once, but got 0 times"
+      ]
+    },
+    {
+      "name": "F03 retains candidate keywords in the actual bounded index URL with a long problem",
+      "failures": [
+        "AssertionError: expected '候选创新点专项查重检索。请检索已发表且可以直接比较的工作，重点寻找与以下研…' to contain 'CANDIDATEXYZ'"
+      ]
+    },
+    {
+      "name": "F05 records rejection on the old node and sends its reason to the next generator",
+      "failures": [
+        "AssertionError: expected 'awaiting-confirmation' to be 'rejected' // Object.is equality"
+      ]
+    },
+    {
+      "name": "F07 reports inspected and total pages separately when PDF reading is capped",
+      "failures": [
+        "AssertionError: expected { fileName: 'cap.pdf', …(4) } to match object { processedPageCount: 1 }"
+      ]
+    },
+    {
+      "name": "F02 pending B selection overrides both creation A and the last A request for research and OCR",
+      "failures": [
+        "AssertionError: expected { provider: 'fixture', …(3) } to deeply equal { provider: 'fixture', …(2) }"
+      ]
+    },
+    {
+      "name": "expands legacy web into five explicit indexes once without native search",
+      "failures": [
+        "AssertionError: expected [ Array(1) ] to have a length of 5 but got 1"
+      ]
+    },
+    {
+      "name": "F04 gives the owned branch root a badge and keeps it when collapsed",
+      "failures": [
+        "AssertionError: expected '3paper-readawaiting-confirmationSourc…' to contain '回溯 1'"
+      ]
+    },
+    {
+      "name": "F06 renders inherited artifact text only once while keeping the continuation node",
+      "failures": [
+        "AssertionError: expected [ <div></div>, <div></div> ] to have a length of 1 but got 2"
+      ]
+    },
+    {
+      "name": "F08 shows branch selection failure without hiding existing branches",
+      "failures": [
+        "Error: Unable to find role=\"alert\""
+      ]
+    },
+    {
+      "name": "F01 refreshes the committed revision after export failure and permits the next command",
+      "failures": [
+        "AssertionError: expected last \"vi.fn()\" call to have been called with [ { sessionId: 'F01-panel', …(2) } ]"
+      ]
+    }
+  ]
+}

@@ -8,7 +8,8 @@
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit -p packages/research-agent/tsconfig.host.json && tsc --noEmit -p packages/research-agent/tsconfig.client.json",
     "test": "vitest run",
-    "pack": "npm run build && npm pack ./packages/research-agent --pack-destination dist"
+    "pack": "npm run build && npm pack ./packages/research-agent --pack-destination dist",
+    "lint": "oxlint --type-aware --tsconfig tsconfig.lint.json packages/research-agent/src"
   },
   "dependencies": {
     "@deepseek-ai/cordis": "4.0.5",
@@ -35,6 +36,7 @@
     "@deepseek-ai/dsh-sandbox-policy": "0.2.1-rc.3",
     "@deepseek-ai/dsh-session": "0.2.1-rc.3",
     "@deepseek-ai/dsh-storage-domain": "0.2.1-rc.3",
+    "@deepseek-ai/dsh-storage-json": "0.2.1-rc.3",
     "@deepseek-ai/dsh-subagent": "0.2.1-rc.3",
     "@deepseek-ai/dsh-typert-generator": "0.2.1-rc.3",
     "@deepseek-ai/dsh-typert-protocol": "0.2.1-rc.3",
@@ -50,10 +52,17 @@
     "react": "18.3.1",
     "typescript": "6.0.3",
     "vitest": "4.1.8",
-    "zod": "4.4.3",
-    "@deepseek-ai/dsh-storage-json": "0.2.1-rc.3"
+    "zod": "4.4.3"
   },
   "devDependencies": {
-    "playwright": "1.58.2"
+    "@stylistic/eslint-plugin": "5.10.0",
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/react": "16.3.2",
+    "eslint-plugin-sonarjs": "4.1.0",
+    "jsdom": "29.1.1",
+    "oxlint": "1.76.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "playwright": "1.58.2",
+    "react-dom": "18.3.1"
   }
 }

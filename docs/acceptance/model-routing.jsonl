@@ -1,0 +1,10 @@
+{"model":"research-fixture","provider":"research-mock","role":"chat"}
+{"model":"research-fixture-b","provider":"research-mock","role":"chat"}
+{"model":"research-fixture-b","provider":"research-mock","role":"research"}
+{"model":"research-fixture-b","provider":"research-mock","role":"research"}
+{"model":"research-fixture-b","provider":"research-mock","role":"innovation-reviewer"}
+{"model":"research-fixture-b","provider":"research-mock","role":"research"}
+{"model":"research-fixture-b","provider":"research-mock","role":"innovation-reviewer"}
+{"model":"research-fixture-b","provider":"research-mock","role":"research"}
+{"model":"research-fixture-b","provider":"research-mock","role":"research"}
+{"model":"research-fixture-b","provider":"research-mock","role":"research"}

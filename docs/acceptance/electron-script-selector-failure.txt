@@ -1,0 +1,101 @@
+IDENTITY {"version":"0.2.1-rc.3","userData":"D:\\dsh-research-agent\\.acceptance\\run-20261027-RV7z7X\\electron-user","appPath":"F:\\deepseek\\resources\\app.asar"}
+MOCK CHAT PASSED dsh-app://app/
+MODEL SWITCH A -> B
+FAIL locator.waitFor: Error: strict mode violation: locator('[data-research-panel]') resolved to 2 elements:
+    1) <div aria-busy="false" data-tab-id="tab2" data-research-panel="true" class="research_unkU3G_root" data-research-branch-view="map" data-research-selected-node="node-10" data-research-active-branch="branch-1">…</div> aka locator('.research_unkU3G_root').first()
+    2) <div aria-busy="true" data-tab-id="tab2" data-research-panel="true" class="research_unkU3G_root" data-research-branch-view="map" data-research-selected-node="node-1" data-research-active-branch="branch-1">…</div> aka locator('div:nth-child(2) > div > .acoR2W_panel > .acoR2W_panelBody > ._surface_6nhg2_125 > ._tabLayout_6nhg2_134 > ._tabCell_6nhg2_142 > ._tabHost_6nhg2_162 > ._tabHostBody_6nhg2_181 > .acoR2W_tabBody > div > .research_unkU3G_root')
+
+Call log:
+[2m  - waiting for locator('[data-research-panel]') to be visible[22m
+
+    at D:\dsh-research-agent\tests\acceptance\electron-candidate.mjs:49:64
+FAIL BODY 新会话
+Ctrl
++
+N
+插件
+自动化任务
+更多
+工作区
+默认工作区
+隔离最终验收：只输出合成响
+刚刚
+隔离最终验收：只输出合成响
+13分钟
+隔离最终验收：只输出合成响
+16分钟
+隔离最终验收：只输出合成响
+55分钟
+更多
+隔离最终验收：只输出合成响
+自动科研流程
+对话
+轨迹
+隔离最终验收：只输出合成响应，不执行工具。
+09:14
+已完成
+已完成，用时 1秒
+合成科研输出
+
+创新点：通过可复现的校准机制研究分布偏移。
+
+方法：固定五点数值样例。基线：普通最小二乘。指标：均方误差。风险：此内容仅用于离线验收，不能作为真实科研结论。
+
+09:14
+发消息或创建任务, / 调用指令, @ 文件或对话
+科研合成夹具 B
+1 轮 1 步
+自动科研流程
+自动科研流程
+上传论文
+进行中
+项目工作区：research-projects/session-eac11d8d-a1df-4aac-bd11-af361654cb9f
+方案分支
+对话顺序与历史节点
+树状视图
+列表视图
+1
+＋
+100%
+−
+⌖
+↺
+↗
+↘
+1 个节点
+1
+上传论文
+进行中
+该节点还没有输出内容。
+上传论文
+方案 A
+当前
+对话顺序与历史节点
+上传论文
+上传论文
+进行中
+节点详情
+上传论文
+进行中
+查看完整科研内容
+从这里继续（新分支）
+节点信息
+节点 ID
+node-1
+所属方案
+方案 A
+节点类型
+上传论文
+父节点
+—
+子节点数
+0
+输出数量
+0
+内容概览
+
+该节点还没有输出内容。
+
+上传论文并开始
+支持 PDF、TXT；上传后先生成可确认的论文摘要
+上传论文并开始

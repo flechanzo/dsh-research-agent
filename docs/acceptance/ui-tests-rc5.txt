@@ -1,0 +1,13 @@
+
+> dsh-research-agent-workspace@0.1.0 test
+> vitest run --run --reporter=dot
+
+
+ RUN  v4.1.8 D:/dsh-research-agent
+
+··························································································
+
+ Test Files  13 passed (13)
+      Tests  90 passed (90)
+   Start at  16:27:51
+   Duration  4.03s (transform 1.72s, setup 0ms, import 7.83s, tests 2.75s, environment 11.15s)

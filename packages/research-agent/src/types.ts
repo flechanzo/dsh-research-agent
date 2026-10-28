@@ -11,8 +11,8 @@ export type ResearchStage =
   | 'idea-generation' | 'idea-refinement' | 'targeted-literature-search' | 'multi-agent-review'
   | 'simulation-or-final-plan' | 'final-plan'
 
-/** Explicit paper indexes available to the research workflow. */
-export type ResearchLiteratureSourceId = 'arxiv' | 'openreview' | 'semantic-scholar' | 'acl-anthology' | 'openalex'
+/** Explicit paper indexes and the preserved v1 web alias; execution expands web to indexes. */
+export type ResearchLiteratureSourceId = 'web' | 'arxiv' | 'openreview' | 'semantic-scholar' | 'acl-anthology' | 'openalex'
 
 /** User-selectable research emphasis areas. */
 export type ResearchDirectionFocusId = 'method' | 'data' | 'theory' | 'efficiency' | 'application'

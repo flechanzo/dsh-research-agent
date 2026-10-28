@@ -8,6 +8,7 @@ import {
   createHostResearchCoordinator,
   createNumericalResearchSimulationRunner,
   createSubagentResearchRunner,
+  createSubagentResearchOcr,
   createWebLiteratureSearcher,
   createResearchState,
   rejectIdea,
@@ -639,7 +640,7 @@ describe('createSubagentResearchRunner', () => {
       },
     }, SubagentRuntime.prototype) as SubagentRuntime
     const runner = createSubagentResearchRunner(subagents, 'spawn')
-    const owner = { session: { requestHeader: () => undefined }, options: { provider: 'selected-provider', model: 'gpt-6-astra', maxTokens: 321 } } as Agent
+    const owner = { ctx: { get: () => undefined }, session: { requestHeader: () => undefined }, options: { provider: 'selected-provider', model: 'gpt-6-astra', maxTokens: 321 } } as Agent
     await runner.run('problem-extractor', '请处理问题', owner)
     expect(seen?.agentOptions).toEqual({ provider: 'selected-provider', model: 'gpt-6-astra', maxTokens: 321 })
     expect(seen?.prompt?.[0]?.text).toContain('简体中文')
@@ -749,3 +750,83 @@ function testPdfPages(texts: readonly string[]): Uint8Array {
   pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`
   return new TextEncoder().encode(pdf)
 }
+it('F03 retains candidate keywords in the actual bounded index URL with a long problem', async () => {
+  const urls: string[] = []
+  const web = Object.setPrototypeOf({async fetch(request: {url:string}) {
+    urls.push(request.url)
+    return {url:request.url,statusCode:200,truncated:false,body:{kind:'text',content:'{"results":[{"id":"https://openalex.org/W1","title":"Evidence"}]}'}}
+  }}, WebRuntime.prototype) as WebRuntime
+  const base=adapters()
+  const coordinator=new ResearchCoordinator({...base,literature:createWebLiteratureSearcher(web,2),agents:{async run(role,prompt,owner,signal){
+    return role==='idea-generator'?'创新点：CANDIDATEXYZ calibration gating':base.agents.run(role,prompt,owner,signal)
+  }}})
+  let state=appendResearchOutput(createResearchState(),{stage:'problem-summary',kind:'problem',title:'Long',content:'研究问题很多。'.repeat(500)})
+  state=appendResearchOutput(state,{stage:'literature-search',kind:'literature',title:'Evidence',content:'Baseline',status:'confirmed'})
+  const node=state.nodes[state.selectedNodeId]!
+  state={...state,nodes:{...state.nodes,[node.nodeId]:{...node,memorySnapshot:{...node.memorySnapshot,literatureSources:['openalex']}}}}
+  await coordinator.advance({state,parent})
+  expect(urls).toHaveLength(1)
+  expect(new URL(urls[0]!).searchParams.get('search')).toContain('CANDIDATEXYZ')
+  expect(urls[0]!.length).toBeLessThan(1400)
+})
+
+it('F05 records rejection on the old node and sends its reason to the next generator',async()=>{
+  const prompts:string[]=[];const base=adapters()
+  const coordinator=new ResearchCoordinator({...base,agents:{async run(role,prompt,owner,signal){if(role==='idea-generator')prompts.push(prompt);return base.agents.run(role,prompt,owner,signal)}}})
+  let state=appendResearchOutput(createResearchState(),{stage:'problem-summary',kind:'problem',title:'Problem',content:'Problem'})
+  state=appendResearchOutput(state,{stage:'idea-generation',kind:'idea',title:'Old idea',content:'创新点：old'})
+  const old=state.selectedNodeId;const original=structuredClone(state)
+  const next=rejectIdea(state,'REJECTION_MARKER missing ablation')
+  expect(state).toEqual(original)
+  expect(next.nodes[old]?.status).toBe('rejected')
+  expect(next.nodes[old]?.userDecision).toBe('reject')
+  expect(next.nodes[next.selectedNodeId]?.memorySnapshot.feedback).toContain('REJECTION_MARKER missing ablation')
+  await coordinator.advance({state:next,parent})
+  expect(prompts[0]).toContain('REJECTION_MARKER')
+})
+
+it('F07 reports inspected and total pages separately when PDF reading is capped',async()=>{
+  const bytes=testPdfPages(['First inspected page has sufficient selectable text.','Second excluded page has sufficient selectable text.'])
+  const reader=createAttachmentPaperReader(attachmentReader(bytes),bytes.length,{maxPdfPages:1})
+  const paper=await reader.read({attachmentId:AttachmentId('sha256:cap'),name:'cap.pdf',bytes:bytes.length})
+  expect(paper.pageCount).toBe(2)
+  expect(paper).toMatchObject({processedPageCount:1})
+  expect(paper.text).toContain('First inspected')
+  expect(paper.text).not.toContain('Second excluded')
+  const prompts:string[]=[];const base=adapters()
+  const coordinator=new ResearchCoordinator({...base,papers:{async read(){return paper}},agents:{async run(role,prompt,owner,signal){prompts.push(prompt);return base.agents.run(role,prompt,owner,signal)}}})
+  const result=await coordinator.advance({state:createResearchState(),parent,paper:{attachmentId:AttachmentId('sha256:cap'),name:'cap.pdf',bytes:bytes.length}})
+  expect(prompts[0]).toContain('Inspected pages: 1 / 2')
+  expect(result.artifact?.content).toContain('检查页数：1 / 2')
+})
+
+it('F02 pending B selection overrides both creation A and the last A request for research and OCR',async()=>{
+ const requests: Array<{agentOptions?:unknown}>=[]
+ const runtime=Object.setPrototypeOf({async startActivation(spec:{request:{agentOptions?:unknown}}){requests.push(spec.request);return {result:Promise.resolve({stopReason:'completed',output:[{type:'text',text:'result'}]}),async dispose(){}}}},SubagentRuntime.prototype) as SubagentRuntime
+ const owner={options:{provider:'fixture',model:'A',maxTokens:512},session:{requestHeader:()=>({config:{provider:'fixture',model:'A',reasoningEffort:'old-effort'}})},ctx:{get:()=>({stateOf:()=>({pending:{provider:'fixture',model:'B'},lastUsed:{provider:'fixture',model:'A'}})})}} as Agent
+ await createSubagentResearchRunner(runtime,'spawn').run('problem-extractor','synthetic',owner)
+ const attachments={saveImage:async()=>({attachmentId:AttachmentId('sha256:image'),mediaType:'image/png',bytes:1,width:1,height:1})} as AttachmentStore
+ await createSubagentResearchOcr(attachments,runtime,'spawn').recognize({fileName:'synthetic.pdf',pages:[{pageNumber:1,data:new Uint8Array([0])}]},owner)
+ expect(requests).toHaveLength(2)
+ for(const request of requests)expect(request.agentOptions).toEqual({provider:'fixture',model:'B',maxTokens:512})
+})
+it('expands legacy web into five explicit indexes once without native search', async () => {
+  const urls: string[] = []
+  let nativeCalls = 0
+  const web = Object.setPrototypeOf({
+    async search() { nativeCalls++; throw new Error('native search is forbidden') },
+    async fetch(request: { readonly url: string }) {
+      urls.push(request.url)
+      const host = new URL(request.url).hostname
+      const content = host.includes('arxiv') ? '<feed></feed>'
+        : host.includes('openreview') ? '{"notes":[]}'
+        : host.includes('semanticscholar') ? '{"data":[]}'
+        : host.includes('openalex') ? '{"results":[]}' : '<html></html>'
+      return { url: request.url, statusCode: 200, truncated: false, body: { kind: 'text' as const, content } }
+    },
+  }, WebRuntime.prototype) as WebRuntime
+  await createWebLiteratureSearcher(web, 4).search('synthetic', undefined, { sources: ['web', 'arxiv'] })
+  expect(nativeCalls).toBe(0)
+  expect(urls).toHaveLength(5)
+  expect(new Set(urls.map(url => new URL(url).hostname)).size).toBe(5)
+})

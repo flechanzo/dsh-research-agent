@@ -1,0 +1,9 @@
+[WARN] The store at C:\Users\destiny\AppData\Local\pnpm\store\v11 is not used because packages cannot be hard linked from it into this project. Using the store at D:\.pnpm-store\v11 instead. Set storeDir to choose the store.
+✓ Lockfile passes supply-chain policies (verified 21m ago)
+Progress: resolved 0, reused 1, downloaded 0, added 0
+[WARN] Issues with peer dependencies found. Run "pnpm peers check" to list them.
+Packages: -10
+----------
+Progress: resolved 16, reused 1, downloaded 0, added 0, done
+
+Done in 815ms using pnpm v11.28.5

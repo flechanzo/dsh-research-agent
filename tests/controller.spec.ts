@@ -146,3 +146,25 @@ describe('ResearchController continueFromNode', () => {
     expect(records.get(sessionId)?.state.activeBranchId).toBe('branch-2')
   })
 })
+
+it('F06 exports a shared artifact once and F12 preserves plans from two branches',async()=>{
+ const sessionId=SessionId('F06-F12');let state=appendResearchOutput(createResearchState(),{stage:'final-plan',kind:'plan',title:'Plan',content:'# UNIQUE_PLAN',status:'awaiting-confirmation'})
+ const records=new Map<SessionId,ResearchRecord>([[sessionId,{revision:1,state,updatedAt:0}]])
+ const files=new Map<string,string>();const fs={resolve:async(path:string)=>({targetKey:path,displayPath:path}),readText:async(target:{displayPath:string})=>{const v=files.get(target.displayPath);if(v===undefined)throw new FsError('missing','FS_NOT_FOUND');return v},writeText:async(target:{displayPath:string},content:string)=>{files.set(target.displayPath,content)}}
+ const ctx=new Context();contexts.push(ctx)
+ ctx.provide('storageDomain',{open:async()=>({table:()=>({get:(id:SessionId)=>records.get(id),put:async(id:SessionId,row:ResearchRecord)=>{records.set(id,row)}}),close:async()=>{}})} as never)
+ ctx.provide('fs',fs as never);ctx.provide('attachments',{} as never);ctx.provide('web',{} as never);ctx.provide('subagents',{} as never)
+ ctx.provide('sessionController',{resolveAgent:async()=>({agent:{session:{header:{cwd:'C:/isolated-F12'},seq:0},ctx:{get:()=>undefined}}})} as never)
+ const controller=new ResearchController(ctx)
+ const first=await controller.confirm({sessionId,expectedRevision:1},new AbortController().signal)
+ const firstPath=[...files.keys()].find(x=>x.endsWith('research-plan.md'))!;expect(files.get(firstPath)).toBe('# UNIQUE_PLAN')
+ const fork=await controller.continueFromNode({sessionId,expectedRevision:first.snapshot.revision,nodeId:state.selectedNodeId})
+ const manifest=[...files.entries()].find(([key])=>key.endsWith('research-conversation.md'))![1]
+ expect.soft(manifest.match(/UNIQUE_PLAN/g)).toHaveLength(1)
+ const current=records.get(sessionId)!;const selected=current.state.nodes[current.state.selectedNodeId]!
+ records.set(sessionId,{...current,state:{...current.state,nodes:{...current.state.nodes,[selected.nodeId]:{...selected,status:'awaiting-confirmation'}}}})
+ await controller.confirm({sessionId,expectedRevision:fork.snapshot.revision},new AbortController().signal)
+ const plans=[...files.keys()].filter(x=>x.endsWith('research-plan.md'))
+ expect(plans).toHaveLength(2)
+ expect(plans[0]).not.toBe(plans[1]);expect(files.get(firstPath)).toBe('# UNIQUE_PLAN')
+})

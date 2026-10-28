@@ -1,0 +1,2335 @@
+{
+  "counts": {
+    "oldTests": 74,
+    "oldAssertions": 250,
+    "original014Tests": 54,
+    "original014Assertions": 181,
+    "candidateTests": 89,
+    "candidateAssertions": 301,
+    "mapped": 72,
+    "supersededUnverified": 2
+  },
+  "cases": [
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "keeps generated branch labels unique beyond the alphabet",
+        "assertions": [
+          "expect(researchBranchLabel(1)).toBe('A')",
+          "expect(researchBranchLabel(2)).toBe('B')",
+          "expect(researchBranchLabel(26)).toBe('Z')",
+          "expect(researchBranchLabel(27)).toBe('AA')",
+          "expect(researchBranchLabel(52)).toBe('AZ')",
+          "expect(researchBranchLabel(53)).toBe('BA')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "keeps generated branch labels unique beyond the alphabet",
+        "assertions": [
+          "expect(researchBranchLabel(1)).toBe('A')",
+          "expect(researchBranchLabel(2)).toBe('B')",
+          "expect(researchBranchLabel(26)).toBe('Z')",
+          "expect(researchBranchLabel(27)).toBe('AA')",
+          "expect(researchBranchLabel(52)).toBe('AZ')",
+          "expect(researchBranchLabel(53)).toBe('BA')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "keeps generated branch labels unique beyond the alphabet",
+        "assertions": [
+          "expect(researchBranchLabel(1)).toBe('A')",
+          "expect(researchBranchLabel(2)).toBe('B')",
+          "expect(researchBranchLabel(26)).toBe('Z')",
+          "expect(researchBranchLabel(27)).toBe('AA')",
+          "expect(researchBranchLabel(52)).toBe('AZ')",
+          "expect(researchBranchLabel(53)).toBe('BA')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "keeps stage outputs visible and confirms them before continuation",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.status).toBe('awaiting-confirmation')",
+          "expect(state.nodes[state.selectedNodeId]?.userDecision).toBe('confirm')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "keeps stage outputs visible and confirms them before continuation",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.status).toBe('awaiting-confirmation')",
+          "expect(state.nodes[state.selectedNodeId]?.userDecision).toBe('confirm')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "keeps stage outputs visible and confirms them before continuation",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.status).toBe('awaiting-confirmation')",
+          "expect(state.nodes[state.selectedNodeId]?.userDecision).toBe('confirm')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "marks the displayed final plan as written only after a valid path is returned",
+        "assertions": [
+          "expect(() => markResearchPlanWritten(state, ' ')).toThrow('file name')",
+          "expect(() => markResearchPlanWritten(createResearchState(), 'research-plan.md')).toThrow('plan artifact')",
+          "expect(() => markResearchPlanWritten(state, 'research-plan.md')).toThrow('plan artifact')",
+          "expect(written.artifacts[written.nodes[written.selectedNodeId]?.artifactRefs[0] ?? '']?.source).toBe('workspace/research-plan.md')",
+          "expect(markResearchPlanWritten(written, 'workspace/research-plan.md')).toBe(written)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "marks the displayed final plan as written only after a valid path is returned",
+        "assertions": [
+          "expect(() => markResearchPlanWritten(state, ' ')).toThrow('file name')",
+          "expect(() => markResearchPlanWritten(createResearchState(), 'research-plan.md')).toThrow('plan artifact')",
+          "expect(() => markResearchPlanWritten(state, 'research-plan.md')).toThrow('plan artifact')",
+          "expect(written.artifacts[written.nodes[written.selectedNodeId]?.artifactRefs[0] ?? '']?.source).toBe('workspace/research-plan.md')",
+          "expect(markResearchPlanWritten(written, 'workspace/research-plan.md')).toBe(written)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "marks the displayed final plan as written only after a valid path is returned",
+        "assertions": [
+          "expect(() => markResearchPlanWritten(state, ' ')).toThrow('file name')",
+          "expect(() => markResearchPlanWritten(createResearchState(), 'research-plan.md')).toThrow('plan artifact')",
+          "expect(() => markResearchPlanWritten(state, 'research-plan.md')).toThrow('plan artifact')",
+          "expect(written.artifacts[written.nodes[written.selectedNodeId]?.artifactRefs[0] ?? '']?.source).toBe('workspace/research-plan.md')",
+          "expect(markResearchPlanWritten(written, 'workspace/research-plan.md')).toBe(written)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "stores at least one selected research focus in branch memory",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.memorySnapshot.directionFocuses).toEqual(['method', 'application'])",
+          "expect(() => setResearchDirectionFocuses(state, [])).toThrow('at least one research direction focus')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "stores at least one selected research focus in branch memory",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.memorySnapshot.directionFocuses).toEqual(['method', 'application'])",
+          "expect(() => setResearchDirectionFocuses(state, [])).toThrow('at least one research direction focus')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "stores at least one selected research focus in branch memory",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.memorySnapshot.directionFocuses).toEqual(['method', 'application'])",
+          "expect(() => setResearchDirectionFocuses(state, [])).toThrow('at least one research direction focus')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "rejects an idea into a new branch while preserving the original branch",
+        "assertions": [
+          "expect(state.activeBranchId).not.toBe(oldBranch)",
+          "expect(state.branches[state.activeBranchId]?.label).toBe('方案 B')",
+          "expect(state.branches[oldBranch]?.nodeIds).toHaveLength(3)",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('idea-generation')",
+          "expect(state.nodes[state.selectedNodeId]?.userNote).toBe('缺少消融实验')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "rejects an idea into a new branch while preserving the original branch",
+        "assertions": [
+          "expect(state.activeBranchId).not.toBe(oldBranch)",
+          "expect(state.branches[state.activeBranchId]?.label).toBe('方案 B')",
+          "expect(state.branches[oldBranch]?.nodeIds).toHaveLength(3)",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('idea-generation')",
+          "expect(state.nodes[state.selectedNodeId]?.userNote).toBe('缺少消融实验')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "rejects an idea into a new branch while preserving the original branch",
+        "assertions": [
+          "expect(state.activeBranchId).not.toBe(oldBranch)",
+          "expect(state.branches[state.activeBranchId]?.label).toBe('方案 B')",
+          "expect(state.branches[oldBranch]?.nodeIds).toHaveLength(3)",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('idea-generation')",
+          "expect(state.nodes[state.selectedNodeId]?.userNote).toBe('缺少消融实验')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "continues from history without mutating the source node",
+        "assertions": [
+          "expect(state.activeBranchId).toBe('branch-2')",
+          "expect(state.nodes[source]?.branchId).toBe('branch-1')",
+          "expect(state.nodes[state.selectedNodeId]?.parentNodeId).toBe(source)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "continues from history without mutating the source node",
+        "assertions": [
+          "expect(state.activeBranchId).toBe('branch-2')",
+          "expect(state.nodes[source]?.branchId).toBe('branch-1')",
+          "expect(state.nodes[state.selectedNodeId]?.parentNodeId).toBe(source)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "continues from history without mutating the source node",
+        "assertions": [
+          "expect(state.activeBranchId).toBe('branch-2')",
+          "expect(state.nodes[source]?.branchId).toBe('branch-1')",
+          "expect(state.nodes[state.selectedNodeId]?.parentNodeId).toBe(source)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "records feedback and enforces an explicit innovation claim",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.memorySnapshot.feedback).toEqual(['加入基线比较'])",
+          "expect(() => { assertInnovationClaim({ artifactId: 'a', kind: 'idea', title: 'bad', content: '没有声明', createdAt: 0, }) }).toThrow('innovation claim')",
+          "expect(() => { assertInnovationClaim({ artifactId: 'a', kind: 'idea', title: 'good', content: '创新点：动态检索', createdAt: 0, }) }).not.toThrow()"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "records feedback and enforces an explicit innovation claim",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.memorySnapshot.feedback).toEqual(['加入基线比较'])",
+          "expect(() => { assertInnovationClaim({ artifactId: 'a', kind: 'idea', title: 'bad', content: '没有声明', createdAt: 0, }) }).toThrow('innovation claim')",
+          "expect(() => { assertInnovationClaim({ artifactId: 'a', kind: 'idea', title: 'good', content: '创新点：动态检索', createdAt: 0, }) }).not.toThrow()"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "records feedback and enforces an explicit innovation claim",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.memorySnapshot.feedback).toEqual(['加入基线比较'])",
+          "expect(() => { assertInnovationClaim({ artifactId: 'a', kind: 'idea', title: 'bad', content: '没有声明', createdAt: 0, }) }).toThrow('innovation claim')",
+          "expect(() => { assertInnovationClaim({ artifactId: 'a', kind: 'idea', title: 'good', content: '创新点：动态检索', createdAt: 0, }) }).not.toThrow()"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "preserves feedback as the decision when confirming a refinement",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.status).toBe('confirmed')",
+          "expect(state.nodes[state.selectedNodeId]?.userDecision).toBe('feedback')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "preserves feedback as the decision when confirming a refinement",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.status).toBe('confirmed')",
+          "expect(state.nodes[state.selectedNodeId]?.userDecision).toBe('feedback')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "preserves feedback as the decision when confirming a refinement",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.status).toBe('confirmed')",
+          "expect(state.nodes[state.selectedNodeId]?.userDecision).toBe('feedback')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "keeps the source status when continuing from history",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.status).toBe('confirmed')",
+          "expect(state.nodes[state.selectedNodeId]?.userDecision).toBe('feedback')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "keeps the source status when continuing from history",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.status).toBe('confirmed')",
+          "expect(state.nodes[state.selectedNodeId]?.userDecision).toBe('feedback')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "keeps the source status when continuing from history",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.status).toBe('confirmed')",
+          "expect(state.nodes[state.selectedNodeId]?.userDecision).toBe('feedback')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "continues any selected node without rewriting the source branch",
+        "assertions": [
+          "expect(continuedAwaiting.nodes[awaiting]).toEqual(sourceSnapshot)",
+          "expect(continuedAwaiting.nodes[continuedAwaiting.selectedNodeId]?.status).toBe('awaiting-confirmation')",
+          "expect(continuedAwaiting.activeBranchId).toBe('branch-2')",
+          "expect(continuedAwaiting.branches['branch-1']?.nodeIds).toEqual(sourceBranch.nodeIds)",
+          "expect(state.nodes[confirmed]?.status).toBe('confirmed')",
+          "expect(continuedCompleted.nodes[completed]?.status).toBe('completed')",
+          "expect(continuedCompleted.nodes[continuedCompleted.selectedNodeId]?.parentNodeId).toBe(completed)",
+          "expect(continuedCompleted.activeBranchId).toBe('branch-3')",
+          "expect(continuedCompleted.branches['branch-2']?.nodeIds).toContain(continuedAwaiting.selectedNodeId)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "continues any selected node without rewriting the source branch",
+        "assertions": [
+          "expect(continuedAwaiting.nodes[awaiting]).toEqual(sourceSnapshot)",
+          "expect(continuedAwaiting.nodes[continuedAwaiting.selectedNodeId]?.status).toBe('awaiting-confirmation')",
+          "expect(continuedAwaiting.activeBranchId).toBe('branch-2')",
+          "expect(continuedAwaiting.branches['branch-1']?.nodeIds).toEqual(sourceBranch.nodeIds)",
+          "expect(state.nodes[confirmed]?.status).toBe('confirmed')",
+          "expect(continuedCompleted.nodes[completed]?.status).toBe('completed')",
+          "expect(continuedCompleted.nodes[continuedCompleted.selectedNodeId]?.parentNodeId).toBe(completed)",
+          "expect(continuedCompleted.activeBranchId).toBe('branch-3')",
+          "expect(continuedCompleted.branches['branch-2']?.nodeIds).toContain(continuedAwaiting.selectedNodeId)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "continues any selected node without rewriting the source branch",
+        "assertions": [
+          "expect(continuedAwaiting.nodes[awaiting]).toEqual(sourceSnapshot)",
+          "expect(continuedAwaiting.nodes[continuedAwaiting.selectedNodeId]?.status).toBe('awaiting-confirmation')",
+          "expect(continuedAwaiting.activeBranchId).toBe('branch-2')",
+          "expect(continuedAwaiting.branches['branch-1']?.nodeIds).toEqual(sourceBranch.nodeIds)",
+          "expect(state.nodes[confirmed]?.status).toBe('confirmed')",
+          "expect(continuedCompleted.nodes[completed]?.status).toBe('completed')",
+          "expect(continuedCompleted.nodes[continuedCompleted.selectedNodeId]?.parentNodeId).toBe(completed)",
+          "expect(continuedCompleted.activeBranchId).toBe('branch-3')",
+          "expect(continuedCompleted.branches['branch-2']?.nodeIds).toContain(continuedAwaiting.selectedNodeId)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "selects a historical node without changing the active branch",
+        "assertions": [
+          "expect(selected.selectedNodeId).toBe('node-1')",
+          "expect(selected.activeBranchId).toBe(state.activeBranchId)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "selects a historical node without changing the active branch",
+        "assertions": [
+          "expect(selected.selectedNodeId).toBe('node-1')",
+          "expect(selected.activeBranchId).toBe(state.activeBranchId)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "selects a historical node without changing the active branch",
+        "assertions": [
+          "expect(selected.selectedNodeId).toBe('node-1')",
+          "expect(selected.activeBranchId).toBe(state.activeBranchId)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "copies a recorded Session boundary into a continuation branch",
+        "assertions": [
+          "expect(state.nodes[source]?.sessionSeq).toBe(12)",
+          "expect(state.nodes[source]?.sourceSessionId).toBe(SessionId('source-session'))",
+          "expect(continued.nodes[continued.selectedNodeId]?.sessionSeq).toBe(12)",
+          "expect(continued.nodes[continued.selectedNodeId]?.sourceSessionId).toBe(SessionId('source-session'))",
+          "expect(() => markResearchSessionBoundary(state, -1)).toThrow('Session boundary')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "copies a recorded Session boundary into a continuation branch",
+        "assertions": [
+          "expect(state.nodes[source]?.sessionSeq).toBe(12)",
+          "expect(state.nodes[source]?.sourceSessionId).toBe(SessionId('source-session'))",
+          "expect(continued.nodes[continued.selectedNodeId]?.sessionSeq).toBe(12)",
+          "expect(continued.nodes[continued.selectedNodeId]?.sourceSessionId).toBe(SessionId('source-session'))",
+          "expect(() => markResearchSessionBoundary(state, -1)).toThrow('Session boundary')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "copies a recorded Session boundary into a continuation branch",
+        "assertions": [
+          "expect(state.nodes[source]?.sessionSeq).toBe(12)",
+          "expect(state.nodes[source]?.sourceSessionId).toBe(SessionId('source-session'))",
+          "expect(continued.nodes[continued.selectedNodeId]?.sessionSeq).toBe(12)",
+          "expect(continued.nodes[continued.selectedNodeId]?.sourceSessionId).toBe(SessionId('source-session'))",
+          "expect(() => markResearchSessionBoundary(state, -1)).toThrow('Session boundary')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research.spec.ts",
+        "name": "keeps a copied future node bound to its source Session",
+        "assertions": [
+          "expect(copiedNode.sourceSessionId).toBe(sourceSessionId)",
+          "expect(researchSourceSessionId(copiedNode, childSessionId)).toBe(sourceSessionId)",
+          "expect(researchSourceSessionId({}, childSessionId)).toBe(childSessionId)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research.spec.ts",
+        "name": "keeps a copied future node bound to its source Session",
+        "assertions": [
+          "expect(copiedNode.sourceSessionId).toBe(sourceSessionId)",
+          "expect(researchSourceSessionId(copiedNode, childSessionId)).toBe(sourceSessionId)",
+          "expect(researchSourceSessionId({}, childSessionId)).toBe(childSessionId)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research.spec.ts",
+        "name": "keeps a copied future node bound to its source Session",
+        "assertions": [
+          "expect(copiedNode.sourceSessionId).toBe(sourceSessionId)",
+          "expect(researchSourceSessionId(copiedNode, childSessionId)).toBe(sourceSessionId)",
+          "expect(researchSourceSessionId({}, childSessionId)).toBe(childSessionId)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "runs the built-in numerical adapter and reports computed metrics",
+        "assertions": [
+          "expect(content).toContain('- 状态：completed')",
+          "expect(content).toContain('- 任务：numerical-linear-regression')",
+          "expect(content).toContain('- RMSE：0.100995')",
+          "expect(content).toContain('- R²：0.998739')",
+          "expect(content).toContain('随机种子记录：7')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "runs the built-in numerical adapter and reports computed metrics",
+        "assertions": [
+          "expect(content).toContain('- 状态：completed')",
+          "expect(content).toContain('- 任务：numerical-linear-regression')",
+          "expect(content).toContain('- RMSE：0.100995')",
+          "expect(content).toContain('- R²：0.998739')",
+          "expect(content).toContain('随机种子记录：7')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "runs the built-in numerical adapter and reports computed metrics",
+        "assertions": [
+          "expect(content).toContain('- 状态：completed')",
+          "expect(content).toContain('- 任务：numerical-linear-regression')",
+          "expect(content).toContain('- RMSE：0.100995')",
+          "expect(content).toContain('- R²：0.998739')",
+          "expect(content).toContain('随机种子记录：7')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "rejects an empty idea before computing any result",
+        "assertions": [
+          "expect(runner.run({ idea: { artifactId: 'idea-empty', kind: 'idea', title: '空想法', content: '', createdAt: 0 }, })).rejects.toThrow('non-empty idea artifact')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "rejects an empty idea before computing any result",
+        "assertions": [
+          "expect(runner.run({ idea: { artifactId: 'idea-empty', kind: 'idea', title: '空想法', content: '', createdAt: 0 }, })).rejects.toThrow('non-empty idea artifact')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "rejects an empty idea before computing any result",
+        "assertions": [
+          "expect(runner.run({ idea: { artifactId: 'idea-empty', kind: 'idea', title: '空想法', content: '', createdAt: 0 }, })).rejects.toThrow('non-empty idea artifact')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "honors cancellation before the fixed experiment starts",
+        "assertions": [
+          "expect(runner.run({ idea: { artifactId: 'idea-aborted', kind: 'idea', title: '已取消', content: '内容', createdAt: 0 }, }, controller.signal)).rejects.toThrow()"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "honors cancellation before the fixed experiment starts",
+        "assertions": [
+          "expect(runner.run({ idea: { artifactId: 'idea-aborted', kind: 'idea', title: '已取消', content: '内容', createdAt: 0 }, }, controller.signal)).rejects.toThrow()"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "honors cancellation before the fixed experiment starts",
+        "assertions": [
+          "expect(runner.run({ idea: { artifactId: 'idea-aborted', kind: 'idea', title: '已取消', content: '内容', createdAt: 0 }, }, controller.signal)).rejects.toThrow()"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "reads several uploaded papers in one comparative stage",
+        "assertions": [
+          "expect(artifact?.title).toBe('论文摘要（2 篇）')",
+          "expect(artifact?.source).toContain('paper-a.txt')",
+          "expect(artifact?.source).toContain('paper-b.txt')",
+          "expect(prompts[0]).toContain('File: paper-a.txt')",
+          "expect(prompts[0]).toContain('File: paper-b.txt')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "reads several uploaded papers in one comparative stage",
+        "assertions": [
+          "expect(artifact?.title).toBe('论文摘要（2 篇）')",
+          "expect(artifact?.source).toContain('paper-a.txt')",
+          "expect(artifact?.source).toContain('paper-b.txt')",
+          "expect(prompts[0]).toContain('File: paper-a.txt')",
+          "expect(prompts[0]).toContain('File: paper-b.txt')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "reads several uploaded papers in one comparative stage",
+        "assertions": [
+          "expect(artifact?.title).toBe('论文摘要（2 篇）')",
+          "expect(artifact?.source).toContain('paper-a.txt')",
+          "expect(artifact?.source).toContain('paper-b.txt')",
+          "expect(prompts[0]).toContain('File: paper-a.txt')",
+          "expect(prompts[0]).toContain('File: paper-b.txt')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "asks the problem extractor to retain every distinct question",
+        "assertions": [
+          "expect(prompts).toHaveLength(1)",
+          "expect(prompts[0]).toContain('每一个彼此独立且可检验的研究问题')",
+          "expect(prompts[0]).toContain('保持不同问题的答案分开')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "asks the problem extractor to retain every distinct question",
+        "assertions": [
+          "expect(prompts).toHaveLength(1)",
+          "expect(prompts[0]).toContain('每一个彼此独立且可检验的研究问题')",
+          "expect(prompts[0]).toContain('保持不同问题的答案分开')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "asks the problem extractor to retain every distinct question",
+        "assertions": [
+          "expect(prompts).toHaveLength(1)",
+          "expect(prompts[0]).toContain('每一个彼此独立且可检验的研究问题')",
+          "expect(prompts[0]).toContain('保持不同问题的答案分开')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "executes every confirmed stage and renders a final plan",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('paper-read')",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('literature-search')",
+          "expect(state.artifacts[state.nodes[state.selectedNodeId]?.artifactRefs[0] ?? '']?.content).toContain('创新点')",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('idea-refinement')",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('targeted-literature-search')",
+          "expect(searchQueries).toHaveLength(4)",
+          "expect(searchQueries[1]).toContain('候选创新点专项查重检索')",
+          "expect(searchQueries[2]).toContain('候选创新点专项查重检索')",
+          "expect(searchQueries[3]).toContain('已确认方向：')",
+          "expect(searchQueries[3]).toContain('可校准的不确定性门控检索')",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('simulation-or-final-plan')",
+          "expect(coordinator.advance({ state, parent, finalChoice: 'simulation' })) .rejects.toThrow('no simulation adapter is configured')",
+          "expect(preview.planFile).toBeUndefined()",
+          "expect(preview.artifact?.title).toBe('完整科研方案（待写入）')",
+          "expect(preview.artifact?.content).toContain('# 自动科研方案')",
+          "expect(preview.state.nodes[preview.state.selectedNodeId]?.status).toBe('awaiting-confirmation')",
+          "expect(written).toHaveLength(0)",
+          "expect(final.planFile?.fileName).toBe('workspace/research-plan.md')",
+          "expect(final.planFile?.content).toContain('# 自动科研方案')",
+          "expect(written).toHaveLength(1)",
+          "expect(written[0]).toBe(final.planFile?.content)",
+          "expect(final.artifact?.source).toBe('workspace/research-plan.md')",
+          "expect(final.state.nodes[final.state.selectedNodeId]?.stage).toBe('final-plan')",
+          "expect(final.state.nodes[final.state.selectedNodeId]?.status).toBe('completed')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "executes every confirmed stage and renders a final plan",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('paper-read')",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('literature-search')",
+          "expect(state.artifacts[state.nodes[state.selectedNodeId]?.artifactRefs[0] ?? '']?.content).toContain('创新点')",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('idea-refinement')",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('targeted-literature-search')",
+          "expect(searchQueries).toHaveLength(4)",
+          "expect(searchQueries[1]).toContain('候选创新点专项查重检索')",
+          "expect(searchQueries[2]).toContain('候选创新点专项查重检索')",
+          "expect(searchQueries[3]).toContain('已确认方向：')",
+          "expect(searchQueries[3]).toContain('可校准的不确定性门控检索')",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('simulation-or-final-plan')",
+          "expect(coordinator.advance({ state, parent, finalChoice: 'simulation' })) .rejects.toThrow('no simulation adapter is configured')",
+          "expect(preview.planFile).toBeUndefined()",
+          "expect(preview.artifact?.title).toBe('完整科研方案（待写入）')",
+          "expect(preview.artifact?.content).toContain('# 自动科研方案')",
+          "expect(preview.state.nodes[preview.state.selectedNodeId]?.status).toBe('awaiting-confirmation')",
+          "expect(written).toHaveLength(0)",
+          "expect(final.planFile?.fileName).toBe('workspace/research-plan.md')",
+          "expect(final.planFile?.content).toContain('# 自动科研方案')",
+          "expect(written).toHaveLength(1)",
+          "expect(written[0]).toBe(final.planFile?.content)",
+          "expect(final.artifact?.source).toBe('workspace/research-plan.md')",
+          "expect(final.state.nodes[final.state.selectedNodeId]?.stage).toBe('final-plan')",
+          "expect(final.state.nodes[final.state.selectedNodeId]?.status).toBe('completed')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "executes every confirmed stage and renders a final plan",
+        "assertions": [
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('paper-read')",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('literature-search')",
+          "expect(state.artifacts[state.nodes[state.selectedNodeId]?.artifactRefs[0] ?? '']?.content).toContain('创新点')",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('idea-refinement')",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('targeted-literature-search')",
+          "expect(searchQueries).toHaveLength(4)",
+          "expect(searchQueries[1]).toContain('候选创新点专项查重检索')",
+          "expect(searchQueries[2]).toContain('候选创新点专项查重检索')",
+          "expect(searchQueries[3]).toContain('已确认方向：')",
+          "expect(searchQueries[3]).toContain('可校准的不确定性门控检索')",
+          "expect(state.nodes[state.selectedNodeId]?.stage).toBe('simulation-or-final-plan')",
+          "expect(coordinator.advance({ state, parent, finalChoice: 'simulation' })) .rejects.toThrow('no simulation adapter is configured')",
+          "expect(preview.planFile).toBeUndefined()",
+          "expect(preview.artifact?.title).toBe('完整科研方案（待写入）')",
+          "expect(preview.artifact?.content).toContain('# 自动科研方案')",
+          "expect(preview.state.nodes[preview.state.selectedNodeId]?.status).toBe('awaiting-confirmation')",
+          "expect(written).toHaveLength(0)",
+          "expect(final.planFile?.fileName).toBe('workspace/research-plan.md')",
+          "expect(final.planFile?.content).toContain('# 自动科研方案')",
+          "expect(written).toHaveLength(1)",
+          "expect(written[0]).toBe(final.planFile?.content)",
+          "expect(final.artifact?.source).toBe('workspace/research-plan.md')",
+          "expect(final.state.nodes[final.state.selectedNodeId]?.stage).toBe('final-plan')",
+          "expect(final.state.nodes[final.state.selectedNodeId]?.status).toBe('completed')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "gives the isolated innovation reviewer all branch evidence and candidate search results",
+        "assertions": [
+          "expect(reviewerPrompts).toHaveLength(1)",
+          "expect(reviewerPrompts[0]).toContain('上传论文摘要')",
+          "expect(reviewerPrompts[0]).toContain('初始论文：自适应检索基线')",
+          "expect(reviewerPrompts[0]).toContain('补充论文：跨域校准方法')",
+          "expect(reviewerPrompts[0]).toContain('本候选点专项检索结果')",
+          "expect(searchQueries.some(query => query.includes('候选创新点专项查重检索'))).toBe(true)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "gives the isolated innovation reviewer all branch evidence and candidate search results",
+        "assertions": [
+          "expect(reviewerPrompts).toHaveLength(1)",
+          "expect(reviewerPrompts[0]).toContain('上传论文摘要')",
+          "expect(reviewerPrompts[0]).toContain('初始论文：自适应检索基线')",
+          "expect(reviewerPrompts[0]).toContain('补充论文：跨域校准方法')",
+          "expect(reviewerPrompts[0]).toContain('本候选点专项检索结果')",
+          "expect(searchQueries.some(query => query.includes('候选创新点专项查重检索'))).toBe(true)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "gives the isolated innovation reviewer all branch evidence and candidate search results",
+        "assertions": [
+          "expect(reviewerPrompts).toHaveLength(1)",
+          "expect(reviewerPrompts[0]).toContain('上传论文摘要')",
+          "expect(reviewerPrompts[0]).toContain('初始论文：自适应检索基线')",
+          "expect(reviewerPrompts[0]).toContain('补充论文：跨域校准方法')",
+          "expect(reviewerPrompts[0]).toContain('本候选点专项检索结果')",
+          "expect(searchQueries.some(query => query.includes('候选创新点专项查重检索'))).toBe(true)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "passes the resolved sandbox policy to the final plan writer",
+        "assertions": [
+          "expect(received).toEqual(policy)",
+          "expect(result.planFile?.content).toBe('# 方案')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "passes the resolved sandbox policy to the final plan writer",
+        "assertions": [
+          "expect(received).toEqual(policy)",
+          "expect(result.planFile?.content).toBe('# 方案')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "passes the resolved sandbox policy to the final plan writer",
+        "assertions": [
+          "expect(received).toEqual(policy)",
+          "expect(result.planFile?.content).toBe('# 方案')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "mounts the fixed numerical adapter in the Host factory",
+        "assertions": [
+          "expect(result.artifact?.kind).toBe('simulation')",
+          "expect(result.artifact?.content).toContain('- 状态：completed')",
+          "expect(result.artifact?.content).toContain('- 候选方法：固定基准候选')",
+          "expect(result.state.nodes[result.state.selectedNodeId]?.status).toBe('awaiting-confirmation')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "mounts the fixed numerical adapter in the Host factory",
+        "assertions": [
+          "expect(result.artifact?.kind).toBe('simulation')",
+          "expect(result.artifact?.content).toContain('- 状态：completed')",
+          "expect(result.artifact?.content).toContain('- 候选方法：固定基准候选')",
+          "expect(result.state.nodes[result.state.selectedNodeId]?.status).toBe('awaiting-confirmation')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "mounts the fixed numerical adapter in the Host factory",
+        "assertions": [
+          "expect(result.artifact?.kind).toBe('simulation')",
+          "expect(result.artifact?.content).toContain('- 状态：completed')",
+          "expect(result.artifact?.content).toContain('- 候选方法：固定基准候选')",
+          "expect(result.state.nodes[result.state.selectedNodeId]?.status).toBe('awaiting-confirmation')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "leaves research state untouched when a simulation adapter fails",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent, finalChoice: 'simulation' })).rejects.toThrow(failure)",
+          "expect(JSON.stringify(state)).toBe(before)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "leaves research state untouched when a simulation adapter fails",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent, finalChoice: 'simulation' })).rejects.toThrow(failure)",
+          "expect(JSON.stringify(state)).toBe(before)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "leaves research state untouched when a simulation adapter fails",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent, finalChoice: 'simulation' })).rejects.toThrow(failure)",
+          "expect(JSON.stringify(state)).toBe(before)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "refuses to run a stage whose output is still awaiting confirmation",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent })).rejects.toThrow('requires user confirmation')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "refuses to run a stage whose output is still awaiting confirmation",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent })).rejects.toThrow('requires user confirmation')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "refuses to run a stage whose output is still awaiting confirmation",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent })).rejects.toThrow('requires user confirmation')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "requires an innovation claim before multi-agent review",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent })).rejects.toThrow('innovation claim')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "requires an innovation claim before multi-agent review",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent })).rejects.toThrow('innovation claim')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "requires an innovation claim before multi-agent review",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent })).rejects.toThrow('innovation claim')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "generates a new idea from a rejected branch while retaining literature evidence",
+        "assertions": [
+          "expect(state.activeBranchId).not.toBe(oldBranch)",
+          "expect(node?.stage).toBe('idea-generation')",
+          "expect(node?.status).toBe('awaiting-confirmation')",
+          "expect(node?.memorySnapshot.artifactIds.some(id => state.artifacts[id]?.kind === 'literature')).toBe(true)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "generates a new idea from a rejected branch while retaining literature evidence",
+        "assertions": [
+          "expect(state.activeBranchId).not.toBe(oldBranch)",
+          "expect(node?.stage).toBe('idea-generation')",
+          "expect(node?.status).toBe('awaiting-confirmation')",
+          "expect(node?.memorySnapshot.artifactIds.some(id => state.artifacts[id]?.kind === 'literature')).toBe(true)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "generates a new idea from a rejected branch while retaining literature evidence",
+        "assertions": [
+          "expect(state.activeBranchId).not.toBe(oldBranch)",
+          "expect(node?.stage).toBe('idea-generation')",
+          "expect(node?.status).toBe('awaiting-confirmation')",
+          "expect(node?.memorySnapshot.artifactIds.some(id => state.artifacts[id]?.kind === 'literature')).toBe(true)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "appends uploaded supplemental papers to either literature checkpoint",
+        "assertions": [
+          "expect(result.artifact?.title).toBe('补充文献调研（1 篇）')",
+          "expect(result.state.nodes[result.state.selectedNodeId]?.stage).toBe('literature-search')",
+          "expect(result.artifact?.content).toContain('supplement.txt')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "appends uploaded supplemental papers to either literature checkpoint",
+        "assertions": [
+          "expect(result.artifact?.title).toBe('补充文献调研（1 篇）')",
+          "expect(result.state.nodes[result.state.selectedNodeId]?.stage).toBe('literature-search')",
+          "expect(result.artifact?.content).toContain('supplement.txt')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "appends uploaded supplemental papers to either literature checkpoint",
+        "assertions": [
+          "expect(result.artifact?.title).toBe('补充文献调研（1 篇）')",
+          "expect(result.state.nodes[result.state.selectedNodeId]?.stage).toBe('literature-search')",
+          "expect(result.artifact?.content).toContain('supplement.txt')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "discards low-score or overlapping candidates before exposing a passing idea",
+        "assertions": [
+          "expect(reviewCount).toBe(2)",
+          "expect(result.artifact?.evaluation).toMatchObject({ score: 84, overlap: false, threshold: 70 })"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "discards low-score or overlapping candidates before exposing a passing idea",
+        "assertions": [
+          "expect(reviewCount).toBe(2)",
+          "expect(result.artifact?.evaluation).toMatchObject({ score: 84, overlap: false, threshold: 70 })"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "discards low-score or overlapping candidates before exposing a passing idea",
+        "assertions": [
+          "expect(reviewCount).toBe(2)",
+          "expect(result.artifact?.evaluation).toMatchObject({ score: 84, overlap: false, threshold: 70 })"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "reports the innovation threshold when every candidate is rejected",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent })).rejects.toThrow('INNOVATION_SCORE_BELOW_THRESHOLD')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "reports the innovation threshold when every candidate is rejected",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent })).rejects.toThrow('INNOVATION_SCORE_BELOW_THRESHOLD')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "reports the innovation threshold when every candidate is rejected",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent })).rejects.toThrow('INNOVATION_SCORE_BELOW_THRESHOLD')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "fails closed when candidate-specific literature search has no results",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent })).rejects.toThrow('INNOVATION_SCORE_BELOW_THRESHOLD')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "fails closed when candidate-specific literature search has no results",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent })).rejects.toThrow('INNOVATION_SCORE_BELOW_THRESHOLD')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "fails closed when candidate-specific literature search has no results",
+        "assertions": [
+          "expect(coordinator.advance({ state, parent })).rejects.toThrow('INNOVATION_SCORE_BELOW_THRESHOLD')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "queries arXiv machine-learning categories and merges duplicate URLs",
+        "assertions": [
+          "expect(sources).toHaveLength(1)",
+          "expect(sources[0]).toMatchObject({ provider: 'arxiv', title: 'A ML paper', url: 'https://arxiv.org/abs/1234.5678' })",
+          "expect(fetchedUrls[0]).toContain('cat%3Acs.LG')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "queries arXiv machine-learning categories and merges duplicate URLs",
+        "assertions": [
+          "expect(sources).toHaveLength(1)",
+          "expect(sources[0]).toMatchObject({ provider: 'arxiv', title: 'A ML paper', url: 'https://arxiv.org/abs/1234.5678' })",
+          "expect(fetchedUrls[0]).toContain('cat%3Acs.LG')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "queries arXiv machine-learning categories and merges duplicate URLs",
+        "assertions": [
+          "expect(sources).toHaveLength(1)",
+          "expect(sources[0]).toMatchObject({ provider: 'arxiv', title: 'A ML paper', url: 'https://arxiv.org/abs/1234.5678' })",
+          "expect(fetchedUrls[0]).toContain('cat%3Acs.LG')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "does not call the native Web Search capability",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['semantic-scholar'] })).resolves.toEqual([])",
+          "expect(searchCalls).toBe(0)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "does not call the native Web Search capability",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['semantic-scholar'] })).resolves.toEqual([])",
+          "expect(searchCalls).toBe(0)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "does not call the native Web Search capability",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['semantic-scholar'] })).resolves.toEqual([])",
+          "expect(searchCalls).toBe(0)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "retries transient timeouts once and keeps the successful source result",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['arxiv'] })).resolves.toMatchObject([ { provider: 'arxiv', title: 'Recovered paper' }, ])",
+          "expect(calls).toBe(2)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "retries transient timeouts once and keeps the successful source result",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['arxiv'] })).resolves.toMatchObject([ { provider: 'arxiv', title: 'Recovered paper' }, ])",
+          "expect(calls).toBe(2)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "retries transient timeouts once and keeps the successful source result",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['arxiv'] })).resolves.toMatchObject([ { provider: 'arxiv', title: 'Recovered paper' }, ])",
+          "expect(calls).toBe(2)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "does not retry a non-public address block and reports failure categories",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['arxiv', 'openalex'] })).rejects.toThrow( 'diagnostics: arxiv=non-public-address; openalex=http-429', )",
+          "expect(calls).toBe(3)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "does not retry a non-public address block and reports failure categories",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['arxiv', 'openalex'] })).rejects.toThrow( 'diagnostics: arxiv=non-public-address; openalex=http-429', )",
+          "expect(calls).toBe(3)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "does not retry a non-public address block and reports failure categories",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['arxiv', 'openalex'] })).rejects.toThrow( 'diagnostics: arxiv=non-public-address; openalex=http-429', )",
+          "expect(calls).toBe(3)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "keeps index results when another index is unavailable",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['openreview', 'arxiv'] })).resolves.toEqual([ { url: 'https://arxiv.org/abs/9876.5432', provider: 'arxiv', title: 'Fallback ML paper', snippet: 'Evidence' }, ])"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "keeps index results when another index is unavailable",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['openreview', 'arxiv'] })).resolves.toEqual([ { url: 'https://arxiv.org/abs/9876.5432', provider: 'arxiv', title: 'Fallback ML paper', snippet: 'Evidence' }, ])"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "keeps index results when another index is unavailable",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['openreview', 'arxiv'] })).resolves.toEqual([ { url: 'https://arxiv.org/abs/9876.5432', provider: 'arxiv', title: 'Fallback ML paper', snippet: 'Evidence' }, ])"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "reports the selected indexes when every fetch fails",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['arxiv', 'openalex'], })).rejects.toThrow('diagnostics: arxiv=http-5xx; openalex=http-5xx')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "reports the selected indexes when every fetch fails",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['arxiv', 'openalex'], })).rejects.toThrow('diagnostics: arxiv=http-5xx; openalex=http-5xx')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "reports the selected indexes when every fetch fails",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['arxiv', 'openalex'], })).rejects.toThrow('diagnostics: arxiv=http-5xx; openalex=http-5xx')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "classifies a proxied connection failure separately from DNS and address blocks",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['openalex'], })).rejects.toThrow('diagnostics: openalex=proxy-connection')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "classifies a proxied connection failure separately from DNS and address blocks",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['openalex'], })).rejects.toThrow('diagnostics: openalex=proxy-connection')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "classifies a proxied connection failure separately from DNS and address blocks",
+        "assertions": [
+          "expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['openalex'], })).rejects.toThrow('diagnostics: openalex=proxy-connection')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "bounds encoded queries so long problem summaries reach the indexes",
+        "assertions": [
+          "expect(fetchedUrls).toHaveLength(1)",
+          "expect(fetchedUrls[0]?.length).toBeLessThanOrEqual(2048)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "bounds encoded queries so long problem summaries reach the indexes",
+        "assertions": [
+          "expect(fetchedUrls).toHaveLength(1)",
+          "expect(fetchedUrls[0]?.length).toBeLessThanOrEqual(2048)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "bounds encoded queries so long problem summaries reach the indexes",
+        "assertions": [
+          "expect(fetchedUrls).toHaveLength(1)",
+          "expect(fetchedUrls[0]?.length).toBeLessThanOrEqual(2048)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "parses explicit conference and citation indexes without native search",
+        "assertions": [
+          "expect(new Set(sources.map(source => source.provider))).toEqual(new Set(['arxiv', 'openreview', 'semantic-scholar', 'acl-anthology', 'openalex']))",
+          "expect(sources.find(source => source.provider === 'openreview')?.title).toBe('ICLR paper')",
+          "expect(sources.find(source => source.provider === 'openalex')?.snippet).toBe('Open Alex')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "parses explicit conference and citation indexes without native search",
+        "assertions": [
+          "expect(new Set(sources.map(source => source.provider))).toEqual(new Set(['arxiv', 'openreview', 'semantic-scholar', 'acl-anthology', 'openalex']))",
+          "expect(sources.find(source => source.provider === 'openreview')?.title).toBe('ICLR paper')",
+          "expect(sources.find(source => source.provider === 'openalex')?.snippet).toBe('Open Alex')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "parses explicit conference and citation indexes without native search",
+        "assertions": [
+          "expect(new Set(sources.map(source => source.provider))).toEqual(new Set(['arxiv', 'openreview', 'semantic-scholar', 'acl-anthology', 'openalex']))",
+          "expect(sources.find(source => source.provider === 'openreview')?.title).toBe('ICLR paper')",
+          "expect(sources.find(source => source.provider === 'openalex')?.snippet).toBe('Open Alex')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "inherits the selected parent model route and Chinese output instruction",
+        "assertions": [
+          "expect(seen?.agentOptions).toEqual({ provider: 'selected-provider', model: 'gpt-6-astra', maxTokens: 321 })",
+          "expect(seen?.prompt?.[0]?.text).toContain('简体中文')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "inherits the selected parent model route and Chinese output instruction",
+        "assertions": [
+          "expect(seen?.agentOptions).toEqual({ provider: 'selected-provider', model: 'gpt-6-astra', maxTokens: 321 })",
+          "expect(seen?.prompt?.[0]?.text).toContain('简体中文')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "inherits the selected parent model route and Chinese output instruction",
+        "assertions": [
+          "expect(seen?.agentOptions).toEqual({ provider: 'selected-provider', model: 'gpt-6-astra', maxTokens: 321 })",
+          "expect(seen?.prompt?.[0]?.text).toContain('简体中文')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "extracts a PDF text layer with PDF.js",
+        "assertions": [
+          "expect(document.extractionMethod).toBe('embedded-text')",
+          "expect(document.pageCount).toBe(1)",
+          "expect(document.text).toContain('Selectable PDF text')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "extracts a PDF text layer with PDF.js",
+        "assertions": [
+          "expect(document.extractionMethod).toBe('embedded-text')",
+          "expect(document.pageCount).toBe(1)",
+          "expect(document.text).toContain('Selectable PDF text')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "extracts a PDF text layer with PDF.js",
+        "assertions": [
+          "expect(document.extractionMethod).toBe('embedded-text')",
+          "expect(document.pageCount).toBe(1)",
+          "expect(document.text).toContain('Selectable PDF text')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "renders a scanned PDF and delegates the pages to OCR",
+        "assertions": [
+          "expect(document.extractionMethod).toBe('ocr')",
+          "expect(document.text).toContain('扫描版论文内容')",
+          "expect(pages[0]?.byteLength).toBeGreaterThan(0)"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "renders a scanned PDF and delegates the pages to OCR",
+        "assertions": [
+          "expect(document.extractionMethod).toBe('ocr')",
+          "expect(document.text).toContain('扫描版论文内容')",
+          "expect(pages[0]?.byteLength).toBeGreaterThan(0)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "renders a scanned PDF and delegates the pages to OCR",
+        "assertions": [
+          "expect(document.extractionMethod).toBe('ocr')",
+          "expect(document.text).toContain('扫描版论文内容')",
+          "expect(pages[0]?.byteLength).toBeGreaterThan(0)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "OCRs sparse pages in a mixed PDF while retaining embedded page text order",
+        "assertions": [
+          "expect(document.extractionMethod).toBe('ocr')",
+          "expect(pages).toEqual([2])",
+          "expect(document.text.indexOf('Selectable page')).toBeLessThan(document.text.indexOf('OCR recovered page'))"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "OCRs sparse pages in a mixed PDF while retaining embedded page text order",
+        "assertions": [
+          "expect(document.extractionMethod).toBe('ocr')",
+          "expect(pages).toEqual([2])",
+          "expect(document.text.indexOf('Selectable page')).toBeLessThan(document.text.indexOf('OCR recovered page'))"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "OCRs sparse pages in a mixed PDF while retaining embedded page text order",
+        "assertions": [
+          "expect(document.extractionMethod).toBe('ocr')",
+          "expect(pages).toEqual([2])",
+          "expect(document.text.indexOf('Selectable page')).toBeLessThan(document.text.indexOf('OCR recovered page'))"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/workflow/workflow/tests/research-coordinator.spec.ts",
+        "name": "reports a clear error when a scanned PDF has no OCR adapter",
+        "assertions": [
+          "expect(reader.read({ attachmentId: AttachmentId('sha256:no-ocr'), name: 'scan.pdf', bytes: bytes.byteLength }, undefined, { parent })) .rejects.toThrow('PDF_OCR_UNAVAILABLE')"
+        ]
+      },
+      "original014": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "reports a clear error when a scanned PDF has no OCR adapter",
+        "assertions": [
+          "expect(reader.read({ attachmentId: AttachmentId('sha256:no-ocr'), name: 'scan.pdf', bytes: bytes.byteLength }, undefined, { parent })) .rejects.toThrow('PDF_OCR_UNAVAILABLE')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/research-coordinator.spec.ts",
+        "name": "reports a clear error when a scanned PDF has no OCR adapter",
+        "assertions": [
+          "expect(reader.read({ attachmentId: AttachmentId('sha256:no-ocr'), name: 'scan.pdf', bytes: bytes.byteLength }, undefined, { parent })) .rejects.toThrow('PDF_OCR_UNAVAILABLE')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/api/research-controller/tests/continue-from-node.host.spec.ts",
+        "name": "advertises the fixed numerical simulation adapter",
+        "assertions": [
+          "expect(snapshot.simulationAvailable).toBe(true)"
+        ]
+      },
+      "original014": {
+        "file": "tests/controller.spec.ts",
+        "name": "advertises the fixed numerical simulation adapter",
+        "assertions": [
+          "expect(snapshot.simulationAvailable).toBe(true)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/controller.spec.ts",
+        "name": "advertises the fixed numerical simulation adapter",
+        "assertions": [
+          "expect(snapshot.simulationAvailable).toBe(true)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/api/research-controller/tests/continue-from-node.host.spec.ts",
+        "name": "creates a same-Session branch, commits a revision, and reloads it",
+        "assertions": [
+          "expect(result.snapshot.revision).toBe(5)",
+          "expect(result.snapshot.sessionId).toBe(sessionId)",
+          "expect(result.snapshot.state.selectedNodeId).not.toBe('node-2')",
+          "expect(result.snapshot.state.activeBranchId).toBe('branch-2')",
+          "expect(result.snapshot.state.nodes['node-2']).toEqual(state.nodes['node-2'])",
+          "expect(result.snapshot.state.branches['branch-1']?.nodeIds).toEqual(state.branches['branch-1']?.nodeIds)",
+          "expect(persisted.revision).toBe(result.snapshot.revision)",
+          "expect(persisted.state).toEqual(result.snapshot.state)",
+          "expect(typeof persisted.updatedAt).toBe('number')",
+          "expect(table.put).toHaveBeenCalledOnce()",
+          "expect(reloaded).toEqual(result.snapshot)"
+        ]
+      },
+      "original014": {
+        "file": "tests/controller.spec.ts",
+        "name": "creates a same-Session branch, commits a revision, and reloads it",
+        "assertions": [
+          "expect(result.snapshot.revision).toBe(5)",
+          "expect(result.snapshot.sessionId).toBe(sessionId)",
+          "expect(result.snapshot.state.selectedNodeId).not.toBe('node-2')",
+          "expect(result.snapshot.state.activeBranchId).toBe('branch-2')",
+          "expect(result.snapshot.state.nodes['node-2']).toEqual(state.nodes['node-2'])",
+          "expect(result.snapshot.state.branches['branch-1']?.nodeIds).toEqual(state.branches['branch-1']?.nodeIds)",
+          "expect(persisted.revision).toBe(result.snapshot.revision)",
+          "expect(persisted.state).toEqual(result.snapshot.state)",
+          "expect(typeof persisted.updatedAt).toBe('number')",
+          "expect(table.put).toHaveBeenCalledOnce()",
+          "expect(reloaded).toEqual(result.snapshot)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/controller.spec.ts",
+        "name": "creates a same-Session branch, commits a revision, and reloads it",
+        "assertions": [
+          "expect(result.snapshot.revision).toBe(5)",
+          "expect(result.snapshot.sessionId).toBe(sessionId)",
+          "expect(result.snapshot.state.selectedNodeId).not.toBe('node-2')",
+          "expect(result.snapshot.state.activeBranchId).toBe('branch-2')",
+          "expect(result.snapshot.state.nodes['node-2']).toEqual(state.nodes['node-2'])",
+          "expect(result.snapshot.state.branches['branch-1']?.nodeIds).toEqual(state.branches['branch-1']?.nodeIds)",
+          "expect(persisted.revision).toBe(result.snapshot.revision)",
+          "expect(persisted.state).toEqual(result.snapshot.state)",
+          "expect(typeof persisted.updatedAt).toBe('number')",
+          "expect(table.put).toHaveBeenCalledOnce()",
+          "expect(reloaded).toEqual(result.snapshot)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/api/research-controller/tests/continue-from-node.host.spec.ts",
+        "name": "rejects stale continuation without changing the durable row",
+        "assertions": [
+          "expect(controller.continueFromNode({ sessionId, expectedRevision: 3, nodeId: 'node-2', })).rejects.toMatchObject({ code: 'research/stale' })",
+          "expect(records.get(sessionId)).toBe(before)"
+        ]
+      },
+      "original014": {
+        "file": "tests/controller.spec.ts",
+        "name": "rejects stale continuation without changing the durable row",
+        "assertions": [
+          "expect(controller.continueFromNode({ sessionId, expectedRevision: 3, nodeId: 'node-2', })).rejects.toMatchObject({ code: 'research/stale' })",
+          "expect(records.get(sessionId)).toBe(before)"
+        ]
+      },
+      "candidate": {
+        "file": "tests/controller.spec.ts",
+        "name": "rejects stale continuation without changing the durable row",
+        "assertions": [
+          "expect(controller.continueFromNode({ sessionId, expectedRevision: 3, nodeId: 'node-2', })).rejects.toMatchObject({ code: 'research/stale' })",
+          "expect(records.get(sessionId)).toBe(before)"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/api/research-controller/tests/continue-from-node.host.spec.ts",
+        "name": "rejects a repeated continuation with the old revision",
+        "assertions": [
+          "expect(controller.continueFromNode({ sessionId, expectedRevision: 4, nodeId: 'node-2', })).rejects.toMatchObject({ code: 'research/stale' })",
+          "expect(records.get(sessionId)?.revision).toBe(first.snapshot.revision)",
+          "expect(table.put).toHaveBeenCalledOnce()"
+        ]
+      },
+      "original014": {
+        "file": "tests/controller.spec.ts",
+        "name": "rejects a repeated continuation with the old revision",
+        "assertions": [
+          "expect(controller.continueFromNode({ sessionId, expectedRevision: 4, nodeId: 'node-2', })).rejects.toMatchObject({ code: 'research/stale' })",
+          "expect(records.get(sessionId)?.revision).toBe(first.snapshot.revision)",
+          "expect(table.put).toHaveBeenCalledOnce()"
+        ]
+      },
+      "candidate": {
+        "file": "tests/controller.spec.ts",
+        "name": "rejects a repeated continuation with the old revision",
+        "assertions": [
+          "expect(controller.continueFromNode({ sessionId, expectedRevision: 4, nodeId: 'node-2', })).rejects.toMatchObject({ code: 'research/stale' })",
+          "expect(records.get(sessionId)?.revision).toBe(first.snapshot.revision)",
+          "expect(table.put).toHaveBeenCalledOnce()"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/api/research-controller/tests/continue-from-node.host.spec.ts",
+        "name": "keeps history mutation errors separate from continuation",
+        "assertions": [
+          "expect(controller.feedback({ sessionId, expectedRevision: 4, feedback: '补充实验', })).rejects.toMatchObject({ code: 'research/history' })",
+          "expect(records.get(sessionId)).toBe(before)",
+          "expect(continued.snapshot.state.activeBranchId).toBe('branch-2')"
+        ]
+      },
+      "original014": {
+        "file": "tests/controller.spec.ts",
+        "name": "keeps history mutation errors separate from continuation",
+        "assertions": [
+          "expect(controller.feedback({ sessionId, expectedRevision: 4, feedback: '补充实验', })).rejects.toMatchObject({ code: 'research/history' })",
+          "expect(records.get(sessionId)).toBe(before)",
+          "expect(continued.snapshot.state.activeBranchId).toBe('branch-2')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/controller.spec.ts",
+        "name": "keeps history mutation errors separate from continuation",
+        "assertions": [
+          "expect(controller.feedback({ sessionId, expectedRevision: 4, feedback: '补充实验', })).rejects.toMatchObject({ code: 'research/history' })",
+          "expect(records.get(sessionId)).toBe(before)",
+          "expect(continued.snapshot.state.activeBranchId).toBe('branch-2')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/api/research-controller/tests/continue-from-node.host.spec.ts",
+        "name": "commits the durable state before a project projection failure",
+        "assertions": [
+          "expect(controller.continueFromNode({ sessionId, expectedRevision: 4, nodeId: 'node-2', })).rejects.toMatchObject({ code: 'FS_IO_ERROR' })",
+          "expect(events).toEqual(['domain.put', 'project.write'])",
+          "expect(records.get(sessionId)?.revision).toBe(5)",
+          "expect(records.get(sessionId)?.state.activeBranchId).toBe('branch-2')"
+        ]
+      },
+      "original014": {
+        "file": "tests/controller.spec.ts",
+        "name": "commits the durable state before a project projection failure",
+        "assertions": [
+          "expect(controller.continueFromNode({ sessionId, expectedRevision: 4, nodeId: 'node-2', })).rejects.toMatchObject({ code: 'FS_IO_ERROR' })",
+          "expect(events).toEqual(['domain.put', 'project.write'])",
+          "expect(records.get(sessionId)?.revision).toBe(5)",
+          "expect(records.get(sessionId)?.state.activeBranchId).toBe('branch-2')"
+        ]
+      },
+      "candidate": {
+        "file": "tests/controller.spec.ts",
+        "name": "commits the durable state before a project projection failure",
+        "assertions": [
+          "expect(controller.continueFromNode({ sessionId, expectedRevision: 4, nodeId: 'node-2', })).rejects.toMatchObject({ code: 'FS_IO_ERROR' })",
+          "expect(events).toEqual(['domain.put', 'project.write'])",
+          "expect(records.get(sessionId)?.revision).toBe(5)",
+          "expect(records.get(sessionId)?.state.activeBranchId).toBe('branch-2')"
+        ]
+      },
+      "status": "passed",
+      "note": "0.1.4 已迁移；具体断言见 JSON。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-session-store.client.spec.tsx",
+        "name": "keeps the newest revision when an older read completes later",
+        "assertions": [
+          "expect(researchSessionSnapshot(sessionId)?.revision).toBe(2)",
+          "expect(researchSessionSnapshot(sessionId)?.state.artifacts['artifact-1']?.content).toBe('new')",
+          "expect(listener).toHaveBeenCalledOnce()"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-session-store.client.spec.tsx",
+        "name": "keeps the newest revision when an older read completes later",
+        "assertions": [
+          "expect(researchSessionSnapshot(sessionId)?.revision).toBe(2)",
+          "expect(researchSessionSnapshot(sessionId)?.state.artifacts['artifact-1']?.content).toBe('new')",
+          "expect(listener).toHaveBeenCalledOnce()"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-session-store.client.spec.tsx",
+        "name": "does not replace a snapshot with a different state at the same revision",
+        "assertions": [
+          "expect(researchSessionSnapshot(sessionId)?.state.artifacts['artifact-1']?.content).toBe('first')",
+          "expect(listener).toHaveBeenCalledOnce()"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-session-store.client.spec.tsx",
+        "name": "does not replace a snapshot with a different state at the same revision",
+        "assertions": [
+          "expect(researchSessionSnapshot(sessionId)?.state.artifacts['artifact-1']?.content).toBe('first')",
+          "expect(listener).toHaveBeenCalledOnce()"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-session-store.client.spec.tsx",
+        "name": "publishes a remote read to every projection and returns the shared snapshot",
+        "assertions": [
+          "expect(result).toEqual({ ok: true, value: researchSessionSnapshot(sessionId) })",
+          "expect(researchSessionSnapshot(sessionId)?.state.artifacts['artifact-1']?.content).toBe('loaded')",
+          "expect(listener).toHaveBeenCalledOnce()"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-session-store.client.spec.tsx",
+        "name": "publishes a remote read to every projection and returns the shared snapshot",
+        "assertions": [
+          "expect(result).toEqual({ ok: true, value: researchSessionSnapshot(sessionId) })",
+          "expect(researchSessionSnapshot(sessionId)?.state.artifacts['artifact-1']?.content).toBe('loaded')",
+          "expect(listener).toHaveBeenCalledOnce()"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-session-store.client.spec.tsx",
+        "name": "keeps completed ancestors visible while viewing a historical node",
+        "assertions": [
+          "expect(view.container.querySelectorAll('[data-research-main-node]')).toHaveLength(2)",
+          "expect(view.container.querySelector('[data-research-main-node=\"node-1\"]')).toBeTruthy()",
+          "expect(view.container.querySelector('[data-research-main-node=\"node-2\"]')).toBeTruthy()",
+          "expect(view.container.querySelector('[data-research-main-node=\"node-3\"]')).toBeNull()",
+          "expect(firstNode?.getAttribute('aria-expanded')).toBe('false')",
+          "expect(firstNode?.getAttribute('data-expanded')).toBe('false')",
+          "expect(content).toBeTruthy()",
+          "expect(contentNode?.getAttribute('aria-expanded')).toBe('true')",
+          "expect(contentNode?.getAttribute('aria-expanded')).toBe('false')",
+          "expect(contentNode?.getAttribute('data-expanded')).toBe('false')",
+          "expect(contentNode?.getAttribute('aria-expanded')).toBe('true')",
+          "expect(contentNode?.getAttribute('data-expanded')).toBe('true')"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-session-store.client.spec.tsx",
+        "name": "keeps completed ancestors visible while viewing a historical node",
+        "assertions": [
+          "expect(view.container.querySelectorAll('[data-research-main-node]')).toHaveLength(2)",
+          "expect(view.container.querySelector('[data-research-main-node=\"node-1\"]')).toBeTruthy()",
+          "expect(view.container.querySelector('[data-research-main-node=\"node-2\"]')).toBeTruthy()",
+          "expect(view.container.querySelector('[data-research-main-node=\"node-3\"]')).toBeNull()",
+          "expect(firstNode?.getAttribute('aria-expanded')).toBe('false')",
+          "expect(firstNode?.getAttribute('data-expanded')).toBe('false')",
+          "expect(content).toBeTruthy()",
+          "expect(contentNode?.getAttribute('aria-expanded')).toBe('true')",
+          "expect(contentNode?.getAttribute('aria-expanded')).toBe('false')",
+          "expect(contentNode?.getAttribute('data-expanded')).toBe('false')",
+          "expect(contentNode?.getAttribute('aria-expanded')).toBe('true')",
+          "expect(contentNode?.getAttribute('data-expanded')).toBe('true')"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-session-store.client.spec.tsx",
+        "name": "keeps every completed stage visible after the final plan is selected",
+        "assertions": [
+          "expect(view.container.querySelectorAll('[data-research-main-node]')).toHaveLength(4)",
+          "expect(view.getByText('paper summary')).toBeTruthy()",
+          "expect(view.getByText('research problem')).toBeTruthy()",
+          "expect(view.getByText('final plan')).toBeTruthy()"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-session-store.client.spec.tsx",
+        "name": "keeps every completed stage visible after the final plan is selected",
+        "assertions": [
+          "expect(view.container.querySelectorAll('[data-research-main-node]')).toHaveLength(4)",
+          "expect(view.getByText('paper summary')).toBeTruthy()",
+          "expect(view.getByText('research problem')).toBeTruthy()",
+          "expect(view.getByText('final plan')).toBeTruthy()"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-session-store.client.spec.tsx",
+        "name": "uses the research DAG branch action without opening a Conversation fork",
+        "assertions": [
+          "expect(continueFromNode).toHaveBeenCalledWith({ sessionId, expectedRevision: 1, nodeId: source.nodeId })"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-session-store.client.spec.tsx",
+        "name": "uses the research DAG branch action without opening a Conversation fork",
+        "assertions": [
+          "expect(continueFromNode).toHaveBeenCalledWith({ sessionId, expectedRevision: 1, nodeId: source.nodeId })"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-panel.client.spec.tsx",
+        "name": "shows and calls continueFromNode for the current branch tail",
+        "assertions": [
+          "expect(action.hasAttribute('disabled')).toBe(false)",
+          "expect(continueFromNode).toHaveBeenCalledWith({ sessionId, expectedRevision: 1, nodeId: state.selectedNodeId, })"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-panel.client.spec.tsx",
+        "name": "shows and calls continueFromNode for the current branch tail",
+        "assertions": [
+          "expect(action.hasAttribute('disabled')).toBe(false)",
+          "expect(continueFromNode).toHaveBeenCalledWith({ sessionId, expectedRevision: 1, nodeId: state.selectedNodeId, })"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-panel.client.spec.tsx",
+        "name": "shows and calls continueFromNode for historical and final-plan nodes",
+        "assertions": [
+          "expect(continueFromHistorical).toHaveBeenCalledWith({ sessionId: historicalSession, expectedRevision: 1, nodeId: historicalNodeId, })",
+          "expect(finalAction.hasAttribute('disabled')).toBe(false)",
+          "expect(continueFromFinal).toHaveBeenCalledWith({ sessionId: finalSession, expectedRevision: 1, nodeId: finalState.selectedNodeId, })"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-panel.client.spec.tsx",
+        "name": "shows and calls continueFromNode for historical and final-plan nodes",
+        "assertions": [
+          "expect(continueFromHistorical).toHaveBeenCalledWith({ sessionId: historicalSession, expectedRevision: 1, nodeId: historicalNodeId, })",
+          "expect(finalAction.hasAttribute('disabled')).toBe(false)",
+          "expect(continueFromFinal).toHaveBeenCalledWith({ sessionId: finalSession, expectedRevision: 1, nodeId: finalState.selectedNodeId, })"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-panel.client.spec.tsx",
+        "name": "keeps the action after a continue request fails",
+        "assertions": [
+          "expect(view.getByRole('alert').textContent).toContain(zh['research.error.stale'])",
+          "expect(view.getByRole('button', { name: zh['research.continue'] }).hasAttribute('disabled')).toBe(false)",
+          "expect(continueFromNode).toHaveBeenCalledOnce()"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-panel.client.spec.tsx",
+        "name": "keeps the action after a continue request fails",
+        "assertions": [
+          "expect(view.getByRole('alert').textContent).toContain(zh['research.error.stale'])",
+          "expect(view.getByRole('button', { name: zh['research.continue'] }).hasAttribute('disabled')).toBe(false)",
+          "expect(continueFromNode).toHaveBeenCalledOnce()"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-panel.client.spec.tsx",
+        "name": "disables simulation when the Host does not advertise an adapter",
+        "assertions": [
+          "expect(simulation.hasAttribute('disabled')).toBe(true)",
+          "expect(view.getByText(zh['research.simulationUnavailable'])).toBeTruthy()",
+          "expect(view.getByRole('button', { name: zh['research.plan'] }).hasAttribute('disabled')).toBe(false)"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-panel.client.spec.tsx",
+        "name": "disables simulation when the Host does not advertise an adapter",
+        "assertions": [
+          "expect(simulation.hasAttribute('disabled')).toBe(true)",
+          "expect(view.getByText(zh['research.simulationUnavailable'])).toBeTruthy()",
+          "expect(view.getByRole('button', { name: zh['research.plan'] }).hasAttribute('disabled')).toBe(false)"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-flow-canvas.client.spec.tsx",
+        "name": "lays out shared ancestors once and connects every dynamic branch",
+        "assertions": [
+          "expect(view.container.querySelectorAll('[data-research-node]')).toHaveLength(5)",
+          "expect(view.container.querySelectorAll('path')).toHaveLength(4)",
+          "expect(onSelectNode).toHaveBeenCalledWith('node-2')"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-flow-canvas.client.spec.tsx",
+        "name": "lays out shared ancestors once and connects every dynamic branch",
+        "assertions": [
+          "expect(view.container.querySelectorAll('[data-research-node]')).toHaveLength(5)",
+          "expect(view.container.querySelectorAll('path')).toHaveLength(4)",
+          "expect(onSelectNode).toHaveBeenCalledWith('node-2')"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-flow-canvas.client.spec.tsx",
+        "name": "keeps the branch root and hides descendants when a branch is collapsed",
+        "assertions": [
+          "expect(view.container.querySelector('[data-research-node=\"node-1\"]')).toBeTruthy()",
+          "expect(view.container.querySelector('[data-research-node=\"node-2\"]')).toBeNull()",
+          "expect(view.container.querySelector('[data-research-node=\"node-5\"]')).toBeNull()"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-flow-canvas.client.spec.tsx",
+        "name": "keeps the branch root and hides descendants when a branch is collapsed",
+        "assertions": [
+          "expect(view.container.querySelector('[data-research-node=\"node-1\"]')).toBeTruthy()",
+          "expect(view.container.querySelector('[data-research-node=\"node-2\"]')).toBeNull()",
+          "expect(view.container.querySelector('[data-research-node=\"node-5\"]')).toBeNull()"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-flow-canvas.client.spec.tsx",
+        "name": "pans the canvas without selecting a node",
+        "assertions": [
+          "expect(view.container.querySelector('[data-research-node=\"node-2\"]')).toBeTruthy()",
+          "expect(onSelectNode).not.toHaveBeenCalled()",
+          "expect(view.container.querySelector('[data-flow-canvas]')?.getAttribute('data-dragging')).toBe('false')"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-flow-canvas.client.spec.tsx",
+        "name": "pans the canvas without selecting a node",
+        "assertions": [
+          "expect(view.container.querySelector('[data-research-node=\"node-2\"]')).toBeTruthy()",
+          "expect(onSelectNode).not.toHaveBeenCalled()",
+          "expect(view.container.querySelector('[data-flow-canvas]')?.getAttribute('data-dragging')).toBe('false')"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-flow-canvas.client.spec.tsx",
+        "name": "keeps a node click intact until the drag threshold is crossed",
+        "assertions": [
+          "expect(setPointerCapture).not.toHaveBeenCalled()",
+          "expect(onSelectNode).toHaveBeenCalledWith('node-2')",
+          "expect(onSelectNode).toHaveBeenCalledWith('node-2')"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-flow-canvas.client.spec.tsx",
+        "name": "keeps a node click intact until the drag threshold is crossed",
+        "assertions": [
+          "expect(setPointerCapture).not.toHaveBeenCalled()",
+          "expect(onSelectNode).toHaveBeenCalledWith('node-2')",
+          "expect(onSelectNode).toHaveBeenCalledWith('node-2')"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-flow-canvas.client.spec.tsx",
+        "name": "moves a node and suppresses selection for a drag while keeping clicks selectable",
+        "assertions": [
+          "expect(node.style.left).not.toBe(originalLeft)",
+          "expect(onSelectNode).not.toHaveBeenCalled()",
+          "expect(window.localStorage.getItem('dsh:research-flow-layout:v1:test-node-drag')).toContain('node-2')",
+          "expect(onSelectNode).toHaveBeenCalledWith('node-2')"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-flow-canvas.client.spec.tsx",
+        "name": "moves a node and suppresses selection for a drag while keeping clicks selectable",
+        "assertions": [
+          "expect(node.style.left).not.toBe(originalLeft)",
+          "expect(onSelectNode).not.toHaveBeenCalled()",
+          "expect(window.localStorage.getItem('dsh:research-flow-layout:v1:test-node-drag')).toContain('node-2')",
+          "expect(onSelectNode).toHaveBeenCalledWith('node-2')"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-flow-canvas.client.spec.tsx",
+        "name": "restores automatic positions after a manual node move",
+        "assertions": [
+          "expect((view.container.querySelector('[data-research-node=\"node-2\"]') as HTMLElement).style.left).toBe(originalLeft)"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-flow-canvas.client.spec.tsx",
+        "name": "restores automatic positions after a manual node move",
+        "assertions": [
+          "expect((view.container.querySelector('[data-research-node=\"node-2\"]') as HTMLElement).style.left).toBe(originalLeft)"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-branch-list.client.spec.tsx",
+        "name": "renders parent-child rows from node relationships and keeps shared ancestors",
+        "assertions": [
+          "expect(view.container.querySelectorAll('[data-research-node]')).toHaveLength(5)",
+          "expect(view.container.querySelector('[data-research-node=\"node-3\"]')?.textContent).toContain('1.1.1')",
+          "expect(view.container.querySelector('[data-research-node=\"node-5\"]')?.textContent).toContain('1.1.1.2')"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-branch-list.client.spec.tsx",
+        "name": "renders parent-child rows from node relationships and keeps shared ancestors",
+        "assertions": [
+          "expect(view.container.querySelectorAll('[data-research-node]')).toHaveLength(5)",
+          "expect(view.container.querySelector('[data-research-node=\"node-3\"]')?.textContent).toContain('1.1.1')",
+          "expect(view.container.querySelector('[data-research-node=\"node-5\"]')?.textContent).toContain('1.1.1.2')"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-branch-list.client.spec.tsx",
+        "name": "supports independent collapse, search, status filtering, and node actions",
+        "assertions": [
+          "expect(view.container.querySelector('[data-research-node=\"node-4\"]')).toBeNull()",
+          "expect(view.container.querySelector('[data-research-node=\"node-5\"]')).toBeNull()",
+          "expect(view.container.querySelector('[data-research-node=\"node-3\"]')).toBeTruthy()",
+          "expect(view.container.querySelector('[data-research-node=\"node-4\"]')).toBeTruthy()",
+          "expect(view.container.querySelector('[data-research-node=\"node-5\"]')).toBeNull()",
+          "expect(onSelectNode).toHaveBeenCalledWith('node-4')",
+          "expect(onLocateNode).toHaveBeenCalledWith('node-5')",
+          "expect(state.nodes['node-5']?.status).toBe('active')"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-branch-list.client.spec.tsx",
+        "name": "supports independent collapse, search, status filtering, and node actions",
+        "assertions": [
+          "expect(view.container.querySelector('[data-research-node=\"node-4\"]')).toBeNull()",
+          "expect(view.container.querySelector('[data-research-node=\"node-5\"]')).toBeNull()",
+          "expect(view.container.querySelector('[data-research-node=\"node-3\"]')).toBeTruthy()",
+          "expect(view.container.querySelector('[data-research-node=\"node-4\"]')).toBeTruthy()",
+          "expect(view.container.querySelector('[data-research-node=\"node-5\"]')).toBeNull()",
+          "expect(onSelectNode).toHaveBeenCalledWith('node-4')",
+          "expect(onLocateNode).toHaveBeenCalledWith('node-5')",
+          "expect(state.nodes['node-5']?.status).toBe('active')"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-panel-styles.client.spec.ts",
+        "name": "lets the DockKit pane body measure the full workflow before scrolling",
+        "assertions": [
+          "expect(rootDeclarations()).toEqual(expect.arrayContaining([ 'flex: 0 0 auto', 'min-height: auto', 'height: auto', 'max-height: none', 'overflow: visible', ]))"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-panel-styles.client.spec.ts",
+        "name": "keeps the plugin panel scrollable inside the target sidebar",
+        "assertions": [
+          "expect(rootDeclarations()).toEqual(expect.arrayContaining([ 'flex: 1 1 auto', 'min-height: 0', 'height: 100%', 'max-height: none', 'overflow: auto', ]))"
+        ]
+      },
+      "status": "passed",
+      "note": "适配为插件面板自身滚动断言；不再证明旧 DockKit 内容测量策略。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-panel-styles.client.spec.ts",
+        "name": "makes only the research tab body content-sized so confirmation stays reachable",
+        "assertions": [
+          "expect(declarations(sidebarDeclarationText, \".tabBody[data-sidebar-right-tab-kind='research-workflow']\")).toEqual(expect.arrayContaining([ 'position: absolute', 'inset: 0', 'display: block', 'height: auto', 'min-height: 0', 'overflow-x: hidden', 'overflow-y: auto', 'overscroll-behavior: contain', ]))"
+        ]
+      },
+      "original014": null,
+      "candidate": null,
+      "status": "superseded-unverified",
+      "note": "旧核心 Sidebar/DockKit 样式不属于插件；目标窗口尺寸矩阵未验证。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-panel-styles.client.spec.ts",
+        "name": "gives tab bodies a definite vertical flex track inside DockKit",
+        "assertions": [
+          "expect(declarations(dockkitDeclarationText, '.tabHost')).toEqual(expect.arrayContaining([ 'display: flex', 'flex: 1 1 auto', 'flex-direction: column', 'min-height: 0', ]))",
+          "expect(declarations(dockkitDeclarationText, '.paneBody')).toEqual(expect.arrayContaining([ 'display: flex', 'flex-direction: column', 'min-height: 0', 'overflow: auto', ]))",
+          "expect(declarations(dockkitDeclarationText, '.floatBody')).toEqual(expect.arrayContaining([ 'position: relative', 'min-height: 0', 'overflow: auto', ]))"
+        ]
+      },
+      "original014": null,
+      "candidate": null,
+      "status": "superseded-unverified",
+      "note": "旧核心 Sidebar/DockKit 样式不属于插件；目标窗口尺寸矩阵未验证。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-panel-styles.client.spec.ts",
+        "name": "keeps the relationship view readable inside the narrow sidebar",
+        "assertions": [
+          "expect(declarations(declarationText, '.branchMap')).toEqual(expect.arrayContaining([ 'display: flex', 'max-height: 320px', 'overflow-x: hidden', 'overflow-y: auto', ]))",
+          "expect(declarations(declarationText, '.branchMapLane')).toEqual(expect.arrayContaining([ 'width: 100%', 'min-width: 0', 'border-radius: var(--dsw-radius-md)', 'background: var(--dsw-alias-bg-layer-1)', ]))",
+          "expect(declarations(declarationText, '.branchMapLaneSteps')).toEqual(expect.arrayContaining([ 'margin-left: 5px', 'padding-left: 8px', 'border-left: 0.5px solid var(--dsw-alias-border-l2)', ]))"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-panel-styles.client.spec.ts",
+        "name": "keeps the relationship view readable inside the narrow sidebar",
+        "assertions": [
+          "expect(declarations(declarationText, '.branchMap')).toEqual(expect.arrayContaining([ 'display: flex', 'max-height: 320px', 'overflow-x: hidden', 'overflow-y: auto', ]))",
+          "expect(declarations(declarationText, '.branchMapLane')).toEqual(expect.arrayContaining([ 'width: 100%', 'min-width: 0', 'border-radius: var(--dsw-radius-md)', 'background: var(--dsw-alias-bg-layer-1)', ]))",
+          "expect(declarations(declarationText, '.branchMapLaneSteps')).toEqual(expect.arrayContaining([ 'margin-left: 5px', 'padding-left: 8px', 'border-left: 0.5px solid var(--dsw-alias-border-l2)', ]))"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-panel-styles.client.spec.ts",
+        "name": "uses full-width step controls with a readable marker and copy column",
+        "assertions": [
+          "expect(declarations(declarationText, '.branchMapNode')).toEqual(expect.arrayContaining([ 'display: grid', 'grid-template-columns: 22px minmax(0, 1fr) auto', 'width: 100%', 'min-width: 0', ]))",
+          "expect(declarations(declarationText, '.branchMapNodeMarker')).toEqual(expect.arrayContaining([ 'width: 18px', 'height: 18px', 'border-radius: 50%', ]))"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-panel-styles.client.spec.ts",
+        "name": "uses full-width step controls with a readable marker and copy column",
+        "assertions": [
+          "expect(declarations(declarationText, '.branchMapNode')).toEqual(expect.arrayContaining([ 'display: grid', 'grid-template-columns: 22px minmax(0, 1fr) auto', 'width: 100%', 'min-width: 0', ]))",
+          "expect(declarations(declarationText, '.branchMapNodeMarker')).toEqual(expect.arrayContaining([ 'width: 18px', 'height: 18px', 'border-radius: 50%', ]))"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    },
+    {
+      "old": {
+        "file": "packages/client/ui-workflow-run/tests/research-panel-styles.client.spec.ts",
+        "name": "renders the alternate view as a connected node tree",
+        "assertions": [
+          "expect(declarations(declarationText, '.branchTreeCanvas')).toEqual(expect.arrayContaining([ 'display: flex', 'width: 100%', 'height: clamp(520px, 68vh, 760px)', 'min-height: 520px', 'overflow: auto', ]))",
+          "expect(declarations(declarationText, '.branchTreeSection')).toEqual(expect.arrayContaining([ 'min-height: 600px', ]))",
+          "expect(declarations(declarationText, '.branchTreeCanvas .branchTree')).toEqual(expect.arrayContaining([ 'display: flex', 'min-height: 100%', 'max-height: none', 'overflow: visible', ]))",
+          "expect(declarations(declarationText, '.branchTreeHeader')).toEqual(expect.arrayContaining([ 'display: grid', 'grid-template-columns: 24px minmax(0, 1fr) auto', 'width: 100%', 'min-width: 0', ]))",
+          "expect(declarations(declarationText, '.treeNode')).toEqual(expect.arrayContaining([ 'display: grid', 'grid-template-columns: 20px minmax(0, 1fr) auto', 'width: 100%', ]))",
+          "expect(declarations(declarationText, '.branchTreeChildren')).toEqual(expect.arrayContaining([ 'display: flex', 'flex-direction: row', ]))",
+          "expect(declarations(declarationText, '.branchTreeNodes')).toEqual(expect.arrayContaining([ 'display: flex', 'flex-direction: column', ]))",
+          "expect(declarations(declarationText, '.branchTreePathNode')).toEqual(expect.arrayContaining([ 'display: flex', 'flex-direction: column', 'align-items: center', ]))"
+        ]
+      },
+      "original014": null,
+      "candidate": {
+        "file": "tests/legacy-ui/research-panel-styles.client.spec.ts",
+        "name": "renders the alternate view as a connected node tree",
+        "assertions": [
+          "expect(declarations(declarationText, '.branchTreeCanvas')).toEqual(expect.arrayContaining([ 'display: flex', 'width: 100%', 'height: clamp(520px, 68vh, 760px)', 'min-height: 520px', 'overflow: auto', ]))",
+          "expect(declarations(declarationText, '.branchTreeSection')).toEqual(expect.arrayContaining([ 'min-height: 600px', ]))",
+          "expect(declarations(declarationText, '.branchTreeCanvas .branchTree')).toEqual(expect.arrayContaining([ 'display: flex', 'min-height: 100%', 'max-height: none', 'overflow: visible', ]))",
+          "expect(declarations(declarationText, '.branchTreeHeader')).toEqual(expect.arrayContaining([ 'display: grid', 'grid-template-columns: 24px minmax(0, 1fr) auto', 'width: 100%', 'min-width: 0', ]))",
+          "expect(declarations(declarationText, '.treeNode')).toEqual(expect.arrayContaining([ 'display: grid', 'grid-template-columns: 20px minmax(0, 1fr) auto', 'width: 100%', ]))",
+          "expect(declarations(declarationText, '.branchTreeChildren')).toEqual(expect.arrayContaining([ 'display: flex', 'flex-direction: row', ]))",
+          "expect(declarations(declarationText, '.branchTreeNodes')).toEqual(expect.arrayContaining([ 'display: flex', 'flex-direction: column', ]))",
+          "expect(declarations(declarationText, '.branchTreePathNode')).toEqual(expect.arrayContaining([ 'display: flex', 'flex-direction: column', 'align-items: center', ]))"
+        ]
+      },
+      "status": "passed",
+      "note": "恢复旧 UI 测试；宿主 primitives 为显式替身。"
+    }
+  ],
+  "added": [
+    {
+      "file": "tests/adapters.spec.ts",
+      "name": "persists an explicit data directory across controller disposal without opening the shared route",
+      "assertions": [
+        "expect(JSON.parse(bytes).tables.sessions.isolated.revision).toBe(1)",
+        "expect((await second.controller.read({sessionId:SessionId('isolated')})).revision).toBe(1)",
+        "expect(open).not.toHaveBeenCalled()"
+      ]
+    },
+    {
+      "file": "tests/adapters.spec.ts",
+      "name": "cancels a published activation once and observes teardown failures",
+      "assertions": [
+        "expect(run.dispose()).rejects.toBe(failure)",
+        "expect(dispose).toHaveBeenCalledOnce()",
+        "expect(runtime.startActivation.mock.calls[0]?.[0]).toMatchObject({delivery:'caller'})"
+      ]
+    },
+    {
+      "file": "tests/compatibility.spec.ts",
+      "name": "preserves the legacy v1 web alias and ancestors when parsing a durable row",
+      "assertions": [
+        "expect(researchDomain.version).toBe(1)",
+        "expect(researchDomain.tables.sessions.valueSchema.parse(row)).toEqual(row)"
+      ]
+    },
+    {
+      "file": "tests/controller.spec.ts",
+      "name": "F06 exports a shared artifact once and F12 preserves plans from two branches",
+      "assertions": [
+        "expect(files.get(firstPath)).toBe('# UNIQUE_PLAN')",
+        "expect.soft(manifest.match(/UNIQUE_PLAN/g)).toHaveLength(1)",
+        "expect(plans).toHaveLength(2)",
+        "expect(plans[0]).not.toBe(plans[1])",
+        "expect(files.get(firstPath)).toBe('# UNIQUE_PLAN')"
+      ]
+    },
+    {
+      "file": "tests/migration.spec.ts",
+      "name": "dry-runs, copies once, and rejects conflicting research state",
+      "assertions": [
+        "expect(migrateResearch(source,target).status).toBe('dry-run')",
+        "expect(fs.existsSync(target)).toBe(false)",
+        "expect(migrateResearch(source,target,{apply:true}).status).toBe('copied')",
+        "expect(migrateResearch(source,target,{apply:true}).status).toBe('unchanged')",
+        "expect(()=>migrateResearch(source,target,{apply:true})).toThrow('refusing')"
+      ]
+    },
+    {
+      "file": "tests/migration.spec.ts",
+      "name": "refuses non-research data before creating a destination",
+      "assertions": [
+        "expect(()=>migrateResearch(source,path.join(dir,'out'),{apply:true})).toThrow('Expected research')",
+        "expect(fs.existsSync(path.join(dir,'out'))).toBe(false)"
+      ]
+    },
+    {
+      "file": "tests/refresh.spec.ts",
+      "name": "F01/F08 refreshes a cached revision after a committed command fails during export",
+      "assertions": [
+        "expect(remote.read).toHaveBeenCalledOnce()",
+        "expect(researchSessionSnapshot(sessionId)?.revision).toBe(5)"
+      ]
+    },
+    {
+      "file": "tests/research-coordinator.spec.ts",
+      "name": "F03 retains candidate keywords in the actual bounded index URL with a long problem",
+      "assertions": [
+        "expect(urls).toHaveLength(1)",
+        "expect(new URL(urls[0]!).searchParams.get('search')).toContain('CANDIDATEXYZ')",
+        "expect(urls[0]!.length).toBeLessThan(1400)"
+      ]
+    },
+    {
+      "file": "tests/research-coordinator.spec.ts",
+      "name": "F05 records rejection on the old node and sends its reason to the next generator",
+      "assertions": [
+        "expect(state).toEqual(original)",
+        "expect(next.nodes[old]?.status).toBe('rejected')",
+        "expect(next.nodes[old]?.userDecision).toBe('reject')",
+        "expect(next.nodes[next.selectedNodeId]?.memorySnapshot.feedback).toContain('REJECTION_MARKER missing ablation')",
+        "expect(prompts[0]).toContain('REJECTION_MARKER')"
+      ]
+    },
+    {
+      "file": "tests/research-coordinator.spec.ts",
+      "name": "F07 reports inspected and total pages separately when PDF reading is capped",
+      "assertions": [
+        "expect(paper.pageCount).toBe(2)",
+        "expect(paper).toMatchObject({processedPageCount:1})",
+        "expect(paper.text).toContain('First inspected')",
+        "expect(paper.text).not.toContain('Second excluded')",
+        "expect(prompts[0]).toContain('Inspected pages: 1 / 2')",
+        "expect(result.artifact?.content).toContain('检查页数：1 / 2')"
+      ]
+    },
+    {
+      "file": "tests/research-coordinator.spec.ts",
+      "name": "F02 pending B selection overrides both creation A and the last A request for research and OCR",
+      "assertions": [
+        "expect(requests).toHaveLength(2)",
+        "expect(request.agentOptions).toEqual({provider:'fixture',model:'B',maxTokens:512})"
+      ]
+    },
+    {
+      "file": "tests/research-coordinator.spec.ts",
+      "name": "expands legacy web into five explicit indexes once without native search",
+      "assertions": [
+        "expect(nativeCalls).toBe(0)",
+        "expect(urls).toHaveLength(5)",
+        "expect(new Set(urls.map(url => new URL(url).hostname)).size).toBe(5)"
+      ]
+    },
+    {
+      "file": "tests/ui-regressions.spec.tsx",
+      "name": "F04 gives the owned branch root a badge and keeps it when collapsed",
+      "assertions": [
+        "expect(node?.textContent).toContain('回溯 1')",
+        "expect(node?.querySelector('[aria-label=\"collapse\"]')).toBeTruthy()",
+        "expect(view.container.querySelector(`[data-research-node=\"${root}\"]`)).toBeTruthy()",
+        "expect(view.container.querySelector(`[data-research-node=\"${s.selectedNodeId}\"]`)).toBeNull()"
+      ]
+    },
+    {
+      "file": "tests/ui-regressions.spec.tsx",
+      "name": "F06 renders inherited artifact text only once while keeping the continuation node",
+      "assertions": [
+        "expect(view.container.querySelectorAll('[data-research-main-node]')).toHaveLength(3)",
+        "expect(view.getAllByText('UNIQUE_ARTIFACT_TEXT')).toHaveLength(1)"
+      ]
+    },
+    {
+      "file": "tests/ui-regressions.spec.tsx",
+      "name": "F08 shows branch selection failure without hiding existing branches",
+      "assertions": [
+        "expect(await view.findByRole('alert')).toBeTruthy()",
+        "expect(view.getByRole('combobox')).toBeTruthy()"
+      ]
+    },
+    {
+      "file": "tests/ui-regressions.spec.tsx",
+      "name": "F08 reloads the authoritative revision on remount and window focus",
+      "assertions": [
+        "expect(first.getByTestId('revision').textContent).toBe('1')",
+        "expect(second.getByTestId('revision').textContent).toBe('2')",
+        "expect(second.getByTestId('revision').textContent).toBe('3')",
+        "expect(remote.read).toHaveBeenCalledTimes(3)"
+      ]
+    },
+    {
+      "file": "tests/legacy-ui/research-panel.client.spec.tsx",
+      "name": "F01 refreshes the committed revision after export failure and permits the next command",
+      "assertions": [
+        "expect(button.hasAttribute('disabled')).toBe(false)",
+        "expect(command).toHaveBeenLastCalledWith({sessionId,expectedRevision:2,nodeId:state.selectedNodeId})"
+      ]
+    }
+  ]
+}
