@@ -191,6 +191,8 @@ describe('ResearchPanel branch action', () => {
     const continueFromNode = vi.fn(async () => commandResult(sessionId, 2, state))
     const { view } = renderPanel(sessionId, state, continueFromNode)
 
+    fireEvent.click(view.getByRole('tab', { name: zh['research.navDetails'] }))
+
     const action = await view.findByRole('button', { name: zh['research.continue'] })
     expect(action.hasAttribute('disabled')).toBe(false)
     fireEvent.click(action)
@@ -210,6 +212,7 @@ describe('ResearchPanel branch action', () => {
     const historicalState = { ...historical, selectedNodeId: historicalNodeId }
     const continueFromHistorical = vi.fn(async () => commandResult(historicalSession, 2, historicalState))
     const historicalView = renderPanel(historicalSession, historicalState, continueFromHistorical).view
+    fireEvent.click(historicalView.getByRole('tab', { name: zh['research.navDetails'] }))
     const historicalAction = await historicalView.findByRole('button', { name: zh['research.continue'] })
     fireEvent.click(historicalAction)
     await waitFor(() => {
@@ -225,6 +228,7 @@ describe('ResearchPanel branch action', () => {
     const finalState = panelState('final-plan')
     const continueFromFinal = vi.fn(async () => commandResult(finalSession, 2, finalState))
     const finalView = renderPanel(finalSession, finalState, continueFromFinal).view
+    fireEvent.click(finalView.getByRole('tab', { name: zh['research.navDetails'] }))
     const finalAction = await finalView.findByRole('button', { name: zh['research.continue'] })
     expect(finalAction.hasAttribute('disabled')).toBe(false)
     fireEvent.click(finalAction)
@@ -243,6 +247,7 @@ describe('ResearchPanel branch action', () => {
     const failure = new RemoteError('research/stale', 'stale research state', { expected: 1, actual: 2 })
     const continueFromNode = vi.fn(async (): Promise<RemoteResult<ResearchCommandValue>> => ({ ok: false, error: failure }))
     const { view } = renderPanel(sessionId, state, continueFromNode)
+    fireEvent.click(view.getByRole('tab', { name: zh['research.navDetails'] }))
     const action = await view.findByRole('button', { name: zh['research.continue'] })
     fireEvent.click(action)
     await waitFor(() => {
@@ -272,10 +277,53 @@ it('F01 refreshes the committed revision after export failure and permits the ne
  const remote=researchRemote(sessionId,state,command)
  remote.read=vi.fn(async()=>({ok:true as const,value:{sessionId,revision,state}}))
  const view=render(<ResearchPanel {...standard} sessionId={sessionId} useTabInfo={useTabInfo} research={remote} fileUpload={fileUpload} t={makeTranslate(zh)}/> )
+ fireEvent.click(view.getByRole('tab', { name: zh['research.navDetails'] }))
  const button=await view.findByRole('button',{name:zh['research.continue']})
  fireEvent.click(button)
  await view.findByRole('alert')
  await waitFor(()=>expect(button.hasAttribute('disabled')).toBe(false))
  fireEvent.click(button)
  await waitFor(()=>expect(command).toHaveBeenLastCalledWith({sessionId,expectedRevision:2,nodeId:state.selectedNodeId}))
+})
+
+it('cancels an active research request through its actual signal and allows another operation', async () => {
+  const sessionId=SessionId('panel-explicit-cancel'),state=panelState()
+  const remote=researchRemote(sessionId,state,async()=>commandResult(sessionId,2,state))
+  let captured: AbortSignal | undefined
+  remote.confirm=vi.fn(async(_request,signal)=>{
+    captured=signal
+    return new Promise((_resolve,reject)=>signal?.addEventListener('abort',()=>reject(signal.reason),{once:true}))
+  })
+  const view=render(<ResearchPanel {...standard} sessionId={sessionId} useTabInfo={useTabInfo} research={remote} fileUpload={fileUpload} t={makeTranslate(zh)}/> )
+  fireEvent.click(await view.findByRole('button',{name:zh['research.confirm']}))
+  fireEvent.click(await view.findByRole('button',{name:'取消当前科研任务'}))
+  expect(captured?.aborted).toBe(true)
+  await waitFor(()=>expect(view.container.querySelector('[data-research-panel]')?.getAttribute('aria-busy')).toBe('false'))
+  expect(view.queryByRole('button',{name:'取消当前科研任务'})).toBeNull()
+  fireEvent.click(view.getByRole('button',{name:zh['research.confirm']}))
+  await waitFor(()=>expect(remote.confirm).toHaveBeenCalledTimes(2))
+  fireEvent.click(await view.findByRole('button',{name:'取消当前科研任务'}))
+})
+
+it('shows exactly one research view and supports keyboard tab switching', async () => {
+  const sessionId = SessionId('independent-research-tabs')
+  const state = panelState()
+  const { view } = renderPanel(sessionId, state, async () => commandResult(sessionId, 2, state))
+  const content = view.getByRole('tab', { name: zh['research.navContent'] })
+  const branches = view.getByRole('tab', { name: zh['research.navBranches'] })
+  const details = view.getByRole('tab', { name: zh['research.navDetails'] })
+  await waitFor(() => expect(view.container.querySelector('[data-research-panel]')?.getAttribute('aria-busy')).toBe('false'))
+  expect(view.getAllByRole('tabpanel')).toHaveLength(1)
+  expect(view.getByRole('tabpanel').getAttribute('data-research-view-panel')).toBe('content')
+  fireEvent.click(branches)
+  expect(view.getAllByRole('tabpanel')).toHaveLength(1)
+  expect(view.getByRole('tabpanel').getAttribute('data-research-view-panel')).toBe('branches')
+  expect(content.getAttribute('aria-selected')).toBe('false')
+  fireEvent.keyDown(branches, { key: 'ArrowRight' })
+  expect(details.getAttribute('aria-selected')).toBe('true')
+  expect(view.getByRole('tabpanel').getAttribute('data-research-view-panel')).toBe('details')
+  expect(document.activeElement).toBe(details)
+  fireEvent.click(view.getByRole('button', { name: zh['research.viewFullContent'] }))
+  expect(content.getAttribute('aria-selected')).toBe('true')
+  expect(view.getAllByRole('tabpanel')).toHaveLength(1)
 })

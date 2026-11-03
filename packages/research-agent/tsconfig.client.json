@@ -2,7 +2,12 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "src",
-    "declaration": true
+    "declaration": true,
+    "types": [
+      "node",
+      "react",
+      "vite/client"
+    ]
   },
   "files": [
     "src/client/index.ts",

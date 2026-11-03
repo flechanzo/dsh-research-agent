@@ -76,7 +76,7 @@ describe('ResearchPanel Sidebar layout', () => {
       'overflow: auto',
     ]))
     expect(declarations(declarationText, '.branchTreeSection')).toEqual(expect.arrayContaining([
-      'min-height: 600px',
+      'min-height: 260px',
     ]))
     expect(declarations(declarationText, '.branchTreeCanvas .branchTree')).toEqual(expect.arrayContaining([
       'display: flex',

@@ -1,3 +1,5 @@
+import type {} from '@deepseek-ai/dsh-api-workspace-controller/remote'
+import type {} from '@deepseek-ai/dsh-api-session-controller/remote'
 import { TYPERT_REMOTE } from '../../lib/typert.remote-client.js'
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 /** Native sidebar and session-header integration for automatic research. */

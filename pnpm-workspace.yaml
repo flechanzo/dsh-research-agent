@@ -2,3 +2,13 @@ packages:
   - 'packages/research-agent'
 autoInstallPeers: true
 nodeLinker: hoisted
+
+supportedArchitectures:
+  os:
+    - current
+  cpu:
+    - current
+
+# Office runtime is supplied by Desktop; the development SDK only needs its declarations.
+ignoredOptionalDependencies:
+  - '@deepseek-ai/libreoffice-kit-wasm'

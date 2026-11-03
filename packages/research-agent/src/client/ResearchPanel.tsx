@@ -1,6 +1,8 @@
+import { ShadowAuditView } from './ShadowAuditView.tsx'
+import { TargetTaskEditor, type ConfirmableTarget } from './TargetTaskEditor.tsx'
 import { ResearchTranscriptMain } from './ResearchTranscriptMain.tsx'
 import { ResearchBranchSelector } from './ResearchBranchSelector.tsx'
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactNode } from 'react'
+import { useEffect, useId, useMemo, useRef, useState, type ChangeEvent, type ReactNode } from 'react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import {
   IconBranchOutlineRegular,
@@ -176,8 +178,13 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
   const state = snapshot?.state
   const revision = snapshot?.revision ?? 0
   const loading = snapshot === undefined && loadFailure === undefined
+  const viewId = useId()
+  const [activeView, setActiveView] = useState<'content' | 'branches' | 'details'>('content')
   const [busy, setBusy] = useState(false)
+  const operationRef = useRef<AbortController>()
   const [error, setError] = useState<string>()
+  const [targetDraft, setTargetDraft] = useState<ConfirmableTarget>()
+  const [syncMessage, setSyncMessage] = useState<string>()
   const [feedback, setFeedback] = useState('')
   const [branchView, setBranchView] = useState<'list' | 'map'>('map')
   const [treeCollapsed, setTreeCollapsed] = useState<ReadonlySet<string>>(new Set())
@@ -188,7 +195,10 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
   const [directionFocuses, setDirectionFocuses] = useState<readonly ResearchDirectionFocusId[]>(['method', 'data', 'theory', 'efficiency', 'application'])
   const [reviewers, setReviewers] = useState<readonly string[]>(REVIEWER_ROLES.map(item => item.role))
   const simulationAvailable = snapshot?.simulationAvailable === true
+  const panelRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  useEffect(() => { setActiveView('content') }, [workflowSessionId])
+  useEffect(() => { if (panelRef.current !== null) panelRef.current.scrollTop = 0 }, [activeView])
   const defaultBranch = t('research.defaultBranch')
   const initialState = useMemo(() => initialResearchState(defaultBranch), [defaultBranch])
   const displayState = state ?? initialState
@@ -218,21 +228,9 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
     ? t('research.emptyArtifact')
     : summaryText(artifact.content)
 
-  const focusResearchContent = (): void => {
-    if (typeof document === 'undefined') return
-    const target = [...document.querySelectorAll<HTMLElement>('[data-research-main-node]')]
-      .find(element => element.dataset.researchMainNode === selected.nodeId)
-    if (target !== undefined && typeof target.scrollIntoView === 'function') {
-      target.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
-  }
-
+  const focusResearchContent = (): void => { setActiveView('content') }
   const focusSection = (selector: string): void => {
-    if (typeof document === 'undefined') return
-    const target = document.querySelector<HTMLElement>(selector)
-    if (target !== null && typeof target.scrollIntoView === 'function') {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
+    setActiveView(selector === '[data-research-branch-section]' ? 'branches' : 'details')
   }
 
   const toggleTreeBranch = (branchId: string): void => {
@@ -265,12 +263,23 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
     selected.memorySnapshot.directionFocuses,
   ])
 
-  const execute = async (operation: () => Promise<RemoteResult<ResearchCommandValue>>): Promise<ResearchCommandValue | undefined> => {
-    if (busy) return undefined
+  const execute = async (
+    operation: (signal: AbortSignal) => Promise<RemoteResult<ResearchCommandValue>>,
+  ): Promise<ResearchCommandValue | undefined> => {
+    if (operationRef.current !== undefined) return undefined
+    const controller = new AbortController()
+    operationRef.current = controller
+    const signal = AbortSignal.any([tab.signal, controller.signal])
+    const cancelHost = (): void => {
+      if (typeof research.cancel === 'function') {
+        void research.cancel({ sessionId: workflowSessionId, expectedRevision: revision }).catch(() => undefined)
+      }
+    }
+    signal.addEventListener('abort', cancelHost, { once: true })
     setBusy(true)
     setError(undefined)
     try {
-      const result = await operation()
+      const result = await operation(signal)
       if (!result.ok) {
         setError(failureText(result.error, t))
         await loadResearchSession(research, workflowSessionId)
@@ -287,6 +296,8 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
       await loadResearchSession(research, workflowSessionId)
       return undefined
     } finally {
+      signal.removeEventListener('abort', cancelHost)
+      operationRef.current = undefined
       setBusy(false)
     }
   }
@@ -295,10 +306,10 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
     const files = [...(event.target.files ?? [])]
     if (files.length === 0) return
     event.target.value = ''
-    void execute(async () => {
+    void execute(async (signal) => {
       const papers = []
       for (const file of files) {
-        const uploaded = await fileUpload.upload(workflowSessionId, file, file.name, tab.signal)
+        const uploaded = await fileUpload.upload(workflowSessionId, file, file.name, signal)
         if (!uploaded.ok) return uploaded
         papers.push(uploaded.value.file)
       }
@@ -307,18 +318,20 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
         expectedRevision: revision,
         papers,
         ...(selected.stage === 'literature-search' || selected.stage === 'targeted-literature-search' ? { supplemental: true } : {}),
-      }, tab.signal)
+      }, signal)
     })
   }
 
   const confirm = (): void => {
-    void execute(() => research.confirm({
+    if (selected.stage === 'literature-search' && targetDraft?.confirmed !== true && selected.memorySnapshot.targetTask === undefined) { setError('请编辑并确认目标任务'); return }
+    void execute(signal => research.confirm({
       sessionId: workflowSessionId, expectedRevision: revision,
+      ...(selected.stage === 'literature-search' && targetDraft?.confirmed === true ? { targetTask: targetDraft.proposal.fields, targetTaskContextDigest: targetDraft.proposal.contextDigest } : {}),
       ...(selected.stage === 'targeted-literature-search' ? { reviewerRoles: reviewers } : {}),
       ...(selected.stage === 'problem-summary' ? { directionWeights, literatureSources } : {}),
       ...(selected.stage === 'problem-summary' ? { directionFocuses } : {}),
       ...(selected.stage === 'simulation-or-final-plan' ? { finalChoice: choice } : {}),
-    }, tab.signal))
+    }, signal))
   }
 
   const submitFeedback = (): void => {
@@ -329,10 +342,10 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
   }
 
   const reject = (): void => {
-    void execute(() => research.reject({
+    void execute(signal => research.reject({
       sessionId: workflowSessionId, expectedRevision: revision,
       ...(feedback.trim() === '' ? {} : { reason: feedback }),
-    }, tab.signal))
+    }, signal))
   }
 
   const selectBranch = (branchId: string): void => {
@@ -356,11 +369,14 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
 
   return (
     <div
+      ref={panelRef}
       className={css.root}
       data-research-panel
+      data-research-view={activeView}
       data-tab-id={tab.id}
       data-research-selected-node={selected.nodeId}
       data-research-active-branch={displayState.activeBranchId}
+      data-research-revision={revision}
       data-research-branch-view={branchView}
       aria-busy={loading || busy}
     >
@@ -383,10 +399,48 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
         <span className={css.statusBannerText}>{loading ? t('research.loadingHint') : t('research.currentPath', { path: nodeLineage(displayState, selected.nodeId).map(node => stageText(node.stage, t)).join(' › ') })}</span>
       </div>
       {error !== undefined && <div className={css.statusError} role="alert">{error}</div>}
-      <nav className={css.workspaceNav} aria-label={t('research.workspaceNav')}>
-        <button type="button" className={css.workspaceNavButton} onClick={() => { focusResearchContent() }}>{t('research.navContent')}</button>
-        <button type="button" className={css.workspaceNavButton} onClick={() => { focusSection('[data-research-branch-section]') }}>{t('research.navBranches')}</button>
-        <button type="button" className={css.workspaceNavButton} onClick={() => { focusSection(`[data-research-node-detail="${selected.nodeId}"]`) }}>{t('research.navDetails')}</button>
+      {syncMessage !== undefined && <div className={css.successNotice} role="status">{syncMessage}</div>}
+      {snapshot !== undefined && revision > 0 && <button type="button" className={css.syncButton} disabled={busy} onClick={() => {
+        setSyncMessage(undefined)
+        void execute(() => research.resyncProject({ sessionId: workflowSessionId, expectedRevision: revision })).then((result) => {
+          if (result !== undefined) setSyncMessage('科研文件已同步')
+        })
+      }}>重新同步科研文件</button>}
+      <nav
+        className={css.workspaceNav}
+        role="tablist"
+        aria-label={t('research.workspaceNav')}
+        onKeyDown={(event) => {
+          const views = ['content', 'branches', 'details'] as const
+          const index = views.indexOf(activeView)
+          const nextIndex = event.key === 'ArrowRight' ? (index + 1) % views.length
+            : event.key === 'ArrowLeft' ? (index + views.length - 1) % views.length
+              : event.key === 'Home' ? 0 : event.key === 'End' ? views.length - 1 : undefined
+          if (nextIndex === undefined) return
+          const next = views[nextIndex]
+          if (next === undefined) return
+          event.preventDefault()
+          setActiveView(next)
+          event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIndex]?.focus()
+        }}
+      >
+        {([
+          ['content', 'research.navContent'],
+          ['branches', 'research.navBranches'],
+          ['details', 'research.navDetails'],
+        ] as const).map(([view, label]) => (
+          <button
+            key={view}
+            type="button"
+            role="tab"
+            id={viewId + '-tab-' + view}
+            aria-controls={viewId + '-panel-' + view}
+            aria-selected={activeView === view}
+            tabIndex={activeView === view ? 0 : -1}
+            className={css.workspaceNavButton}
+            onClick={() => { setActiveView(view) }}
+          >{t(label)}</button>
+        ))}
       </nav>
       <div className={css.stagePath} aria-label={t('research.currentPath', { path: '' })}>
         {nodeLineage(displayState, selected.nodeId).map((node, index, path) => (
@@ -410,6 +464,12 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
           <span className={css.actionDockHint}>{busy ? t('research.workingHint') : stageText(selected.stage, t)}</span>
         </div>
         <div className={css.actionDockButtons}>
+          {busy && <button type="button" className={css.dangerButton} onClick={() => {
+            if (typeof research.cancel === 'function') {
+              void research.cancel({ sessionId: workflowSessionId, expectedRevision: revision })
+                .catch(() => { setError(t('research.error.request')) })
+            } else operationRef.current?.abort(new Error('科研任务已由用户取消'))
+          }}>取消当前科研任务</button>}
           {isUploadStage && (
             <button type="button" className={css.primaryButton} disabled={busy || loading} onClick={() => { inputRef.current?.click() }}>
               {selected.stage === 'paper-upload' ? t('research.upload') : t('research.uploadSupplemental')}
@@ -431,270 +491,280 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
           )}
         </div>
       </div>
-      <ResearchBranchSelector sessionId={sessionId} viewId="chat" research={research} t={t} />
-      <ResearchTranscriptMain sessionId={sessionId} research={research} t={t} />
-
-      <section data-research-branch-section className={branchView === 'list' ? `${css.section} ${css.branchTreeSection}` : css.section}>
-        <div className={css.sectionHeader}>
-          <div>
-            <div className={css.sectionTitle}>{t('research.branch')}</div>
-            <div className={css.sectionHint}>{t('research.history')}</div>
-          </div>
-          <div className={css.sectionTools}>
-            <div className={css.viewToggle} role="group" aria-label={t('research.branchView')}>
-              <Tooltip label={t('research.branchMap')} side="bottom" delayMs={400}>
-                <button
-                  type="button"
-                  className={branchView === 'map' ? `${css.viewToggleButton} ${css.viewToggleButtonActive}` : css.viewToggleButton}
-                  onClick={() => { setBranchView('map') }}
-                  aria-label={t('research.branchMap')}
-                  aria-pressed={branchView === 'map'}
-                >
-                  <IconWorkspaceTreeOutlineRegular size={13} />
-                  <span className={css.viewToggleLabel}>{t('research.branchMap')}</span>
-                </button>
-              </Tooltip>
-              <Tooltip label={t('research.branchList')} side="bottom" delayMs={400}>
-                <button
-                  type="button"
-                  className={branchView === 'list' ? `${css.viewToggleButton} ${css.viewToggleButtonActive}` : css.viewToggleButton}
-                  onClick={() => { setBranchView('list') }}
-                  aria-label={t('research.branchList')}
-                  aria-pressed={branchView === 'list'}
-                >
-                  <IconFlatListOutlineRegular size={13} />
-                  <span className={css.viewToggleLabel}>{t('research.branchList')}</span>
-                </button>
-              </Tooltip>
-            </div>
-            <span className={css.sectionBadge}>{allBranches.length}</span>
-          </div>
-        </div>
-        {branchView === 'map' ? (
-          <ResearchFlowCanvas
-            state={displayState}
-            selectedNodeId={displayState.selectedNodeId}
-            activeBranchId={displayState.activeBranchId}
-            stageText={stage => stageText(stage, t)}
-            statusText={status => statusText(status, t)}
-            emptyArtifact={t('research.emptyArtifact')}
-            currentLabel={t('research.current')}
-            nodeCountLabel={count => t(count === 1 ? 'research.node.one' : 'research.node.other', { count })}
-            branchViewLabel={t('research.branchMap')}
-            expandLabel={t('research.expand')}
-            collapseLabel={t('research.collapse')}
-            zoomInLabel={t('research.zoomIn')}
-            zoomOutLabel={t('research.zoomOut')}
-            fitViewLabel={t('research.fitView')}
-            restoreLayoutLabel={t('research.restoreLayout')}
-            layoutScope={String(workflowSessionId)}
-            collapsedBranchIds={treeCollapsed}
-            onToggleBranch={toggleTreeBranch}
-            onSelectNode={selectNode}
-            onSelectBranch={selectBranch}
-            onExpandAll={() => { setTreeCollapsed(new Set()) }}
-            onCollapseAll={() => { setTreeCollapsed(new Set(allBranches.map(item => item.branchId))) }}
-            disabled={busy}
-          />
-        ) : (
-          <ResearchBranchList
-            state={displayState}
-            selectedNodeId={displayState.selectedNodeId}
-            stageText={stage => stageText(stage, t)}
-            statusText={status => statusText(status, t)}
-            emptyArtifact={t('research.emptyArtifact')}
-            t={t}
-            onSelectNode={selectNode}
-            onLocateNode={(nodeId) => {
-              selectNode(nodeId)
-              setBranchView('map')
-            }}
-            collapsedNodeIds={listCollapsed}
-            onCollapsedNodeIdsChange={setListCollapsed}
-            disabled={busy}
-          />
-        )}
-      </section>
-
-      <section className={css.section}>
-        <div className={css.sectionHeader}>
-          <div className={css.sectionTitle}>{t('research.history')}</div>
-          <span className={css.sectionHint}>{stageText(selected.stage, t)}</span>
-        </div>
-        <div className={css.timeline} aria-label={t('research.history')}>
-          {branchNodes.map(node => (
-            <button
-              key={node.nodeId}
-              type="button"
-              className={node.nodeId === displayState.selectedNodeId ? `${css.node} ${css.nodeSelected}` : css.node}
-              onClick={() => { selectNode(node.nodeId) }}
-              disabled={busy || node.nodeId === displayState.selectedNodeId}
-              data-research-node={node.nodeId}
-            >
-              <span className={css.nodeStage}>{stageText(node.stage, t)}</span>
-              <span className={css.nodeStatus}>{statusText(node.status, t)}</span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section className={css.card} data-research-node-detail={selected.nodeId}>
-        <div className={css.cardHeader}>
-          <div className={css.cardIdentity}>
-            <div className={css.cardKicker}>{t('research.nodeDetails')}</div>
-            <div className={css.cardTitle}>{artifact?.title ?? stageText(selected.stage, t)}</div>
-          </div>
-          <span className={css.statusPill} data-status={selected.status}>{statusText(selected.status, t)}</span>
-        </div>
-        <div className={css.detailActions}>
-          <button type="button" className={css.button} disabled={busy} onClick={focusResearchContent}>
-            {t('research.viewFullContent')}
-          </button>
-          <button
-            type="button"
-            className={css.button}
-            disabled={busy || loading || loadFailure !== undefined}
-            onClick={() => { continueFromNode(selected.nodeId) }}
-          >
-            {t('research.continue')}
-          </button>
-        </div>
-        <section className={css.detailGroup} aria-label={t('research.nodeInfo')}>
-          <div className={css.subtle}>{t('research.nodeInfo')}</div>
-          <dl className={css.detailGrid}>
-            <div className={css.detailItem}><dt>{t('research.nodeId')}</dt><dd>{selected.nodeId}</dd></div>
-            <div className={css.detailItem}><dt>{t('research.planLabel')}</dt><dd>{displayState.branches[selected.branchId]?.label ?? selected.branchId}</dd></div>
-            <div className={css.detailItem}><dt>{t('research.stageType')}</dt><dd>{stageText(selected.stage, t)}</dd></div>
-            <div className={css.detailItem}><dt>{t('research.parentNode')}</dt><dd>{parentNode === undefined ? '—' : parentNode.nodeId}</dd></div>
-            <div className={css.detailItem}><dt>{t('research.childNodes')}</dt><dd>{childCount}</dd></div>
-            <div className={css.detailItem}><dt>{t('research.artifactCount')}</dt><dd>{selected.artifactRefs.length}</dd></div>
-          </dl>
-        </section>
-        <section className={css.detailGroup} aria-label={t('research.contentSummary')}>
-          <div className={css.subtle}>{t('research.contentSummary')}</div>
-          <p className={css.detailSummary}>{contentSummary}</p>
-          {artifact?.source !== undefined && <div className={css.detailMeta}>{t('research.source')}: {artifact.source}</div>}
-          {artifact !== undefined && <div className={css.detailMeta}>{t('research.createdAt')}: {new Date(artifact.createdAt).toLocaleString()}</div>}
-        </section>
-        {(selected.userDecision !== undefined || selected.userNote !== undefined) && (
-          <section className={css.detailGroup} aria-label={t('research.executionInfo')}>
-            <div className={css.subtle}>{t('research.executionInfo')}</div>
-            {selected.userDecision !== undefined && <div className={css.detailMeta}>{t('research.decision')}: {decisionText(selected.userDecision, t)}</div>}
-            {selected.userNote !== undefined && <p className={css.detailSummary}>{selected.userNote}</p>}
-          </section>
-        )}
-        {artifact?.evaluation !== undefined && (
-          <section className={css.detailGroup} aria-label={t('research.evaluationSummary')}>
-            <div className={css.subtle}>{t('research.evaluationSummary')}</div>
-            <div className={artifact.evaluation.overlap || artifact.evaluation.score < artifact.evaluation.threshold
-              ? css.notice
-              : css.successNotice}>
-              {t('research.evaluation', { score: artifact.evaluation.score, threshold: artifact.evaluation.threshold })}
-              {' '}{artifact.evaluation.overlap ? t('research.overlap') : t('research.noOverlap')}
-              <div>{summaryText(artifact.evaluation.rationale, 180)}</div>
-            </div>
-          </section>
-        )}
-        {artifact?.kind === 'plan' && artifact.source !== undefined && (
-          <div className={css.successNotice}>{t('research.planWritten', { path: artifact.source })}</div>
-        )}
-        {artifact?.kind === 'plan' && artifact.source === undefined && (
-          <div className={css.notice}>{t('research.planPreview')}</div>
-        )}
-        {canMutate && selected.stage === 'problem-summary' && (
-          <div className={css.directionControls}>
-            <div className={css.subtle}>{t('research.directionTitle')}</div>
-            {([
-              ['novelty', 'research.direction.novelty'],
-              ['impact', 'research.direction.impact'],
-              ['feasibility', 'research.direction.feasibility'],
-              ['reproducibility', 'research.direction.reproducibility'],
-            ] as const).map(([key, labelKey]) => (
-              <label key={key} className={css.weightRow}>
-                <span>{t(labelKey)}</span>
-                <input type="range" min="0" max="100" step="1" value={directionWeights[key]} aria-label={t(labelKey)} onChange={(event) => { setDirectionWeights(current => ({ ...current, [key]: Number(event.target.value) })) }} />
-                <output>{directionWeights[key]}</output>
-              </label>
-            ))}
-            <div className={css.subtle}>{t('research.directionFocuses')}</div>
-            <div className={css.reviewerRow}>
+      <div className={css.viewPanel} role="tabpanel" id={viewId + '-panel-content'} aria-labelledby={viewId + '-tab-content'} hidden={activeView !== 'content'} tabIndex={0} data-research-view-panel="content">
+        <div className={css.checkpointControls}>
+          {artifact?.kind === 'plan' && artifact.source !== undefined && (
+            <div className={css.successNotice}>{t('research.planWritten', { path: artifact.source })}</div>
+          )}
+          {artifact?.kind === 'plan' && artifact.source === undefined && (
+            <div className={css.notice}>{t('research.planPreview')}</div>
+          )}
+          {canMutate && selected.stage === 'problem-summary' && (
+            <div className={css.directionControls}>
+              <div className={css.subtle}>{t('research.directionTitle')}</div>
               {([
-                ['method', 'research.focus.method'],
-                ['data', 'research.focus.data'],
-                ['theory', 'research.focus.theory'],
-                ['efficiency', 'research.focus.efficiency'],
-                ['application', 'research.focus.application'],
-              ] as const).map(([focus, labelKey]) => (
-                <label key={focus} className={css.reviewer}>
-                  <input
-                    type="checkbox"
-                    checked={directionFocuses.includes(focus)}
-                    onChange={(event) => {
-                      setDirectionFocuses(current => event.target.checked
-                        ? [...new Set([...current, focus])]
-                        : current.filter(item => item !== focus))
-                    }}
-                  />
-                  {t(labelKey)}
+                ['novelty', 'research.direction.novelty'],
+                ['impact', 'research.direction.impact'],
+                ['feasibility', 'research.direction.feasibility'],
+                ['reproducibility', 'research.direction.reproducibility'],
+              ] as const).map(([key, labelKey]) => (
+                <label key={key} className={css.weightRow}>
+                  <span>{t(labelKey)}</span>
+                  <input type="range" min="0" max="100" step="1" value={directionWeights[key]} aria-label={t(labelKey)} onChange={(event) => { setDirectionWeights(current => ({ ...current, [key]: Number(event.target.value) })) }} />
+                  <output>{directionWeights[key]}</output>
                 </label>
               ))}
-            </div>
-            <div className={css.subtle}>{t('research.literatureSources')}</div>
-            <div className={css.reviewerRow}>
-              {([
-                ['arxiv', 'research.source.arxiv'],
-                ['openreview', 'research.source.openreview'],
-                ['semantic-scholar', 'research.source.semanticScholar'],
-                ['acl-anthology', 'research.source.aclAnthology'],
-                ['openalex', 'research.source.openAlex'],
-              ] as const).map(([source, labelKey]) => (
-                <label key={source} className={css.reviewer}>
-                  <input type="checkbox" checked={literatureSources.includes(source)} onChange={(event) => { setLiteratureSources(current => event.target.checked ? [...new Set([...current, source])] : current.filter(item => item !== source)) }} />
-                  {t(labelKey)}
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
-        {(selected.stage === 'paper-upload' || selected.stage === 'literature-search' || selected.stage === 'targeted-literature-search') && (
-          <>
-            <div className={css.uploadPanel}>
-              <div className={css.uploadCopy}>
-                <span className={css.uploadTitle}>{selected.stage === 'paper-upload' ? t('research.upload') : t('research.uploadSupplemental')}</span>
-                <span className={css.subtle}>{selected.stage === 'paper-upload' ? t('research.uploadHint') : t('research.uploadSupplementalHint')}</span>
+              <div className={css.subtle}>{t('research.directionFocuses')}</div>
+              <div className={css.reviewerRow}>
+                {([
+                  ['method', 'research.focus.method'],
+                  ['data', 'research.focus.data'],
+                  ['theory', 'research.focus.theory'],
+                  ['efficiency', 'research.focus.efficiency'],
+                  ['application', 'research.focus.application'],
+                ] as const).map(([focus, labelKey]) => (
+                  <label key={focus} className={css.reviewer}>
+                    <input
+                      type="checkbox"
+                      checked={directionFocuses.includes(focus)}
+                      onChange={(event) => {
+                        setDirectionFocuses(current => event.target.checked
+                          ? [...new Set([...current, focus])]
+                          : current.filter(item => item !== focus))
+                      }}
+                    />
+                    {t(labelKey)}
+                  </label>
+                ))}
               </div>
-              <input ref={inputRef} className={css.fileInput} type="file" multiple accept=".pdf,.txt,application/pdf,text/plain" onChange={upload} />
+              <div className={css.subtle}>{t('research.literatureSources')}</div>
+              <div className={css.reviewerRow}>
+                {([
+                  ['arxiv', 'research.source.arxiv'],
+                  ['openreview', 'research.source.openreview'],
+                  ['semantic-scholar', 'research.source.semanticScholar'],
+                  ['acl-anthology', 'research.source.aclAnthology'],
+                  ['openalex', 'research.source.openAlex'],
+                ] as const).map(([source, labelKey]) => (
+                  <label key={source} className={css.reviewer}>
+                    <input type="checkbox" checked={literatureSources.includes(source)} onChange={(event) => { setLiteratureSources(current => event.target.checked ? [...new Set([...current, source])] : current.filter(item => item !== source)) }} />
+                    {t(labelKey)}
+                  </label>
+                ))}
+              </div>
             </div>
-          </>
-        )}
-        {canMutate && ideaNeedsReview && (
-          <>
-            <div className={css.subtle}>{t('research.innovation')}</div>
-            <textarea className={css.feedback} value={feedback} placeholder={t('research.feedbackPlaceholder')} onChange={(event) => { setFeedback(event.target.value) }} />
-            {selected.stage === 'idea-generation' && (
-              <span className={css.subtle}>{t('research.innovationCheck')}{innovationClaimPasses(artifact) ? t('research.pass') : t('research.needsWork')}</span>
-            )}
-          </>
-        )}
-        {canMutate && selected.stage === 'targeted-literature-search' && (
-          <>
-            <div className={css.subtle}>{t('research.roles')}</div>
-            <div className={css.reviewerRow}>
-              {REVIEWER_ROLES.map(({ key, role }) => {
-                const label = t(key)
-                return <label key={key} className={css.reviewer}><input type="checkbox" disabled={busy || loading} checked={reviewers.includes(role)} onChange={(event) => { setReviewers(current => event.target.checked ? [...current, role] : current.filter(item => item !== role)) }} />{label}</label>
-              })}
+          )}
+          {(selected.stage === 'paper-upload' || selected.stage === 'literature-search' || selected.stage === 'targeted-literature-search') && (
+            <>
+              <div className={css.uploadPanel}>
+                <div className={css.uploadCopy}>
+                  <span className={css.uploadTitle}>{selected.stage === 'paper-upload' ? t('research.upload') : t('research.uploadSupplemental')}</span>
+                  <span className={css.subtle}>{selected.stage === 'paper-upload' ? t('research.uploadHint') : t('research.uploadSupplementalHint')}</span>
+                </div>
+                <input ref={inputRef} className={css.fileInput} type="file" multiple accept=".pdf,.txt,application/pdf,text/plain" onChange={upload} />
+              </div>
+            </>
+          )}
+          {canMutate && ideaNeedsReview && (
+            <>
+              <div className={css.subtle}>{t('research.innovation')}</div>
+              <textarea className={css.feedback} value={feedback} placeholder={t('research.feedbackPlaceholder')} onChange={(event) => { setFeedback(event.target.value) }} />
+              {selected.stage === 'idea-generation' && (
+                <span className={css.subtle}>{t('research.innovationCheck')}{innovationClaimPasses(artifact) ? t('research.pass') : t('research.needsWork')}</span>
+              )}
+            </>
+          )}
+          {canMutate && selected.stage === 'targeted-literature-search' && (
+            <>
+              <div className={css.subtle}>{t('research.roles')}</div>
+              <div className={css.reviewerRow}>
+                {REVIEWER_ROLES.map(({ key, role }) => {
+                  const label = t(key)
+                  return <label key={key} className={css.reviewer}><input type="checkbox" disabled={busy || loading} checked={reviewers.includes(role)} onChange={(event) => { setReviewers(current => event.target.checked ? [...current, role] : current.filter(item => item !== role)) }} />{label}</label>
+                })}
+              </div>
+            </>
+          )}
+          {canMutate && selected.stage === 'simulation-or-final-plan' && (
+            <div className={css.choiceRow}>
+              <button type="button" disabled={busy || loading || !simulationAvailable} className={choice === 'simulation' ? `${css.button} ${css.branchActive}` : css.button} onClick={() => { setChoice('simulation') }}><IconPlayOutlineRegular size={13} /> {t('research.simulate')}</button>
+              <button type="button" disabled={busy || loading} className={choice === 'plan' ? `${css.button} ${css.branchActive}` : css.button} onClick={() => { setChoice('plan') }}>{t('research.plan')}</button>
+              {!simulationAvailable && <span className={css.subtle}>{t('research.simulationUnavailable')}</span>}
             </div>
-          </>
-        )}
-        {canMutate && selected.stage === 'simulation-or-final-plan' && (
-          <div className={css.choiceRow}>
-            <button type="button" disabled={busy || loading || !simulationAvailable} className={choice === 'simulation' ? `${css.button} ${css.branchActive}` : css.button} onClick={() => { setChoice('simulation') }}><IconPlayOutlineRegular size={13} /> {t('research.simulate')}</button>
-            <button type="button" disabled={busy || loading} className={choice === 'plan' ? `${css.button} ${css.branchActive}` : css.button} onClick={() => { setChoice('plan') }}>{t('research.plan')}</button>
-            {!simulationAvailable && <span className={css.subtle}>{t('research.simulationUnavailable')}</span>}
+          )}
+        </div>
+        {selected.stage === 'literature-search' && canMutate && <TargetTaskEditor key={selected.nodeId} research={research} sessionId={workflowSessionId} revision={revision} signal={tab.signal} onChange={setTargetDraft} />}
+        <ShadowAuditView research={research} sessionId={workflowSessionId} busy={busy} revision={revision}/>
+        <ResearchTranscriptMain sessionId={sessionId} research={research} t={t} />
+
+      </div>
+      <div className={css.viewPanel} role="tabpanel" id={viewId + '-panel-branches'} aria-labelledby={viewId + '-tab-branches'} hidden={activeView !== 'branches'} tabIndex={0} data-research-view-panel="branches">
+        <ResearchBranchSelector sessionId={sessionId} viewId="chat" research={research} t={t} />
+        <section data-research-branch-section className={branchView === 'list' ? `${css.section} ${css.branchTreeSection}` : css.section}>
+          <div className={css.sectionHeader}>
+            <div>
+              <div className={css.sectionTitle}>{t('research.branch')}</div>
+              <div className={css.sectionHint}>{t('research.history')}</div>
+            </div>
+            <div className={css.sectionTools}>
+              <div className={css.viewToggle} role="group" aria-label={t('research.branchView')}>
+                <Tooltip label={t('research.branchMap')} side="bottom" delayMs={400}>
+                  <button
+                    type="button"
+                    className={branchView === 'map' ? `${css.viewToggleButton} ${css.viewToggleButtonActive}` : css.viewToggleButton}
+                    onClick={() => { setBranchView('map') }}
+                    aria-label={t('research.branchMap')}
+                    aria-pressed={branchView === 'map'}
+                  >
+                    <IconWorkspaceTreeOutlineRegular size={13} />
+                    <span className={css.viewToggleLabel}>{t('research.branchMap')}</span>
+                  </button>
+                </Tooltip>
+                <Tooltip label={t('research.branchList')} side="bottom" delayMs={400}>
+                  <button
+                    type="button"
+                    className={branchView === 'list' ? `${css.viewToggleButton} ${css.viewToggleButtonActive}` : css.viewToggleButton}
+                    onClick={() => { setBranchView('list') }}
+                    aria-label={t('research.branchList')}
+                    aria-pressed={branchView === 'list'}
+                  >
+                    <IconFlatListOutlineRegular size={13} />
+                    <span className={css.viewToggleLabel}>{t('research.branchList')}</span>
+                  </button>
+                </Tooltip>
+              </div>
+              <span className={css.sectionBadge}>{allBranches.length}</span>
+            </div>
           </div>
-        )}
-      </section>
+          {branchView === 'map' ? (
+            <ResearchFlowCanvas
+              state={displayState}
+              selectedNodeId={displayState.selectedNodeId}
+              activeBranchId={displayState.activeBranchId}
+              stageText={stage => stageText(stage, t)}
+              statusText={status => statusText(status, t)}
+              emptyArtifact={t('research.emptyArtifact')}
+              currentLabel={t('research.current')}
+              nodeCountLabel={count => t(count === 1 ? 'research.node.one' : 'research.node.other', { count })}
+              branchViewLabel={t('research.branchMap')}
+              expandLabel={t('research.expand')}
+              collapseLabel={t('research.collapse')}
+              zoomInLabel={t('research.zoomIn')}
+              zoomOutLabel={t('research.zoomOut')}
+              fitViewLabel={t('research.fitView')}
+              restoreLayoutLabel={t('research.restoreLayout')}
+              layoutScope={String(workflowSessionId)}
+              collapsedBranchIds={treeCollapsed}
+              onToggleBranch={toggleTreeBranch}
+              onSelectNode={selectNode}
+              onSelectBranch={selectBranch}
+              onExpandAll={() => { setTreeCollapsed(new Set()) }}
+              onCollapseAll={() => { setTreeCollapsed(new Set(allBranches.map(item => item.branchId))) }}
+              disabled={busy}
+            />
+          ) : (
+            <ResearchBranchList
+              state={displayState}
+              selectedNodeId={displayState.selectedNodeId}
+              stageText={stage => stageText(stage, t)}
+              statusText={status => statusText(status, t)}
+              emptyArtifact={t('research.emptyArtifact')}
+              t={t}
+              onSelectNode={selectNode}
+              onLocateNode={(nodeId) => {
+                selectNode(nodeId)
+                setBranchView('map')
+              }}
+              collapsedNodeIds={listCollapsed}
+              onCollapsedNodeIdsChange={setListCollapsed}
+              disabled={busy}
+            />
+          )}
+        </section>
+
+        <section className={css.section}>
+          <div className={css.sectionHeader}>
+            <div className={css.sectionTitle}>{t('research.history')}</div>
+            <span className={css.sectionHint}>{stageText(selected.stage, t)}</span>
+          </div>
+          <div className={css.timeline} aria-label={t('research.history')}>
+            {branchNodes.map(node => (
+              <button
+                key={node.nodeId}
+                type="button"
+                className={node.nodeId === displayState.selectedNodeId ? `${css.node} ${css.nodeSelected}` : css.node}
+                onClick={() => { selectNode(node.nodeId) }}
+                disabled={busy || node.nodeId === displayState.selectedNodeId}
+                data-research-node={node.nodeId}
+              >
+                <span className={css.nodeStage}>{stageText(node.stage, t)}</span>
+                <span className={css.nodeStatus}>{statusText(node.status, t)}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+      </div>
+      <div className={css.viewPanel} role="tabpanel" id={viewId + '-panel-details'} aria-labelledby={viewId + '-tab-details'} hidden={activeView !== 'details'} tabIndex={0} data-research-view-panel="details">
+        <section className={css.card} data-research-node-detail={selected.nodeId}>
+          <div className={css.cardHeader}>
+            <div className={css.cardIdentity}>
+              <div className={css.cardKicker}>{t('research.nodeDetails')}</div>
+              <div className={css.cardTitle}>{artifact?.title ?? stageText(selected.stage, t)}</div>
+            </div>
+            <span className={css.statusPill} data-status={selected.status}>{statusText(selected.status, t)}</span>
+          </div>
+          <div className={css.detailActions}>
+            <button type="button" className={css.button} disabled={busy} onClick={focusResearchContent}>
+              {t('research.viewFullContent')}
+            </button>
+            <button
+              type="button"
+              className={css.button}
+              disabled={busy || loading || loadFailure !== undefined}
+              onClick={() => { continueFromNode(selected.nodeId) }}
+            >
+              {t('research.continue')}
+            </button>
+          </div>
+          <section className={css.detailGroup} aria-label={t('research.nodeInfo')}>
+            <div className={css.subtle}>{t('research.nodeInfo')}</div>
+            <dl className={css.detailGrid}>
+              <div className={css.detailItem}><dt>{t('research.nodeId')}</dt><dd>{selected.nodeId}</dd></div>
+              <div className={css.detailItem}><dt>{t('research.planLabel')}</dt><dd>{displayState.branches[selected.branchId]?.label ?? selected.branchId}</dd></div>
+              <div className={css.detailItem}><dt>{t('research.stageType')}</dt><dd>{stageText(selected.stage, t)}</dd></div>
+              <div className={css.detailItem}><dt>{t('research.parentNode')}</dt><dd>{parentNode === undefined ? '—' : parentNode.nodeId}</dd></div>
+              <div className={css.detailItem}><dt>{t('research.childNodes')}</dt><dd>{childCount}</dd></div>
+              <div className={css.detailItem}><dt>{t('research.artifactCount')}</dt><dd>{selected.artifactRefs.length}</dd></div>
+            </dl>
+          </section>
+          <section className={css.detailGroup} aria-label={t('research.contentSummary')}>
+            <div className={css.subtle}>{t('research.contentSummary')}</div>
+            <p className={css.detailSummary}>{contentSummary}</p>
+            {artifact?.source !== undefined && <div className={css.detailMeta}>{t('research.source')}: {artifact.source}</div>}
+            {artifact !== undefined && <div className={css.detailMeta}>{t('research.createdAt')}: {new Date(artifact.createdAt).toLocaleString()}</div>}
+          </section>
+          {(selected.userDecision !== undefined || selected.userNote !== undefined) && (
+            <section className={css.detailGroup} aria-label={t('research.executionInfo')}>
+              <div className={css.subtle}>{t('research.executionInfo')}</div>
+              {selected.userDecision !== undefined && <div className={css.detailMeta}>{t('research.decision')}: {decisionText(selected.userDecision, t)}</div>}
+              {selected.userNote !== undefined && <p className={css.detailSummary}>{selected.userNote}</p>}
+            </section>
+          )}
+          {artifact?.evaluation !== undefined && (
+            <section className={css.detailGroup} aria-label={t('research.evaluationSummary')}>
+              <div className={css.subtle}>{t('research.evaluationSummary')}</div>
+              <div className={artifact.evaluation.overlap || artifact.evaluation.score < artifact.evaluation.threshold
+                ? css.notice
+                : css.successNotice}>
+                {t('research.evaluation', { score: artifact.evaluation.score, threshold: artifact.evaluation.threshold })}
+                {' '}{artifact.evaluation.overlap ? t('research.overlap') : t('research.noOverlap')}
+                <div>{summaryText(artifact.evaluation.rationale, 180)}</div>
+              </div>
+            </section>
+          )}
+        </section>
+      </div>
     </div>
   )
 }

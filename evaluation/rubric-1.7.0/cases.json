@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "rubricVersion": "1.7.0",
+  "rubricSha256": "50990acd698ac5fada0f9d055864c982fdec3361fc9bd3542ba96dbd076532ff",
+  "goldScores": false,
+  "cases": [
+    {
+      "id": "modern-dora-reproduction",
+      "boundaryFocus": "duplicate",
+      "domain": "参数高效微调",
+      "scope": "modern-reproduction",
+      "comparisonPoint": "2026-11-03",
+      "candidate": "在比较时点提出：将预训练权重分解为幅度与方向，幅度独立学习，方向通过低秩增量更新，并声明这一关系是新增创新。",
+      "sources": [
+        {
+          "url": "https://arxiv.org/html/2402.09353v2",
+          "title": "DoRA v2",
+          "publicationDate": "2024-02-14"
+        },
+        {
+          "url": "https://arxiv.org/pdf/2402.09353v2",
+          "title": "DoRA PDF v2",
+          "publicationDate": "2024-02-14"
+        }
+      ],
+      "query": "DoRA weight decomposed low rank adaptation",
+      "question": "逐项核对幅度初始化、方向低秩更新、冻结变量，确认候选是否已由该公开版本包含。",
+      "targetTask": {
+        "domain": "参数高效微调",
+        "problem": "对预训练自回归语言模型进行下游监督微调",
+        "input": "输入提示及其目标答案 token 序列、冻结的预训练权重",
+        "output": "给定提示的答案 token 序列",
+        "constraints": "与低秩微调比较；考察幅度/方向更新的实质关系，忽略模型规模和论文影响力",
+        "conditions": "公开原文可获取；缺失关键证据则不输出数值分",
+        "subtaskBoundary": "逐项核对幅度初始化、方向低秩更新、冻结变量，确认候选是否已由该公开版本包含。",
+        "comparisonPoint": "2026-11-03"
+      },
+      "expectedScientificScore": null,
+      "reviewStatus": "unreviewed"
+    },
+    {
+      "id": "local-rule-synthetic",
+      "boundaryFocus": "A local change",
+      "domain": "自然语言理解",
+      "scope": "synthetic-counterexample",
+      "comparisonPoint": "2026-11-03",
+      "candidate": "合成候选：在既有编码器输出上增加固定温度和单一局部门控阈值，未主张新训练目标、信息流或新问题。",
+      "sources": [
+        {
+          "url": "https://aclanthology.org/N19-1423.pdf",
+          "title": "BERT ACL published version",
+          "publicationDate": "2019-06-01"
+        }
+      ],
+      "query": "BERT temperature scaling gating prediction calibration",
+      "question": "局部规则能否构成独立新增单元；常规超参数变化是否只能排除或低档，而非抬高机制类别？",
+      "targetTask": {
+        "domain": "自然语言理解",
+        "problem": "对文本或句对进行监督分类并输出校准置信度",
+        "input": "文本或句对、类别标签、已有编码器",
+        "output": "类别及其预测概率",
+        "constraints": "基础编码器与训练目标相同；只改变温度及局部门控阈值",
+        "conditions": "公开原文可获取；缺失关键证据则不输出数值分",
+        "subtaskBoundary": "局部规则能否构成独立新增单元；常规超参数变化是否只能排除或低档，而非抬高机制类别？",
+        "comparisonPoint": "2026-11-03"
+      },
+      "expectedScientificScore": null,
+      "reviewStatus": "unreviewed"
+    },
+    {
+      "id": "rag-combination-boundary",
+      "boundaryFocus": "B combination",
+      "domain": "检索增强问答",
+      "scope": "historical-exploratory",
+      "comparisonPoint": "2020-05-22",
+      "candidate": "检验检索器与生成器结合以及联合学习关系的技术实质，不假定组合必然属于B类。",
+      "sources": [
+        {
+          "url": "https://arxiv.org/pdf/2005.11401v1",
+          "title": "RAG original v1",
+          "publicationDate": "2020-05-22"
+        }
+      ],
+      "query": "retrieval augmented generation latent document marginalization prior work",
+      "question": "增量究竟是现有技术的组合、核心计算关系还是任务定义？需要比对REALM及潜变量检索先例。",
+      "targetTask": {
+        "domain": "检索增强问答",
+        "problem": "使用外部文本库回答开放域知识问题",
+        "input": "自然语言问题与可检索文档集合",
+        "output": "可核对的自然语言答案",
+        "constraints": "考察文档潜变量边缘化及检索器/生成器训练关系；比较时点以前的等价方法",
+        "conditions": "公开原文可获取；缺失关键证据则不输出数值分",
+        "subtaskBoundary": "增量究竟是现有技术的组合、核心计算关系还是任务定义？需要比对REALM及潜变量检索先例。",
+        "comparisonPoint": "2020-05-22"
+      },
+      "expectedScientificScore": null,
+      "reviewStatus": "unreviewed"
+    },
+    {
+      "id": "lora-transfer-boundary",
+      "boundaryFocus": "C transfer/adaptation",
+      "domain": "参数高效微调",
+      "scope": "historical-exploratory",
+      "comparisonPoint": "2021-06-17",
+      "candidate": "检验训练权重低秩重参数化的来源、必要复杂性及任务适配，不能因跨学科术语而认定迁移。",
+      "sources": [
+        {
+          "url": "https://arxiv.org/pdf/2106.09685v1",
+          "title": "LoRA v1",
+          "publicationDate": "2021-06-17"
+        },
+        {
+          "url": "https://openreview.net/pdf?id=nZeVKeeFYf9",
+          "title": "LoRA OpenReview published revision",
+          "publicationDate": "2022-01-01"
+        }
+      ],
+      "query": "LoRA low rank adaptation intrinsic dimension low rank reparameterization",
+      "question": "源模块是否本来已知？目标任务中产生了什么结构改变？OpenReview晚于时点，只能核查版本，不能当时点前先例。",
+      "targetTask": {
+        "domain": "参数高效微调",
+        "problem": "通过可训练低秩增量适配冻结的预训练语言模型",
+        "input": "监督微调样例与冻结权重矩阵",
+        "output": "适配后的任务预测及低秩增量",
+        "constraints": "考察优化变量、秩约束及更新关系；不以跨任务命名代替结构适配证据",
+        "conditions": "公开原文可获取；缺失关键证据则不输出数值分",
+        "subtaskBoundary": "源模块是否本来已知？目标任务中产生了什么结构改变？OpenReview晚于时点，只能核查版本，不能当时点前先例。",
+        "comparisonPoint": "2021-06-17"
+      },
+      "expectedScientificScore": null,
+      "reviewStatus": "unreviewed"
+    },
+    {
+      "id": "attention-mechanism-boundary",
+      "boundaryFocus": "D mechanism",
+      "domain": "序列建模与机器翻译",
+      "scope": "historical-exploratory",
+      "comparisonPoint": "2017-06-12",
+      "candidate": "检验自注意力、位置表达与信息路径的不可约关系，不能因为论文影响力高就指定机制高档。",
+      "sources": [
+        {
+          "url": "https://arxiv.org/pdf/1706.03762v1",
+          "title": "Attention Is All You Need v1",
+          "publicationDate": "2017-06-12"
+        }
+      ],
+      "query": "self attention sequence transduction earlier neural attention memory networks",
+      "question": "需要与更早attention和memory网络比较核心信息路径，区分组合与机制变化。",
+      "targetTask": {
+        "domain": "序列建模与机器翻译",
+        "problem": "将源语言 token 序列翻译为目标语言序列",
+        "input": "源语言句子及平行训练语料",
+        "output": "目标语言译文序列",
+        "constraints": "考察编码器/解码器信息路径、掩码与位置表示；比较时点以前的注意力及非循环先例",
+        "conditions": "公开原文可获取；缺失关键证据则不输出数值分",
+        "subtaskBoundary": "需要与更早attention和memory网络比较核心信息路径，区分组合与机制变化。",
+        "comparisonPoint": "2017-06-12"
+      },
+      "expectedScientificScore": null,
+      "reviewStatus": "unreviewed"
+    },
+    {
+      "id": "smoothing-theory-boundary",
+      "boundaryFocus": "E theory/principle",
+      "domain": "对抗鲁棒性与认证",
+      "scope": "historical-exploratory",
+      "comparisonPoint": "2019-02-08",
+      "candidate": "检验高斯随机平滑认证半径的假设、命题、界限和证明方法，不按认证准确率或引用量加分。",
+      "sources": [
+        {
+          "url": "https://arxiv.org/pdf/1902.02918v1",
+          "title": "Certified Adversarial Robustness via Randomized Smoothing v1",
+          "publicationDate": "2019-02-08"
+        }
+      ],
+      "query": "randomized smoothing certified robustness Gaussian Neyman Pearson prior work",
+      "question": "理论增量与已有随机化防御/认证界限如何区分？E8以上所需基本条件是否真实成立？",
+      "targetTask": {
+        "domain": "对抗鲁棒性与认证",
+        "problem": "为图像分类给出对抗扰动下的认证预测",
+        "input": "图像、基础分类器、高斯噪声尺度及类别概率界",
+        "output": "预测类别与在 L2 扰动下成立的认证半径",
+        "constraints": "固定平滑分布、范数和概率假设；区分证书性质、估计误差与新基本原理",
+        "conditions": "公开原文可获取；缺失关键证据则不输出数值分",
+        "subtaskBoundary": "理论增量与已有随机化防御/认证界限如何区分？E8以上所需基本条件是否真实成立？",
+        "comparisonPoint": "2019-02-08"
+      },
+      "expectedScientificScore": null,
+      "reviewStatus": "unreviewed"
+    },
+    {
+      "id": "adversarial-problem-boundary",
+      "boundaryFocus": "P problem/threat model",
+      "domain": "对抗鲁棒性与威胁建模",
+      "scope": "historical-exploratory",
+      "comparisonPoint": "2014-12-20",
+      "candidate": "检验线性解释与攻击方法是否同时提出新的非等价威胁定义，不能把提出攻击算法自动计为新问题。",
+      "sources": [
+        {
+          "url": "https://arxiv.org/pdf/1412.6572v1",
+          "title": "Explaining and Harnessing Adversarial Examples v1",
+          "publicationDate": "2014-12-20"
+        }
+      ],
+      "query": "adversarial examples threat model Szegedy Goodfellow linearity 2014",
+      "question": "旧攻击者能力、扰动约束、成功判据与新定义是否等价？算法与问题贡献是否重复计入？",
+      "targetTask": {
+        "domain": "对抗鲁棒性与威胁建模",
+        "problem": "评估图像分类器在受限输入扰动下的安全性",
+        "input": "已训练分类器、带标签图像及给定范数扰动预算",
+        "output": "攻击样本、误分类结果及相应威胁定义",
+        "constraints": "区分攻击算法、线性解释与非等价新问题定义；保留攻击者知识和预算条件",
+        "conditions": "公开原文可获取；缺失关键证据则不输出数值分",
+        "subtaskBoundary": "旧攻击者能力、扰动约束、成功判据与新定义是否等价？算法与问题贡献是否重复计入？",
+        "comparisonPoint": "2014-12-20"
+      },
+      "expectedScientificScore": null,
+      "reviewStatus": "unreviewed"
+    },
+    {
+      "id": "critical-source-missing",
+      "boundaryFocus": "insufficient",
+      "domain": "对抗鲁棒性与认证",
+      "scope": "synthetic-counterexample",
+      "comparisonPoint": "2026-11-03",
+      "candidate": "合成候选只提供摘要，关键定理证明和可能改变类别的最近先例不可取得。",
+      "sources": [],
+      "query": "adversarial robustness certificate missing proof counterexample",
+      "question": "应保留insufficient/null，不能由置信度高或三次查询产生数值分。",
+      "targetTask": {
+        "domain": "对抗鲁棒性与认证",
+        "problem": "核查不完整材料提出的图像鲁棒认证主张",
+        "input": "只有摘要的候选定理及不可获取的关键先例",
+        "output": "有证据支持的结论或 insufficient/null",
+        "constraints": "关键证明、假设或先例冲突未核清时不输出数值",
+        "conditions": "公开原文可获取；缺失关键证据则不输出数值分",
+        "subtaskBoundary": "应保留insufficient/null，不能由置信度高或三次查询产生数值分。",
+        "comparisonPoint": "2026-11-03"
+      },
+      "expectedScientificScore": null,
+      "reviewStatus": "unreviewed"
+    },
+    {
+      "id": "conflicting-precedent-synthetic",
+      "boundaryFocus": "critical conflict / independence",
+      "domain": "检索增强问答",
+      "scope": "synthetic-counterexample",
+      "comparisonPoint": "2026-11-03",
+      "candidate": "合成材料互相冲突：一份材料称检索适配与新增模块独立，另一份指出二者是同一门控关系；缺少决定性方法细节。",
+      "sources": [
+        {
+          "url": "https://arxiv.org/pdf/2005.11401v1",
+          "title": "RAG version reference",
+          "publicationDate": "2020-05-22"
+        }
+      ],
+      "query": "retrieval gating independent contribution repeated adaptation evidence",
+      "question": "冲突可能改变定类和J，不得用provisional掩盖；同一事实不得同时领取R、S0高档和J。",
+      "targetTask": {
+        "domain": "检索增强问答",
+        "problem": "判断检索增强问答中门控适配与新增模块是否独立",
+        "input": "问题、检索文档、相互冲突的两份不完整方法说明",
+        "output": "贡献独立性结论或 insufficient/null",
+        "constraints": "不得将同一门控关系同时计为适配 R 和独立次要贡献 J",
+        "conditions": "公开原文可获取；缺失关键证据则不输出数值分",
+        "subtaskBoundary": "冲突可能改变定类和J，不得用provisional掩盖；同一事实不得同时领取R、S0高档和J。",
+        "comparisonPoint": "2026-11-03"
+      },
+      "expectedScientificScore": null,
+      "reviewStatus": "unreviewed"
+    },
+    {
+      "id": "doi-acl-open-fulltext",
+      "boundaryFocus": "acquisition DOI / ACL",
+      "domain": "自然语言理解",
+      "scope": "modern-reproduction",
+      "comparisonPoint": "2026-11-03",
+      "candidate": "核查DOI落地页能否定位BERT开放全文；不以DOI元数据充当原文。",
+      "sources": [
+        {
+          "url": "https://doi.org/10.18653/v1/N19-1423",
+          "title": "BERT DOI publisher landing",
+          "publicationDate": "2019-06-01"
+        }
+      ],
+      "query": "BERT masked language model next sentence prediction",
+      "question": "DOI解析、开放全文定位、文档版本和摘要/正文区别是否可追溯？",
+      "targetTask": {
+        "domain": "自然语言理解",
+        "problem": "通过 DOI 定位文本/句对理解预训练论文并核验核心训练目标",
+        "input": "DOI、出版落地页及开放全文链接",
+        "output": "可追溯的原文和训练目标证据",
+        "constraints": "这是全文定位样本；元数据不能当成核心方法证据",
+        "conditions": "公开原文可获取；缺失关键证据则不输出数值分",
+        "subtaskBoundary": "DOI解析、开放全文定位、文档版本和摘要/正文区别是否可追溯？",
+        "comparisonPoint": "2026-11-03"
+      },
+      "expectedScientificScore": null,
+      "reviewStatus": "unreviewed"
+    }
+  ]
+}

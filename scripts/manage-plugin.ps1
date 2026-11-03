@@ -43,7 +43,8 @@ $profileDir=Join-Path $DshHome "profiles\$Profile"
 $manifestPath=Join-Path $profileDir 'package.json'
 if(-not(Test-Path -LiteralPath $manifestPath)){throw "Profile does not exist: $profileDir"}
 $version=(& $script:cli --version | Out-String).Trim()
-if($LASTEXITCODE -ne 0 -or $version -ne '0.2.1-rc.3'){throw "Unsupported DSH version: $version. Tested target is exactly 0.2.1-rc.3."}
+$testedVersion=(Read-Json (Join-Path $projectRoot 'packages/research-agent/package.json')).engines.dsh
+if($LASTEXITCODE -ne 0 -or $version -ne $testedVersion){throw "Unsupported DSH version: $version. Tested target is exactly $testedVersion."}
 $before=Read-Json $manifestPath
 $previousSpec=($before['dependencies'] ?? @{})[$pluginName]
 if($Action -eq 'Rollback'){

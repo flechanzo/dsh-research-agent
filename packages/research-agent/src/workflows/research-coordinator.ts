@@ -1,3 +1,17 @@
+import { randomUUID, createHash } from 'node:crypto'
+import { abortable, runCheckpointedReviews, type ReviewCheckpointStore } from './review-checkpoints.ts'
+import { ShadowBudget, shadowDisagreements, type ShadowAudit, type ShadowPolicy } from '../innovation/shadow.ts'
+import { paperProvenance } from '../innovation/documents.ts'
+import { extractPaperBytes, resolvePaperReaderOptions } from './paper-reader.ts'
+import { createRubricNetwork } from '../innovation/network.ts'
+import { unscoredRubric } from '../innovation/scorer.ts'
+import type { RubricAssessment } from '../innovation/schema.ts'
+import {
+  runRubricAssessment,
+  insufficientRubric,
+  type RubricNetwork,
+  type RubricDocument,
+} from '../innovation/pipeline.ts'
 import { startResearchRun } from './subagent-adapter.ts'
 import { parentAgentOptionsForDelegation } from '@deepseek-ai/dsh-subagent'
 /** Host-side execution coordinator for the human-confirmed research DAG. */
@@ -5,23 +19,10 @@ import { parentAgentOptionsForDelegation } from '@deepseek-ai/dsh-subagent'
 import type {} from '@deepseek-ai/dsh-api-session-controller'
 import { ReasoningEffortId } from '@deepseek-ai/dsh-llm'
 import type { Agent, AgentOptions } from '@deepseek-ai/dsh-agent'
-import { createRequire } from 'node:module'
-import { dirname, join } from 'node:path'
-import type {
-  AttachmentStore,
-  FileAttachmentRef,
-} from '@deepseek-ai/dsh-attachment'
-import { createCanvas } from '@napi-rs/canvas'
-import { getDocument, type PDFDocumentProxy } from 'pdfjs-dist/legacy/build/pdf.mjs'
-import type {
-  ContentBlock,
-} from '@deepseek-ai/dsh-llm'
-import type {
-  SubagentRuntime,
-} from '@deepseek-ai/dsh-subagent'
-import type {
-  WebRuntime,
-} from '@deepseek-ai/dsh-web'
+import type { AttachmentStore, FileAttachmentRef } from '@deepseek-ai/dsh-attachment'
+import type { ContentBlock } from '@deepseek-ai/dsh-llm'
+import type { SubagentRuntime } from '@deepseek-ai/dsh-subagent'
+import type { WebRuntime } from '@deepseek-ai/dsh-web'
 import type { FileSystem } from '@deepseek-ai/dsh-fs'
 import type { SandboxExecutionPolicy } from '@deepseek-ai/dsh-sandbox'
 import { createNumericalResearchSimulationRunner } from './research-simulation.ts'
@@ -54,6 +55,8 @@ export interface ResearchPaperDocument {
   readonly pageCount?: number
   /** Number of pages inspected; a smaller value than pageCount indicates truncation. */
   readonly processedPageCount?: number
+  readonly textPages?: readonly { readonly pageNumber: number; readonly text: string }[]
+  readonly missingPages?: readonly number[]
 }
 
 /** Extraction path reported to the user and research-session log. */
@@ -96,12 +99,19 @@ export interface ResearchPaperReader {
    * @param context - Parent agent used by the OCR adapter when needed.
    * @returns Extracted paper text.
    */
-  read(paper: FileAttachmentRef, signal?: AbortSignal, context?: ResearchPaperReadContext): Promise<ResearchPaperDocument>
+  read(
+    paper: FileAttachmentRef,
+    signal?: AbortSignal,
+    context?: ResearchPaperReadContext,
+  ): Promise<ResearchPaperDocument>
 }
 
 /** Optional execution context for a paper read. */
 export interface ResearchPaperReadContext {
   /** Parent Agent for visual OCR delegation. */
+  readonly allowPartial?: boolean
+  readonly allowOcr?: boolean
+  readonly beforeOcr?: (pages: number) => void
   readonly parent?: Agent
 }
 
@@ -140,7 +150,11 @@ export interface ResearchLiteratureSearcher {
    * @param options - Optional backend selection and result limit.
    * @returns Normalized citeable sources.
    */
-  search(query: string, signal?: AbortSignal, options?: ResearchLiteratureSearchOptions): Promise<readonly ResearchLiteratureSource[]>
+  search(
+    query: string,
+    signal?: AbortSignal,
+    options?: ResearchLiteratureSearchOptions,
+  ): Promise<readonly ResearchLiteratureSource[]>
 }
 
 /** Backend selection for one literature search. */
@@ -153,6 +167,8 @@ export interface ResearchLiteratureSearchOptions {
 
 /** Roles used by the coordinator when delegating model work. */
 export type ResearchAgentRole =
+  | 'target-task-extractor'
+  | `rubric-${string}`
   | 'paper-summarizer'
   | 'problem-extractor'
   | 'idea-generator'
@@ -230,6 +246,13 @@ export interface ResearchPlanWriter {
 
 /** Capabilities required by the coordinator. */
 export interface ResearchCoordinatorAdapters {
+  readonly reviewCheckpoints?: ReviewCheckpointStore
+  readonly reviewScope?: string
+  readonly shadow?: Partial<ShadowPolicy>
+  readonly shadowContext?: { readonly sessionId: string; readonly sourceRevision: number; readonly hostRunId: string }
+  readonly onShadowAudit?: (audit: ShadowAudit) => Promise<void>
+  readonly rubricNetworkFactory?: (context: ResearchPaperReadContext, beforeRequest: () => void) => RubricNetwork
+  readonly rubricNetwork?: RubricNetwork
   readonly papers: ResearchPaperReader
   readonly literature: ResearchLiteratureSearcher
   readonly agents: ResearchAgentRunner
@@ -349,9 +372,9 @@ export class ResearchCoordinator {
       request.signal?.throwIfAborted()
       documents.push(await this.adapters.papers.read(paper, request.signal, { parent: request.parent }))
     }
-    const prompt = documents.map(paper =>
-      `文件：${paper.fileName}\n读取方式：${paper.extractionMethod}\n\n${paper.text}`,
-    ).join('\n\n---\n\n')
+    const prompt = documents
+      .map(paper => `文件：${paper.fileName}\n读取方式：${paper.extractionMethod}\n\n${paper.text}`)
+      .join('\n\n---\n\n')
     const summary = await this.adapters.agents.run(
       'paper-summarizer',
       `请用简体中文总结以下补充论文，并逐篇列出与当前研究方向相关的方法、基线、证据、限制和可借鉴之处。不要编造事实；保留论文标题、URL、公式和代码原样。\n\n${prompt}`,
@@ -359,13 +382,17 @@ export class ResearchCoordinator {
       request.signal,
     )
     const fileNames = documents.map(paper => paper.fileName).join(', ')
-    const state = appendResearchOutput(request.state, {
-      stage: node.stage,
-      kind: 'literature',
-      title: `补充文献调研（${String(documents.length)} 篇）`,
-      content: `${documents.map(paper => `### ${paper.fileName}\n\n读取方式：${paper.extractionMethod}`).join('\n\n')}\n\n${summary}`,
-      source: fileNames,
-    }, Date.now())
+    const state = appendResearchOutput(
+      request.state,
+      {
+        stage: node.stage,
+        kind: 'literature',
+        title: `补充文献调研（${String(documents.length)} 篇）`,
+        content: `${documents.map(paper => `### ${paper.fileName}\n\n读取方式：${paper.extractionMethod}`).join('\n\n')}\n\n${summary}`,
+        source: fileNames,
+      },
+      Date.now(),
+    )
     return this.withLatestArtifact(state)
   }
 
@@ -377,9 +404,12 @@ export class ResearchCoordinator {
       request.signal?.throwIfAborted()
       documents.push(await this.adapters.papers.read(paperRef, request.signal, { parent: request.parent }))
     }
-    const prompt = documents.map(paper =>
-      `File: ${paper.fileName}\nExtraction method: ${paper.extractionMethod}\nInspected pages: ${paper.pageCount === undefined ? 'not applicable' : `${paper.processedPageCount ?? paper.pageCount} / ${paper.pageCount}`}\n\n${paper.text}`,
-    ).join('\n\n---\n\n')
+    const prompt = documents
+      .map(
+        paper =>
+          `File: ${paper.fileName}\nExtraction method: ${paper.extractionMethod}\nInspected pages: ${paper.pageCount === undefined ? 'not applicable' : `${paper.processedPageCount ?? paper.pageCount} / ${paper.pageCount}`}\n\n${paper.text}`,
+      )
+      .join('\n\n---\n\n')
     const summary = await this.adapters.agents.run(
       'paper-summarizer',
       `请始终使用简体中文回答（论文标题、URL、代码、公式和 JSON 字段名可保留原样）。阅读以下全部上传论文。请逐篇给出忠实、结构化的摘要，再比较它们的研究问题、方法、证据和局限。不要编造事实；如果使用 OCR，请标出不确定字符，不要擅自补全不可读文本。\n\n${prompt}`,
@@ -387,13 +417,18 @@ export class ResearchCoordinator {
       request.signal,
     )
     const fileNames = documents.map(paper => paper.fileName).join(', ')
-    const state = appendResearchOutput(request.state, {
-      stage: 'paper-read',
-      kind: 'summary',
-      title: `论文摘要（${String(documents.length)} 篇）`,
-      content: `${documents.map(paper => `### ${paper.fileName}\n\n读取方式：${paper.extractionMethod}；检查页数：${paper.pageCount === undefined ? '不适用' : `${paper.processedPageCount ?? paper.pageCount} / ${paper.pageCount}（仅前者页数已检查）`}`).join('\n\n')}\n\n${summary}`,
-      source: fileNames,
-    }, Date.now())
+    const state = appendResearchOutput(
+      request.state,
+      {
+        stage: 'paper-read',
+        kind: 'summary',
+        title: `论文摘要（${String(documents.length)} 篇）`,
+        content: `${documents.map(paper => `### ${paper.fileName}\n\n读取方式：${paper.extractionMethod}；检查页数：${paper.pageCount === undefined ? '不适用' : `${paper.processedPageCount ?? paper.pageCount} / ${paper.pageCount}（仅前者页数已检查）`}`).join('\n\n')}\n\n${summary}`,
+        source: fileNames,
+        paperRefs: papers,
+      },
+      Date.now(),
+    )
     return this.withLatestArtifact(state)
   }
 
@@ -405,9 +440,16 @@ export class ResearchCoordinator {
       request.parent,
       request.signal,
     )
-    const state = appendResearchOutput(request.state, {
-      stage: 'problem-summary', kind: 'problem', title: '待确认的研究问题', content: problem,
-    }, Date.now())
+    const state = appendResearchOutput(
+      request.state,
+      {
+        stage: 'problem-summary',
+        kind: 'problem',
+        title: '待确认的研究问题',
+        content: problem,
+      },
+      Date.now(),
+    )
     return this.withLatestArtifact(state)
   }
 
@@ -416,16 +458,26 @@ export class ResearchCoordinator {
     const sources = await this.adapters.literature.search(problem.content, request.signal, {
       sources: selectedResearchNode(request.state).memorySnapshot.literatureSources,
     })
-    const content = sources.length === 0
-      ? '未找到可引用的相关论文；请修改问题描述或检索条件后重试。'
-      : sources.map((source, index) => {
-        const title = source.title ?? source.url
-        const detail = source.snippet === undefined ? '' : `\n${source.snippet}`
-        return `${index + 1}. [${title}](${source.url})${detail}`
-      }).join('\n\n')
-    const state = appendResearchOutput(request.state, {
-      stage: 'literature-search', kind: 'literature', title: '相关论文与证据', content,
-    }, Date.now())
+    const content =
+      sources.length === 0
+        ? '未找到可引用的相关论文；请修改问题描述或检索条件后重试。'
+        : sources
+          .map((source, index) => {
+            const title = source.title ?? source.url
+            const detail = source.snippet === undefined ? '' : `\n${source.snippet}`
+            return `${index + 1}. [${title}](${source.url})${detail}`
+          })
+          .join('\n\n')
+    const state = appendResearchOutput(
+      request.state,
+      {
+        stage: 'literature-search',
+        kind: 'literature',
+        title: '相关论文与证据',
+        content,
+      },
+      Date.now(),
+    )
     return this.withLatestArtifact(state)
   }
 
@@ -441,7 +493,8 @@ export class ResearchCoordinator {
 
   private async refineIdea(request: ResearchAdvanceRequest): Promise<ResearchAdvanceResult> {
     const idea = this.latestArtifact(request.state, 'idea')
-    const feedback = selectedResearchNode(request.state).memorySnapshot.feedback.join('\n') || '没有额外反馈；补齐可复现细节。'
+    const feedback =
+      selectedResearchNode(request.state).memorySnapshot.feedback.join('\n') || '没有额外反馈；补齐可复现细节。'
     return this.generateEvaluatedIdea(request, {
       stage: 'idea-refinement',
       title: '根据反馈完善后的想法',
@@ -465,57 +518,259 @@ export class ResearchCoordinator {
     const policy = this.adapters.innovation ?? {}
     const threshold = policy.scoreThreshold ?? 70
     const maxAttempts = policy.maxAttempts ?? 3
-    if (!Number.isInteger(threshold) || threshold < 0 || threshold > 100) throw new Error('innovation score threshold must be an integer from 0 to 100')
-    if (!Number.isInteger(maxAttempts) || maxAttempts < 1) throw new Error('innovation max attempts must be a positive integer')
+    if (!Number.isInteger(threshold) || threshold < 0 || threshold > 100)
+      throw new Error('innovation score threshold must be an integer from 0 to 100')
+    if (!Number.isInteger(maxAttempts) || maxAttempts < 1)
+      throw new Error('innovation max attempts must be a positive integer')
     const weights = memory.directionWeights
     const focuses = memory.directionFocuses.join(', ')
+    const budget = new ShadowBudget(this.adapters.shadow)
+    const runId = randomUUID()
     let lastFailure = ''
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-      const role: ResearchAgentRole = input.refinement ? 'idea-refiner' : 'idea-generator'
-      const idea = await this.adapters.agents.run(
-        role,
-        `请用简体中文${input.refinement ? '根据反馈修改候选研究想法' : '提出一个研究改进想法'}，只能使用下面的材料。给出一个可证伪、可实现的候选方案，明确标注创新点并解释它与已有工作的差异，包含方法、基线、消融、指标和风险。本次是第 ${attempt} 个候选；如果前一个候选被否决，必须做出实质不同的方案。\n\n方向权重（不要求总和为 100）：创新性=${weights.novelty}，影响力=${weights.impact}，可行性=${weights.feasibility}，可复现性=${weights.reproducibility}。\n选择的方向侧重：${focuses}。\n\n问题或候选方案上下文：\n${input.problem}\n\n文献证据：\n${input.literature}${lastFailure.length === 0 ? '' : `\n\n上一个候选被否决的原因（不要重复）：\n${lastFailure}`}`,
-        request.parent,
-        request.signal,
-      )
-      const candidate: ResearchArtifact = {
-        artifactId: `candidate-${attempt}`,
-        kind: 'idea',
-        title: input.title,
-        content: idea,
-        createdAt: Date.now(),
+      const audit: ShadowAudit = {
+        id: runId + '-' + String(attempt),
+        hostRunId: this.adapters.shadowContext?.hostRunId ?? runId,
+        sessionId: this.adapters.shadowContext?.sessionId ?? 'unpersisted',
+        sourceRevision: this.adapters.shadowContext?.sourceRevision ?? 0,
+        nodeId: request.state.selectedNodeId,
+        branchId: request.state.activeBranchId,
+        attempt,
+        candidate: null,
+        candidateSha256: null,
+        startedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        legacy: { status: 'pending', reason: '旧候选尚未完成评价' },
+        lifecycle: 'waiting-legacy',
+        policy: budget.policy,
+        usage: { ...budget.usage },
+        disagreements: [],
+        reason: '等待旧评价',
       }
-      assertInnovationClaim(candidate)
-      const candidateSources = await this.adapters.literature.search(
-        `候选创新点专项查重检索 ${decodeURIComponent(encodeLiteratureQuery(idea, 800))} ${decodeURIComponent(encodeLiteratureQuery(input.problem, 250))}`,
-        request.signal,
-        { sources: memory.literatureSources },
-      )
-      const candidateEvidence = formatLiteratureSources(candidateSources)
-      const evaluationText = await this.adapters.agents.run(
-        'innovation-reviewer',
-        `你是完全独立的创新性专家。不要推断或索取原始对话、用户反馈、隐藏状态或论文全文；只能评价下面给出的候选方案和文献证据。你必须把上传论文摘要、初始相关文献、确认方向后的针对性文献，以及本候选点专项检索到的已发表论文逐篇比较。逐项比较研究机制、核心模块、训练目标、数据与实验设置、指标和贡献声明；只要任意一篇已有论文与候选方案实质高度重合，就将 overlap 设为 true。专项检索没有返回结果时，证据不足，必须把 score 设为 0 且 overlap 设为 true，不能把“没有检索到”当作“没有重复”。只返回严格 JSON，不要 Markdown：{"score":0,"overlap":false,"rationale":"……"}。score 必须是 0 到 100 的整数；rationale 必须用简体中文。\n\n候选方案：\n${idea}\n\n上传论文摘要与当前分支全部相关文献证据：\n${input.literature}\n\n本候选点专项检索结果：\n${candidateEvidence}`,
-        request.parent,
-        request.signal,
-      )
-      const evaluation = parseInnovationEvaluation(evaluationText, threshold)
-      if (candidateSources.length > 0 && evaluation.score >= threshold && !evaluation.overlap) {
-        const state = appendResearchOutput(request.state, {
-          stage: input.stage,
+      const persist = async (): Promise<void> => {
+        audit.updatedAt = new Date().toISOString()
+        audit.usage = { ...budget.usage }
+        try {
+          await this.adapters.onShadowAudit?.(audit)
+        } catch (error) {
+          console.warn('SHADOW_AUDIT_PERSIST_FAILED', audit.id, error)
+        }
+      }
+      await persist()
+      try {
+        const role: ResearchAgentRole = input.refinement ? 'idea-refiner' : 'idea-generator'
+        const idea = await this.adapters.agents.run(
+          role,
+          `请用简体中文${input.refinement ? '根据反馈修改候选研究想法' : '提出一个研究改进想法'}，只能使用下面的材料。给出一个可证伪、可实现的候选方案，明确标注创新点并解释它与已有工作的差异，包含方法、基线、消融、指标和风险。本次是第 ${attempt} 个候选；如果前一个候选被否决，必须做出实质不同的方案。\n\n方向权重（不要求总和为 100）：创新性=${weights.novelty}，影响力=${weights.impact}，可行性=${weights.feasibility}，可复现性=${weights.reproducibility}。\n选择的方向侧重：${focuses}。\n\n问题或候选方案上下文：\n${input.problem}\n\n文献证据：\n${input.literature}${lastFailure.length === 0 ? '' : `\n\n上一个候选被否决的原因（不要重复）：\n${lastFailure}`}`,
+          request.parent,
+          request.signal,
+        )
+        const candidate: ResearchArtifact = {
+          artifactId: `candidate-${attempt}`,
           kind: 'idea',
           title: input.title,
           content: idea,
+          createdAt: Date.now(),
+        }
+        audit.candidate = idea
+        audit.candidateSha256 = createHash('sha256').update(idea).digest('hex')
+        assertInnovationClaim(candidate)
+        const candidateSources = await this.adapters.literature.search(
+          `候选创新点专项查重检索 ${decodeURIComponent(encodeLiteratureQuery(idea, 800))} ${decodeURIComponent(encodeLiteratureQuery(input.problem, 250))}`,
+          request.signal,
+          { sources: memory.literatureSources },
+        )
+        const candidateEvidence = formatLiteratureSources(candidateSources)
+        const evaluationText = await this.adapters.agents.run(
+          'innovation-reviewer',
+          `你是完全独立的创新性专家。不要推断或索取原始对话、用户反馈、隐藏状态或论文全文；只能评价下面给出的候选方案和文献证据。你必须把上传论文摘要、初始相关文献、确认方向后的针对性文献，以及本候选点专项检索到的已发表论文逐篇比较。逐项比较研究机制、核心模块、训练目标、数据与实验设置、指标和贡献声明；只要任意一篇已有论文与候选方案实质高度重合，就将 overlap 设为 true。专项检索没有返回结果时，证据不足，必须把 score 设为 0 且 overlap 设为 true，不能把“没有检索到”当作“没有重复”。只返回严格 JSON，不要 Markdown：{"score":0,"overlap":false,"rationale":"……"}。score 必须是 0 到 100 的整数；rationale 必须用简体中文。\n\n候选方案：\n${idea}\n\n上传论文摘要与当前分支全部相关文献证据：\n${input.literature}\n\n本候选点专项检索结果：\n${candidateEvidence}`,
+          request.parent,
+          request.signal,
+        )
+        const evaluation = parseInnovationEvaluation(evaluationText, threshold)
+        const legacyPass = candidateSources.length > 0 && evaluation.score >= threshold && !evaluation.overlap
+        audit.legacy = {
+          status: legacyPass ? 'pass' : 'reject',
           evaluation,
-        }, Date.now())
-        const latest = this.latestArtifact(state, 'idea')
-        return { state, artifact: latest }
+          reason: candidateSources.length === 0 ? '专项检索无已发表证据' : evaluation.rationale,
+        }
+        let rubricAssessment: RubricAssessment | undefined
+        if (
+          !budget.policy.enabled ||
+          (this.adapters.rubricNetwork === undefined && this.adapters.rubricNetworkFactory === undefined)
+        ) {
+          audit.lifecycle = 'disabled'
+          audit.reason = 'Shadow已关闭或未配置网络'
+        } else if (attempt > budget.policy.maxCandidates || budget.exhausted) {
+          audit.lifecycle = 'budget-exhausted'
+          audit.reason = budget.exhausted ?? 'Shadow candidate budget exhausted'
+        } else {
+          audit.lifecycle = 'running'
+          audit.reason = '独立Rubric评价运行中'
+          await persist()
+          let partial: RubricAssessment | undefined
+          try {
+            const signal = budget.begin(request.signal)
+            rubricAssessment = await this.assessShadow(request, idea, budget, signal, (a) => {
+              partial = a
+            })
+            audit.assessment = rubricAssessment
+            audit.lifecycle = budget.exhausted ? 'budget-exhausted' : rubricAssessment.assessmentStatus
+            audit.reason = budget.exhausted ?? rubricAssessment.synthesis
+          } catch (error) {
+            audit.lifecycle = request.signal?.aborted
+              ? 'cancelled'
+              : budget.exhausted
+                ? 'budget-exhausted'
+                : 'insufficient'
+            audit.reason = error instanceof Error ? error.message : String(error)
+            audit.assessment = {
+              ...(partial ?? insufficientRubric(memory.targetTask ?? null, audit.reason)),
+              assessmentStatus: 'insufficient',
+              score: unscoredRubric(),
+              uncertainties: [...(partial?.uncertainties ?? []), audit.reason],
+            }
+            rubricAssessment = audit.assessment
+          } finally {
+            budget.end()
+          }
+        }
+        audit.disagreements = shadowDisagreements(evaluation, audit.assessment)
+        if (rubricAssessment !== undefined) {
+          rubricAssessment = {
+            ...rubricAssessment,
+            legacyComparison: {
+              score: evaluation.score,
+              threshold,
+              pass: legacyPass,
+              disagreement: audit.disagreements.map(d => d.reason).join('；'),
+            },
+          }
+          audit.assessment = rubricAssessment
+        }
+        await persist()
+        request.signal?.throwIfAborted()
+        if (legacyPass) {
+          const state = appendResearchOutput(
+            request.state,
+            {
+              stage: input.stage,
+              kind: 'idea',
+              title: input.title,
+              content: idea,
+              evaluation,
+              ...(rubricAssessment === undefined
+                ? {}
+                : {
+                  rubricAssessment: {
+                    ...rubricAssessment,
+                    legacyComparison: {
+                      score: evaluation.score,
+                      threshold,
+                      pass: true,
+                      disagreement:
+                          rubricAssessment.assessmentStatus === 'insufficient'
+                            ? '旧评分已通过；Rubric证据不足，不能作数值比较。'
+                            : '旧评分与Rubric采用不同量纲，Rubric不改变旧门槛。' + rubricAssessment.synthesis,
+                    },
+                  },
+                }),
+            },
+            Date.now(),
+          )
+          const latest = this.latestArtifact(state, 'idea')
+          return { state, artifact: latest }
+        }
+        lastFailure =
+          candidateSources.length === 0
+            ? '候选点专项检索没有返回已发表论文证据，无法通过创新性查重。'
+            : evaluation.rationale ||
+              (evaluation.overlap
+                ? 'candidate overlaps existing literature'
+                : `score ${evaluation.score} is below threshold ${threshold}`)
+      } catch (error) {
+        if (audit.legacy.status === 'pending') {
+          audit.legacy = { status: 'error', reason: error instanceof Error ? error.message : String(error) }
+          audit.lifecycle = request.signal?.aborted ? 'cancelled' : 'legacy-error'
+          audit.reason = audit.legacy.reason
+        }
+        await persist()
+        throw error
       }
-      lastFailure = candidateSources.length === 0
-        ? '候选点专项检索没有返回已发表论文证据，无法通过创新性查重。'
-        : evaluation.rationale
-        || (evaluation.overlap ? 'candidate overlaps existing literature' : `score ${evaluation.score} is below threshold ${threshold}`)
     }
-    throw new Error(`INNOVATION_SCORE_BELOW_THRESHOLD: no candidate passed the ${threshold} score and overlap checks after ${maxAttempts} attempts`)
+    throw new Error(
+      `INNOVATION_SCORE_BELOW_THRESHOLD: no candidate passed the ${threshold} score and overlap checks after ${maxAttempts} attempts`,
+    )
+  }
+
+  private async assessShadow(
+    request: ResearchAdvanceRequest,
+    candidate: string,
+    budget: ShadowBudget,
+    signal: AbortSignal,
+    onProgress: (a: RubricAssessment) => void,
+  ): Promise<RubricAssessment> {
+    const memory = selectedResearchNode(request.state).memorySnapshot
+    const target = memory.targetTask ?? null
+    try {
+      const context: ResearchPaperReadContext = {
+        parent: request.parent,
+        allowPartial: true,
+        allowOcr: budget.policy.maxOcrPages > 0,
+        beforeOcr: (pages) => {
+          budget.model('', pages)
+        },
+      }
+      const network =
+        this.adapters.rubricNetworkFactory?.(context, () => {
+          budget.network()
+        }) ?? this.adapters.rubricNetwork
+      if (network === undefined) return insufficientRubric(target, 'Rubric网络适配器未配置')
+      const refs = new Map(
+        memory.artifactIds
+          .flatMap(id => request.state.artifacts[id]?.paperRefs ?? [])
+          .map(p => [p.attachmentId, p]),
+      )
+      const papers: RubricDocument[] = []
+      for (const ref of refs.values()) {
+        const document = await this.adapters.papers.read(ref, signal, context)
+        papers.push({
+          id: 'paper:' + ref.attachmentId,
+          title: ref.name,
+          text: document.text,
+          primary: !document.missingPages?.length,
+          publicationDate: null,
+          provenance: paperProvenance(document, 'attachment:' + ref.attachmentId, new Date().toISOString(), ref.name),
+        })
+      }
+      const bounded: RubricNetwork = this.adapters.rubricNetworkFactory
+        ? network
+        : {
+          search: (query, s) => {
+            budget.network()
+            return network.search(query, s)
+          },
+          read: (source, s) => {
+            budget.network()
+            return network.read(source, s)
+          },
+        }
+      return await runRubricAssessment({
+        targetTask: target,
+        candidate,
+        papers,
+        network: bounded,
+        model: (stage, prompt, s) => {
+          budget.model(prompt)
+          return this.adapters.agents.run(`rubric-${stage}`, prompt, request.parent, s)
+        },
+        signal,
+        onProgress,
+      })
+    } catch (error) {
+      signal.throwIfAborted()
+      return insufficientRubric(target, error instanceof Error ? error.message : String(error))
+    }
   }
 
   private async reviewIdea(request: ResearchAdvanceRequest): Promise<ResearchAdvanceResult> {
@@ -526,22 +781,31 @@ export class ResearchCoordinator {
     const roles = selectedResearchNode(state).memorySnapshot.reviewerRoles
     const selectedRoles = roles.length > 0 ? roles : ['method', 'novelty', 'reproducibility']
     const roleMap: Record<string, ResearchAgentRole> = {
-      method: 'method-reviewer', novelty: 'novelty-reviewer', reproducibility: 'reproducibility-reviewer',
-      '方法审查': 'method-reviewer', '创新性审查': 'novelty-reviewer', '可复现性审查': 'reproducibility-reviewer',
+      method: 'method-reviewer',
+      novelty: 'novelty-reviewer',
+      reproducibility: 'reproducibility-reviewer',
+      方法审查: 'method-reviewer',
+      创新性审查: 'novelty-reviewer',
+      可复现性审查: 'reproducibility-reviewer',
     }
-    const reviews = await Promise.all(selectedRoles.map(async (label) => {
-      const role = roleMap[label] ?? 'method-reviewer'
-      const review = await this.adapters.agents.run(
-        role,
-        `请用简体中文以“${label}”审查者身份评审下面的研究想法。指出一个具体优点、一个阻塞性问题，以及一项明确的修改或测试；同时检查明确写出的创新性主张。仅根据给出的研究想法和文献证据判断，不要索取原始对话。\n\n研究想法：\n${idea.content}\n\n文献证据：\n${evidence}`,
-        request.parent,
-        request.signal,
-      )
-      return `### ${label}\n${review}`
-    }))
-    const stateWithReview = appendResearchOutput(state, {
-      stage: 'multi-agent-review', kind: 'review', title: '多智能体协同审查', content: reviews.join('\n\n'),
-    }, Date.now())
+    const works = [...new Set(selectedRoles)].map(label => ({ label, prompt: `请用简体中文以“${label}”审查者身份评审下面的研究想法。指出一个具体优点、一个阻塞性问题，以及一项明确的修改或测试；同时检查明确写出的创新性主张。仅根据给出的研究想法和文献证据判断，不要索取原始对话。\n\n研究想法：\n${idea.content}\n\n文献证据：\n${evidence}` }))
+    const reviews = await runCheckpointedReviews(
+      JSON.stringify([this.adapters.reviewScope ?? 'local', selectedResearchNode(state).nodeId]),
+      works,
+      work => this.adapters.agents.run(roleMap[work.label] ?? 'method-reviewer', work.prompt, request.parent, request.signal),
+      this.adapters.reviewCheckpoints,
+      request.signal,
+    )
+    const stateWithReview = appendResearchOutput(
+      state,
+      {
+        stage: 'multi-agent-review',
+        kind: 'review',
+        title: '多智能体协同审查',
+        content: reviews.join('\n\n'),
+      },
+      Date.now(),
+    )
     return this.withLatestArtifact(stateWithReview)
   }
 
@@ -553,53 +817,84 @@ export class ResearchCoordinator {
       request.signal,
       { sources: selectedResearchNode(request.state).memorySnapshot.literatureSources },
     )
-    const content = sources.length === 0
-      ? '确认研究方向后的针对性检索没有找到可引用的相关论文；请回到改进想法阶段调整方向。'
-      : sources.map((source, index) => {
-        const title = source.title ?? source.url
-        const detail = source.snippet === undefined ? '' : `\n${source.snippet}`
-        return `${index + 1}. [${title}](${source.url})${detail}`
-      }).join('\n\n')
-    const state = appendResearchOutput(request.state, {
-      stage: 'targeted-literature-search', kind: 'literature', title: '确认方向后的针对性文献调研', content,
-    }, Date.now())
+    const content =
+      sources.length === 0
+        ? '确认研究方向后的针对性检索没有找到可引用的相关论文；请回到改进想法阶段调整方向。'
+        : sources
+          .map((source, index) => {
+            const title = source.title ?? source.url
+            const detail = source.snippet === undefined ? '' : `\n${source.snippet}`
+            return `${index + 1}. [${title}](${source.url})${detail}`
+          })
+          .join('\n\n')
+    const state = appendResearchOutput(
+      request.state,
+      {
+        stage: 'targeted-literature-search',
+        kind: 'literature',
+        title: '确认方向后的针对性文献调研',
+        content,
+      },
+      Date.now(),
+    )
     return this.withLatestArtifact(state)
   }
 
   private async chooseSimulationOrPlan(request: ResearchAdvanceRequest): Promise<ResearchAdvanceResult> {
     const current = this.latestArtifact(request.state, 'decision')
-    if (current.title !== '仿真或直接输出选择') throw new Error('simulation-or-plan stage is missing its user choice checkpoint')
-    if (request.finalChoice === undefined) throw new Error('finalChoice must be selected before the simulation-or-plan stage')
+    if (current.title !== '仿真或直接输出选择')
+      throw new Error('simulation-or-plan stage is missing its user choice checkpoint')
+    if (request.finalChoice === undefined)
+      throw new Error('finalChoice must be selected before the simulation-or-plan stage')
     const latestNodeArtifactId = selectedResearchNode(request.state).artifactRefs.at(-1)
-    const latestNodeArtifact = latestNodeArtifactId === undefined ? undefined : request.state.artifacts[latestNodeArtifactId]
+    const latestNodeArtifact =
+      latestNodeArtifactId === undefined ? undefined : request.state.artifacts[latestNodeArtifactId]
     if (latestNodeArtifact?.kind === 'simulation') {
-      if (request.finalChoice !== 'plan') throw new Error('a completed simulation must be confirmed before generating the final plan')
+      if (request.finalChoice !== 'plan')
+        throw new Error('a completed simulation must be confirmed before generating the final plan')
       return this.finishPlan(request)
     }
     if (request.finalChoice === 'plan') return this.finishPlan(request)
-    if (this.adapters.simulation === undefined) throw new Error('simulation was selected but no simulation adapter is configured')
+    if (this.adapters.simulation === undefined)
+      throw new Error('simulation was selected but no simulation adapter is configured')
     const idea = this.latestArtifact(request.state, 'idea')
     const review = this.latestArtifact(request.state, 'review')
     const node = selectedResearchNode(request.state)
-    const simulation = await this.adapters.simulation.run({
-      idea,
-      review,
-      researchNodeId: node.nodeId,
-      branchId: node.branchId,
-      task: 'numerical-linear-regression',
-      seed: 0,
-    }, request.signal)
-    const state = appendResearchOutput(request.state, {
-      stage: 'simulation-or-final-plan', kind: 'simulation', title: '简单仿真结果', content: simulation,
-    }, Date.now())
+    const simulation = await this.adapters.simulation.run(
+      {
+        idea,
+        review,
+        researchNodeId: node.nodeId,
+        branchId: node.branchId,
+        task: 'numerical-linear-regression',
+        seed: 0,
+      },
+      request.signal,
+    )
+    const state = appendResearchOutput(
+      request.state,
+      {
+        stage: 'simulation-or-final-plan',
+        kind: 'simulation',
+        title: '简单仿真结果',
+        content: simulation,
+      },
+      Date.now(),
+    )
     return this.withLatestArtifact(state)
   }
 
   private createFinalChoice(request: ResearchAdvanceRequest): ResearchAdvanceResult {
-    const state = appendResearchOutput(request.state, {
-      stage: 'simulation-or-final-plan', kind: 'decision', title: '仿真或直接输出选择',
-      content: '请确认是否运行简单仿真；确认后可选择运行仿真或直接生成完整科研方案。',
-    }, Date.now())
+    const state = appendResearchOutput(
+      request.state,
+      {
+        stage: 'simulation-or-final-plan',
+        kind: 'decision',
+        title: '仿真或直接输出选择',
+        content: '请确认是否运行简单仿真；确认后可选择运行仿真或直接生成完整科研方案。',
+      },
+      Date.now(),
+    )
     return this.withLatestArtifact(state)
   }
 
@@ -610,9 +905,16 @@ export class ResearchCoordinator {
       .filter((artifact): artifact is ResearchArtifact => artifact !== undefined)
     const content = renderResearchPlan(artifacts)
     const file = { fileName: 'research-plan.md', content }
-    const state = appendResearchOutput(request.state, {
-      stage: 'final-plan', kind: 'plan', title: '完整科研方案（待写入）', content: file.content,
-    }, Date.now())
+    const state = appendResearchOutput(
+      request.state,
+      {
+        stage: 'final-plan',
+        kind: 'plan',
+        title: '完整科研方案（待写入）',
+        content: file.content,
+      },
+      Date.now(),
+    )
     return this.withLatestArtifact(state)
   }
 
@@ -622,7 +924,7 @@ export class ResearchCoordinator {
     const planFile = this.adapters.planWriter === undefined ? file : await this.adapters.planWriter.write(file)
     const written = markResearchPlanWritten(request.state, planFile.fileName)
     const state = completeResearchNode(written)
-    return { ...(this.withLatestArtifact(state)), planFile }
+    return { ...this.withLatestArtifact(state), planFile }
   }
 
   private latestArtifact(state: ResearchState, kind: ResearchArtifact['kind']): ResearchArtifact {
@@ -646,10 +948,12 @@ export class ResearchCoordinator {
       .filter((artifact): artifact is ResearchArtifact => artifact !== undefined)
       .filter(artifact => artifact.kind === 'summary' || artifact.kind === 'literature')
     if (evidence.length === 0) return '（当前分支没有可供创新性查重的上传论文摘要或文献证据。）'
-    return evidence.map((artifact, index) => {
-      const category = artifact.kind === 'summary' ? '上传论文摘要' : '相关文献检索结果'
-      return `### 证据 ${index + 1}：${category}｜${artifact.title}\n${artifact.content}`
-    }).join('\n\n---\n\n')
+    return evidence
+      .map((artifact, index) => {
+        const category = artifact.kind === 'summary' ? '上传论文摘要' : '相关文献检索结果'
+        return `### 证据 ${index + 1}：${category}｜${artifact.title}\n${artifact.content}`
+      })
+      .join('\n\n---\n\n')
   }
 
   private withLatestArtifact(state: ResearchState): ResearchAdvanceResult {
@@ -676,7 +980,8 @@ export function createAttachmentPaperReader(
   maxBytes: number,
   options: ResearchPaperReaderOptions = {},
 ): ResearchPaperReader {
-  const resolved = resolvePaperReaderOptions(options)
+  const resolved = options
+  resolvePaperReaderOptions(options)
   return {
     async read(paper, signal, context) {
       const chunks: Uint8Array[] = []
@@ -688,46 +993,11 @@ export function createAttachmentPaperReader(
       }
       const bytes = new Uint8Array(byteLength)
       let offset = 0
-      for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength }
-      signal?.throwIfAborted()
-      if (!isPdfUpload(bytes, paper.name)) {
-        const text = new TextDecoder().decode(bytes)
-        if (text.trim().length === 0) throw new Error(`paper "${paper.name}" produced no readable text`)
-        return { fileName: paper.name, text, byteLength, extractionMethod: 'plain-text' }
+      for (const chunk of chunks) {
+        bytes.set(chunk, offset)
+        offset += chunk.byteLength
       }
-
-      const pdf = await openPdf(bytes, paper.name, resolved, signal)
-      if (pdf.pages.length === 0) {
-        return {
-          fileName: paper.name,
-          text: pdf.text,
-          byteLength,
-          extractionMethod: 'embedded-text',
-          pageCount: pdf.pageCount,
-          processedPageCount: pdf.processedPageCount,
-        }
-      }
-      if (resolved.ocr === undefined) {
-        throw new Error('PDF_OCR_UNAVAILABLE: this PDF has no usable text layer and no OCR adapter is configured')
-      }
-      if (context?.parent === undefined) {
-        throw new Error('PDF_OCR_PARENT_REQUIRED: OCR requires the parent Agent used for visual delegation')
-      }
-      const text = await resolved.ocr.recognize(
-        { fileName: paper.name, pages: pdf.pages },
-        context.parent,
-        signal,
-      )
-      const mergedText = mergePdfText(pdf.embeddedPages, text)
-      if (mergedText.trim().length === 0) throw new Error(`PDF_OCR_EMPTY: OCR produced no readable text for "${paper.name}"`)
-      return {
-        fileName: paper.name,
-        text: mergedText,
-        byteLength,
-        extractionMethod: 'ocr',
-        pageCount: pdf.pageCount,
-        processedPageCount: pdf.processedPageCount,
-      }
+      return extractPaperBytes(bytes, paper.name, resolved, signal, context)
     },
   }
 }
@@ -741,14 +1011,23 @@ export function createAttachmentPaperReader(
 export function createWebLiteratureSearcher(web: WebRuntime, maxResults: number): ResearchLiteratureSearcher {
   return {
     async search(query, signal, options) {
-      const requested = options?.sources === undefined || options.sources.length === 0
-        ? ['arxiv', 'openreview', 'semantic-scholar', 'acl-anthology', 'openalex'] as const
-        : options.sources
-      const sources = [...new Set(requested.flatMap(source => source === 'web'
-        ? ['arxiv', 'openreview', 'semantic-scholar', 'acl-anthology', 'openalex'] as const
-        : [source]))]
+      const requested =
+        options?.sources === undefined || options.sources.length === 0
+          ? (['arxiv', 'openreview', 'semantic-scholar', 'acl-anthology', 'openalex'] as const)
+          : options.sources
+      const sources = [
+        ...new Set(
+          requested.flatMap(source =>
+            source === 'web'
+              ? (['arxiv', 'openreview', 'semantic-scholar', 'acl-anthology', 'openalex'] as const)
+              : [source],
+          ),
+        ),
+      ]
       const limit = options?.maxResults ?? maxResults
-      const outcomes = await Promise.all(sources.map(source => searchLiteratureSource(web, source, query, signal, limit)))
+      const outcomes = await Promise.all(
+        sources.map(source => searchLiteratureSource(web, source, query, signal, limit)),
+      )
       const failures = outcomes.filter((outcome): outcome is LiteratureSourceFailure => 'error' in outcome)
       const collected = outcomes.flatMap(outcome => outcome.sources)
       // A failed index used to look exactly like an index with no matching papers.
@@ -761,11 +1040,13 @@ export function createWebLiteratureSearcher(web: WebRuntime, maxResults: number)
         throw new Error(`literature search failed for all selected sources: ${details}; diagnostics: ${diagnostics}`)
       }
       const seen = new Set<string>()
-      return collected.filter((source) => {
-        if (seen.has(source.url)) return false
-        seen.add(source.url)
-        return true
-      }).slice(0, limit)
+      return collected
+        .filter((source) => {
+          if (seen.has(source.url)) return false
+          seen.add(source.url)
+          return true
+        })
+        .slice(0, limit)
     },
   }
 }
@@ -810,12 +1091,23 @@ async function searchLiteratureSource(
     try {
       let sources: readonly ResearchLiteratureSource[]
       switch (source) {
-        case 'arxiv': sources = await searchArxiv(web, query, signal, maxResults); break
-        case 'openreview': sources = await searchOpenReview(web, query, signal, maxResults); break
-        case 'semantic-scholar': sources = await searchSemanticScholar(web, query, signal, maxResults); break
-        case 'acl-anthology': sources = await searchAclAnthology(web, query, signal, maxResults); break
-        case 'openalex': sources = await searchOpenAlex(web, query, signal, maxResults); break
-        default: return unreachableLiteratureSource(source)
+        case 'arxiv':
+          sources = await searchArxiv(web, query, signal, maxResults)
+          break
+        case 'openreview':
+          sources = await searchOpenReview(web, query, signal, maxResults)
+          break
+        case 'semantic-scholar':
+          sources = await searchSemanticScholar(web, query, signal, maxResults)
+          break
+        case 'acl-anthology':
+          sources = await searchAclAnthology(web, query, signal, maxResults)
+          break
+        case 'openalex':
+          sources = await searchOpenAlex(web, query, signal, maxResults)
+          break
+        default:
+          return unreachableLiteratureSource(source)
       }
       return { sources }
     } catch (error: unknown) {
@@ -835,7 +1127,12 @@ const LITERATURE_RETRY_DELAY_MS = 50
 function isRetryableLiteratureError(error: unknown): boolean {
   const diagnostic = describeLiteratureError(error)
   if (diagnostic.category === 'non-public-address' || diagnostic.category === 'response-format') return false
-  if (diagnostic.category === 'http-429' || diagnostic.category === 'http-5xx' || diagnostic.category === 'connection-timeout') return true
+  if (
+    diagnostic.category === 'http-429' ||
+    diagnostic.category === 'http-5xx' ||
+    diagnostic.category === 'connection-timeout'
+  )
+    return true
   const code = literatureErrorCode(error)
   if (code === 'WEB_PROXY_ERROR') return true
   if (diagnostic.category === 'proxy-connection') {
@@ -850,7 +1147,11 @@ function waitForLiteratureRetry(signal: AbortSignal | undefined, attempt: number
   return new Promise((resolve, reject) => {
     const onAbort = () => {
       clearTimeout(timer)
-      reject(signal?.reason instanceof Error ? signal.reason : new Error('Literature retry aborted', { cause: signal?.reason }))
+      reject(
+        signal?.reason instanceof Error
+          ? signal.reason
+          : new Error('Literature retry aborted', { cause: signal?.reason }),
+      )
     }
     const timer = setTimeout(() => {
       signal?.removeEventListener('abort', onAbort)
@@ -874,15 +1175,24 @@ async function fetchText(web: WebRuntime, url: string, signal?: AbortSignal): Pr
 function describeLiteratureError(error: unknown): LiteratureErrorDiagnostic {
   const detail = literatureErrorText(error).replace(/\s+/gu, ' ').trim().slice(0, 240) || 'unknown error'
   const code = literatureErrorCode(error)
-  if (code === 'WEB_BLOCKED_URL' || /non-public (?:IP|IPv4)|NAT64/iu.test(detail)) return { detail, category: 'non-public-address' }
-  if (code === 'WEB_FETCH_TIMEOUT' || /tim(?:e|ed) out|timeout|ETIMEDOUT/iu.test(detail)) return { detail, category: 'connection-timeout' }
+  if (code === 'WEB_BLOCKED_URL' || /non-public (?:IP|IPv4)|NAT64/iu.test(detail))
+    return { detail, category: 'non-public-address' }
+  if (code === 'WEB_FETCH_TIMEOUT' || /tim(?:e|ed) out|timeout|ETIMEDOUT/iu.test(detail))
+    return { detail, category: 'connection-timeout' }
   if (/\bHTTP 429\b/iu.test(detail)) return { detail, category: 'http-429' }
   if (/\bHTTP 5\d{2}\b/iu.test(detail)) return { detail, category: 'http-5xx' }
-  if (code === 'WEB_PROXY_ERROR' || /\bproxy\b|und_err_proxy/iu.test(detail)) return { detail, category: 'proxy-connection' }
-  if (code === 'WEB_UNSUPPORTED_CONTENT_TYPE' || /^empty response body$/iu.test(detail) || error instanceof SyntaxError || /JSON parse|unexpected token|malformed response|response body/iu.test(detail)) {
+  if (code === 'WEB_PROXY_ERROR' || /\bproxy\b|und_err_proxy/iu.test(detail))
+    return { detail, category: 'proxy-connection' }
+  if (
+    code === 'WEB_UNSUPPORTED_CONTENT_TYPE' ||
+    /^empty response body$/iu.test(detail) ||
+    error instanceof SyntaxError ||
+    /JSON parse|unexpected token|malformed response|response body/iu.test(detail)
+  ) {
     return { detail, category: 'response-format' }
   }
-  if (code === 'WEB_PROVIDER_ERROR' && /DNS|EAI_|ENOTFOUND|getaddrinfo/iu.test(detail)) return { detail, category: 'dns-resolution' }
+  if (code === 'WEB_PROVIDER_ERROR' && /DNS|EAI_|ENOTFOUND|getaddrinfo/iu.test(detail))
+    return { detail, category: 'dns-resolution' }
   if (/DNS|EAI_|ENOTFOUND|getaddrinfo/iu.test(detail)) return { detail, category: 'dns-resolution' }
   return { detail, category: 'network' }
 }
@@ -906,9 +1216,17 @@ function literatureErrorText(error: unknown): string {
     }
     if (typeof current !== 'object' || current === null) {
       switch (typeof current) {
-        case 'string': parts.push(current); break
-        case 'number': case 'boolean': case 'bigint': case 'symbol': parts.push(current.toString()); break
-        default: parts.push(current === null ? 'null' : typeof current)
+        case 'string':
+          parts.push(current)
+          break
+        case 'number':
+        case 'boolean':
+        case 'bigint':
+        case 'symbol':
+          parts.push(current.toString())
+          break
+        default:
+          parts.push(current === null ? 'null' : typeof current)
       }
       break
     }
@@ -958,27 +1276,34 @@ async function searchOpenReview(
   const suffix = `&limit=${Math.max(1, Math.min(maxResults, 50))}&sort=tcdate:desc`
   const url = `https://api2.openreview.net/notes?content=${encodeLiteratureQuery(query)}${suffix}`
   const value = JSON.parse(await fetchText(web, url, signal)) as { readonly notes?: readonly OpenReviewNote[] }
-  return (value.notes ?? []).map((note) => {
-    const id = note.id ?? note.forum
-    if (id === undefined || id.length === 0) return undefined
-    const content = note.content ?? {}
-    const title = textField(content.title)
-    const abstract = textField(content.abstract)
-    const venue = textField(content.venue)
-    return {
-      url: `https://openreview.net/forum?id=${encodeURIComponent(id)}`,
-      provider: 'openreview' as const,
-      ...(title === undefined ? {} : { title }),
-      ...(abstract === undefined ? {} : { snippet: abstract.slice(0, 1200) }),
-      ...(venue === undefined ? {} : { publishedAt: venue }),
-    }
-  }).filter((source): source is NonNullable<typeof source> => source !== undefined)
+  return (value.notes ?? [])
+    .map((note) => {
+      const id = note.id ?? note.forum
+      if (id === undefined || id.length === 0) return undefined
+      const content = note.content ?? {}
+      const title = textField(content.title)
+      const abstract = textField(content.abstract)
+      const venue = textField(content.venue)
+      return {
+        url: `https://openreview.net/forum?id=${encodeURIComponent(id)}`,
+        provider: 'openreview' as const,
+        ...(title === undefined ? {} : { title }),
+        ...(abstract === undefined ? {} : { snippet: abstract.slice(0, 1200) }),
+        ...(venue === undefined ? {} : { publishedAt: venue }),
+      }
+    })
+    .filter((source): source is NonNullable<typeof source> => source !== undefined)
 }
 
-interface OpenReviewNote { readonly id?: string; readonly forum?: string; readonly content?: Readonly<Record<string, unknown>> }
+interface OpenReviewNote {
+  readonly id?: string
+  readonly forum?: string
+  readonly content?: Readonly<Record<string, unknown>>
+}
 function textField(value: unknown): string | undefined {
   if (typeof value === 'string') return value.trim() || undefined
-  if (typeof value === 'object' && value !== null && 'value' in value) return textField((value as { readonly value?: unknown }).value)
+  if (typeof value === 'object' && value !== null && 'value' in value)
+    return textField((value as { readonly value?: unknown }).value)
   return undefined
 }
 
@@ -1052,22 +1377,25 @@ async function searchOpenAlex(
   maxResults: number,
 ): Promise<readonly ResearchLiteratureSource[]> {
   const suffix = `&per-page=${Math.max(1, Math.min(maxResults, 100))}`
-  const url = `https://api.openalex.org/works?search=${encodeLiteratureQuery(query)}${suffix}`
-    + '&select=id,doi,title,publication_date,abstract_inverted_index'
+  const url =
+    `https://api.openalex.org/works?search=${encodeLiteratureQuery(query)}${suffix}` +
+    '&select=id,doi,title,publication_date,abstract_inverted_index'
   const value = JSON.parse(await fetchText(web, url, signal)) as { readonly results?: readonly OpenAlexWork[] }
-  return (value.results ?? []).map((work) => {
-    const url = work.doi ?? work.id
-    if (url === undefined || url.length === 0) return undefined
-    return {
-      url,
-      provider: 'openalex' as const,
-      ...(work.title === undefined ? {} : { title: work.title }),
-      ...(work.publication_date === undefined ? {} : { publishedAt: work.publication_date }),
-      ...(work.abstract_inverted_index === undefined
-        ? {}
-        : { snippet: openAlexAbstract(work.abstract_inverted_index).slice(0, 1200) }),
-    }
-  }).filter((source): source is NonNullable<typeof source> => source !== undefined)
+  return (value.results ?? [])
+    .map((work) => {
+      const url = work.doi ?? work.id
+      if (url === undefined || url.length === 0) return undefined
+      return {
+        url,
+        provider: 'openalex' as const,
+        ...(work.title === undefined ? {} : { title: work.title }),
+        ...(work.publication_date === undefined ? {} : { publishedAt: work.publication_date }),
+        ...(work.abstract_inverted_index === undefined
+          ? {}
+          : { snippet: openAlexAbstract(work.abstract_inverted_index).slice(0, 1200) }),
+      }
+    })
+    .filter((source): source is NonNullable<typeof source> => source !== undefined)
 }
 interface OpenAlexWork {
   readonly id?: string
@@ -1079,7 +1407,10 @@ interface OpenAlexWork {
 function openAlexAbstract(index: Readonly<Record<string, readonly number[]>>): string {
   const words: Array<[number, string]> = []
   for (const [word, positions] of Object.entries(index)) for (const position of positions) words.push([position, word])
-  return words.sort(([left], [right]) => left - right).map(([, word]) => word).join(' ')
+  return words
+    .sort(([left], [right]) => left - right)
+    .map(([, word]) => word)
+    .join(' ')
 }
 
 async function searchArxiv(
@@ -1116,7 +1447,16 @@ async function searchArxiv(
 function xmlText(xml: string, tag: string): string {
   const match = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`).exec(xml)
   const value = match?.[1] ?? ''
-  return value.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, ' ').trim()
+  return value
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 /**
@@ -1137,11 +1477,14 @@ export function createSubagentResearchRunner(subagents: SubagentRuntime, provide
         signal: signal ?? new AbortController().signal,
       })
       try {
-        const result = await run.result
+        const result = await abortable(run.result, signal)
         if (result.stopReason !== 'completed') {
           throw new Error(`research agent ${role} stopped with ${result.stopReason}`)
         }
-        const text = result.output.filter((block: ContentBlock) => block.type === 'text').map(block => block.text).join('\n')
+        const text = result.output
+          .filter((block: ContentBlock) => block.type === 'text')
+          .map(block => block.text)
+          .join('\n')
         if (text.trim().length === 0) throw new Error(`research agent ${role} returned no visible text`)
         return text
       } finally {
@@ -1221,12 +1564,17 @@ function inheritedAgentOptions(parent: Agent): AgentOptions | undefined {
   const previous = parentAgentOptionsForDelegation(parent)
   const pending = parent.ctx.get('sessionProjections')?.stateOf(parent.session, 'modelSelection')?.pending
   const { provider: _provider, model: _model, reasoningEffort: _effort, ...limits } = previous
-  const options: AgentOptions = pending == null ? previous : {
-    ...limits,
-    provider: pending.provider,
-    model: pending.model,
-    ...(pending.reasoningEffort === undefined ? {} : { reasoningEffort: ReasoningEffortId(pending.reasoningEffort) }),
-  }
+  const options: AgentOptions =
+    pending == null
+      ? previous
+      : {
+        ...limits,
+        provider: pending.provider,
+        model: pending.model,
+        ...(pending.reasoningEffort === undefined
+          ? {}
+          : { reasoningEffort: ReasoningEffortId(pending.reasoningEffort) }),
+      }
   const inherited: AgentOptions = {
     ...(options.provider === undefined ? {} : { provider: options.provider }),
     ...(options.model === undefined ? {} : { model: options.model }),
@@ -1238,7 +1586,14 @@ function inheritedAgentOptions(parent: Agent): AgentOptions | undefined {
 
 /** Options used when assembling all configured Host capabilities. */
 export interface HostResearchCoordinatorOptions {
+  readonly reviewCheckpoints?: ReviewCheckpointStore
+  readonly reviewScope?: string
   /** Named subagent provider used for every research role. */
+  readonly shadow?: Partial<ShadowPolicy>
+  readonly shadowContext?: { readonly sessionId: string; readonly sourceRevision: number; readonly hostRunId: string }
+  readonly onShadowAudit?: (audit: ShadowAudit) => Promise<void>
+  readonly publicPdfEnabled?: boolean
+  readonly publicPdfOrigins?: readonly string[]
   readonly subagentProvider: string
   /** Explicit path in the caller's Session filesystem for the Markdown plan. */
   readonly planPath: string
@@ -1296,6 +1651,25 @@ export function createHostResearchCoordinator(
       ocr: createSubagentResearchOcr(services.attachments, services.subagents, options.subagentProvider),
     }),
     literature: createWebLiteratureSearcher(services.web, options.maxLiteratureResults),
+    reviewCheckpoints: options.reviewCheckpoints,
+    reviewScope: options.reviewScope,
+    shadow: options.shadow,
+    shadowContext: options.shadowContext,
+    onShadowAudit: options.onShadowAudit,
+    rubricNetworkFactory: (context, beforeRequest) =>
+      createRubricNetwork(services.web, {
+        enabled: options.publicPdfEnabled ?? true,
+        ...(options.publicPdfOrigins ? { origins: options.publicPdfOrigins } : {}),
+        beforeRequest,
+        maxBytes: options.maxPaperBytes,
+        paperContext: context,
+        paperOptions: {
+          maxPdfPages: options.maxPdfPages,
+          ocrScale: options.ocrScale,
+          maxOcrPixels: options.maxOcrPixels,
+          ocr: createSubagentResearchOcr(services.attachments, services.subagents, options.subagentProvider),
+        },
+      }),
     agents: createSubagentResearchRunner(services.subagents, options.subagentProvider),
     simulation: services.simulation ?? createNumericalResearchSimulationRunner(),
     innovation: {
@@ -1317,148 +1691,29 @@ export function renderResearchPlan(artifacts: readonly ResearchArtifact[]): stri
     return artifact === undefined ? `## ${heading}\n\n待补充。` : `## ${heading}\n\n${artifact.content}`
   }
   const literature = artifacts.filter(item => item.kind === 'literature')
-  const literatureSection = literature.length === 0
-    ? '## 相关工作与证据\n\n待补充。'
-    : `## 相关工作与证据\n\n${literature.map(item => `### ${item.title}\n\n${item.content}`).join('\n\n')}`
-  return [
-    '# 自动科研方案',
-    section('summary', '论文摘要'),
-    section('problem', '研究问题与缺口'),
-    literatureSection,
-    section('idea', '改进方法与创新点'),
-    section('review', '多智能体审查与修订'),
-    section('simulation', '简单仿真证据'),
-    '## 实验设计\n\n请依据审查意见补齐数据、基线、指标、消融、风险和复现步骤。',
-  ].join('\n\n') + '\n'
-}
-
-interface PdfExtraction {
-  readonly text: string
-  readonly embeddedPages: readonly PdfTextPage[]
-  readonly pageCount: number
-  readonly processedPageCount: number
-  readonly pages: readonly ResearchPaperOcrPage[]
-}
-
-interface PdfTextPage {
-  readonly pageNumber: number
-  readonly text: string
-}
-
-interface ResolvedPaperReaderOptions {
-  readonly maxPdfPages: number
-  readonly ocrScale: number
-  readonly maxOcrPixels: number
-  readonly ocr?: ResearchPaperOcr
-}
-
-const DEFAULT_PDF_PAGES = 12
-const DEFAULT_OCR_SCALE = 1.5
-const DEFAULT_MAX_OCR_PIXELS = 4_000_000
-const MIN_EMBEDDED_TEXT = 24
-
-function resolvePaperReaderOptions(options: ResearchPaperReaderOptions): ResolvedPaperReaderOptions {
-  const maxPdfPages = options.maxPdfPages ?? DEFAULT_PDF_PAGES
-  const ocrScale = options.ocrScale ?? DEFAULT_OCR_SCALE
-  const maxOcrPixels = options.maxOcrPixels ?? DEFAULT_MAX_OCR_PIXELS
-  if (!Number.isSafeInteger(maxPdfPages) || maxPdfPages < 1) throw new Error('maxPdfPages must be a positive integer')
-  if (!Number.isFinite(ocrScale) || ocrScale <= 0) throw new Error('ocrScale must be a positive number')
-  if (!Number.isSafeInteger(maxOcrPixels) || maxOcrPixels < 1) throw new Error('maxOcrPixels must be a positive integer')
-  return { maxPdfPages, ocrScale, maxOcrPixels, ...(options.ocr === undefined ? {} : { ocr: options.ocr }) }
-}
-
-function isPdfUpload(bytes: Uint8Array, fileName: string): boolean {
-  return fileName.toLowerCase().endsWith('.pdf')
-    || bytes.length >= 5 && new TextDecoder().decode(bytes.subarray(0, 5)) === '%PDF-'
-}
-
-async function openPdf(
-  bytes: Uint8Array,
-  fileName: string,
-  options: ResolvedPaperReaderOptions,
-  signal?: AbortSignal,
-): Promise<PdfExtraction> {
-  signal?.throwIfAborted()
-  let document: PDFDocumentProxy | undefined
-  let loadingTask: ReturnType<typeof getDocument> | undefined
-  try {
-    loadingTask = getDocument({
-      data: bytes,
-      useWorkerFetch: false,
-      stopAtErrors: false,
-      disableFontFace: true,
-      standardFontDataUrl: `${join(dirname(createRequire(import.meta.url).resolve('pdfjs-dist/package.json')), 'standard_fonts')}/`,
-    })
-    document = await loadingTask.promise
-    const pageCount = document.numPages
-    const pagesToRead = Math.min(pageCount, options.maxPdfPages)
-    const embeddedPages: PdfTextPage[] = []
-    for (let pageNumber = 1; pageNumber <= pagesToRead; pageNumber += 1) {
-      signal?.throwIfAborted()
-      const page = await document.getPage(pageNumber)
-      const content = await page.getTextContent()
-      const pageText = content.items
-        .map(item => 'str' in item ? item.str : '')
-        .filter(text => text.trim().length > 0)
-        .join(' ')
-      if (pageText.trim().length >= MIN_EMBEDDED_TEXT) embeddedPages.push({ pageNumber, text: pageText.trim() })
-    }
-
-    const pages: ResearchPaperOcrPage[] = []
-    for (let pageNumber = 1; pageNumber <= pagesToRead; pageNumber += 1) {
-      if (embeddedPages.some(page => page.pageNumber === pageNumber)) continue
-      signal?.throwIfAborted()
-      const page = await document.getPage(pageNumber)
-      const initialViewport = page.getViewport({ scale: options.ocrScale })
-      const requestedPixels = initialViewport.width * initialViewport.height
-      const capScale = requestedPixels > options.maxOcrPixels
-        ? Math.sqrt(options.maxOcrPixels / requestedPixels)
-        : 1
-      const viewport = capScale === 1
-        ? initialViewport
-        : page.getViewport({ scale: options.ocrScale * capScale })
-      const width = Math.max(1, Math.ceil(viewport.width))
-      const height = Math.max(1, Math.ceil(viewport.height))
-      const canvas = createCanvas(width, height)
-      const context = canvas.getContext('2d')
-      await page.render({ canvas: null, canvasContext: context as never, viewport }).promise
-      pages.push({ pageNumber, data: canvas.toBuffer('image/png') })
-    }
-    return { text: renderPdfTextPages(embeddedPages), embeddedPages, pageCount, processedPageCount: pagesToRead, pages }
-  } catch (error) {
-    signal?.throwIfAborted()
-    const detail = error instanceof Error ? error.message : String(error)
-    throw new Error(`PDF_TEXT_EXTRACTION_FAILED: ${fileName}: ${detail}`, { cause: error })
-  } finally {
-    if (loadingTask !== undefined) await loadingTask.destroy()
-  }
-}
-
-function renderPdfTextPages(pages: readonly PdfTextPage[]): string {
-  return pages.map(page => `Page ${page.pageNumber}\n${page.text}`).join('\n\n').trim()
-}
-
-function mergePdfText(embeddedPages: readonly PdfTextPage[], ocrText: string): string {
-  const pages = new Map<number, string>(embeddedPages.map(page => [page.pageNumber, page.text]))
-  const marker = /(?:^|\n)Page (\d+)\n([\s\S]*?)(?=\nPage \d+\n|$)/g
-  let matched = false
-  for (const match of ocrText.matchAll(marker)) {
-    const pageNumber = Number(match[1])
-    const text = match[2]?.trim()
-    if (!Number.isSafeInteger(pageNumber) || text === undefined || text.length === 0) continue
-    pages.set(pageNumber, text)
-    matched = true
-  }
-  if (!matched && ocrText.trim().length > 0) return [renderPdfTextPages(embeddedPages), ocrText.trim()].filter(Boolean).join('\n\n')
-  return [...pages.entries()]
-    .sort(([left], [right]) => left - right)
-    .map(([pageNumber, text]) => `Page ${pageNumber}\n${text}`)
-    .join('\n\n')
-    .trim()
+  const literatureSection =
+    literature.length === 0
+      ? '## 相关工作与证据\n\n待补充。'
+      : `## 相关工作与证据\n\n${literature.map(item => `### ${item.title}\n\n${item.content}`).join('\n\n')}`
+  return (
+    [
+      '# 自动科研方案',
+      section('summary', '论文摘要'),
+      section('problem', '研究问题与缺口'),
+      literatureSection,
+      section('idea', '改进方法与创新点'),
+      section('review', '多智能体审查与修订'),
+      section('simulation', '简单仿真证据'),
+      '## 实验设计\n\n请依据审查意见补齐数据、基线、指标、消融、风险和复现步骤。',
+    ].join('\n\n') + '\n'
+  )
 }
 
 function parseInnovationEvaluation(text: string, threshold: number): ResearchInnovationEvaluation {
-  const candidate = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '')
+  const candidate = text
+    .trim()
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/, '')
   const start = candidate.indexOf('{')
   const end = candidate.lastIndexOf('}')
   if (start < 0 || end <= start) throw new Error('INNOVATION_REVIEW_INVALID: expert did not return a JSON object')
@@ -1468,12 +1723,20 @@ function parseInnovationEvaluation(text: string, threshold: number): ResearchInn
   } catch (error) {
     throw new Error('INNOVATION_REVIEW_INVALID: expert returned malformed JSON', { cause: error })
   }
-  if (typeof value !== 'object' || value === null) throw new Error('INNOVATION_REVIEW_INVALID: expert result is not an object')
+  if (typeof value !== 'object' || value === null)
+    throw new Error('INNOVATION_REVIEW_INVALID: expert result is not an object')
   const record = value as Record<string, unknown>
   const score = record.score
   const overlap = record.overlap
   const rationale = record.rationale
-  if (typeof score !== 'number' || !Number.isInteger(score) || score < 0 || score > 100 || typeof overlap !== 'boolean' || typeof rationale !== 'string') {
+  if (
+    typeof score !== 'number' ||
+    !Number.isInteger(score) ||
+    score < 0 ||
+    score > 100 ||
+    typeof overlap !== 'boolean' ||
+    typeof rationale !== 'string'
+  ) {
     throw new Error('INNOVATION_REVIEW_INVALID: expected integer score, boolean overlap, and rationale')
   }
   return { score, threshold, overlap, rationale: rationale.trim() }
@@ -1482,13 +1745,15 @@ function parseInnovationEvaluation(text: string, threshold: number): ResearchInn
 /** Format candidate-specific index results for the isolated innovation reviewer. */
 function formatLiteratureSources(sources: readonly ResearchLiteratureSource[]): string {
   if (sources.length === 0) return '（本候选点专项检索没有返回结果，不能据此证明不存在重复工作。）'
-  return sources.map((source, index) => {
-    const title = source.title ?? source.url
-    const provider = source.provider === undefined ? '未标明来源' : source.provider
-    const publishedAt = source.publishedAt === undefined ? '' : `\n发表信息：${source.publishedAt}`
-    const snippet = source.snippet === undefined ? '' : `\n摘要或检索片段：${source.snippet}`
-    return `${index + 1}. ${title}\n来源：${provider}\nURL：${source.url}${publishedAt}${snippet}`
-  }).join('\n\n')
+  return sources
+    .map((source, index) => {
+      const title = source.title ?? source.url
+      const provider = source.provider === undefined ? '未标明来源' : source.provider
+      const publishedAt = source.publishedAt === undefined ? '' : `\n发表信息：${source.publishedAt}`
+      const snippet = source.snippet === undefined ? '' : `\n摘要或检索片段：${source.snippet}`
+      return `${index + 1}. ${title}\n来源：${provider}\nURL：${source.url}${publishedAt}${snippet}`
+    })
+    .join('\n\n')
 }
 
 function unreachableStage(stage: never): never {

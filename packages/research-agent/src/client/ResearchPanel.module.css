@@ -2,7 +2,8 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  container: research-panel / inline-size;
   width: 100%;
   min-width: 0;
   min-height: 0;
@@ -29,8 +30,8 @@
 }
 
 .header {
-  position: sticky;
-  top: -16px;
+  position: relative;
+  top: 0;
   z-index: 8;
   display: flex;
   align-items: center;
@@ -303,7 +304,7 @@
 
 .actionDock {
   position: sticky;
-  top: 66px;
+  top: 0;
   z-index: 6;
   display: flex;
   align-items: center;
@@ -459,7 +460,7 @@
 }
 
 .branchTreeSection {
-  min-height: 600px;
+  min-height: 260px;
 }
 
 .branchTreeBranch {
@@ -1600,7 +1601,7 @@
   }
 
   .header {
-    top: -12px;
+    top: 0;
     align-items: flex-start;
     flex-direction: column;
     gap: 10px;
@@ -1616,7 +1617,7 @@
   }
 
   .actionDock {
-    top: 62px;
+    top: 0;
     align-items: stretch;
     flex-direction: column;
   }
@@ -1971,3 +1972,57 @@
     padding-inline: 32px;
   }
 }
+
+/* The sidebar width, rather than the window width, determines the layout. */
+.root > * { flex-shrink: 0; }
+.root :is(section, [data-research-node-detail]) { scroll-margin-top: 112px; }
+.header, .section, .card, .mainTranscript { box-shadow: none; }
+.actionDock { flex-wrap: wrap; background: var(--dsw-alias-bg-module-platform); }
+.actionDockButtons { flex: 1 1 180px; min-width: 0; }
+.syncButton {
+  align-self: flex-end;
+  padding: 5px 8px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: var(--dsw-radius-md);
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.syncButton:disabled { opacity: .45; cursor: default; }
+.syncButton:hover:not(:disabled) { background: var(--dsw-alias-interactive-bg-hover); }
+.root :is(button, select, textarea, input, summary):focus-visible {
+  outline: 2px solid var(--dsw-alias-state-business-primary);
+  outline-offset: 3px;
+}
+.mainTranscriptMessageHeader {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.mainTranscriptMessage[data-expanded='false'] [data-rubric-assessment] { display: none; }
+@container research-panel (max-width: 440px) {
+  .header { flex-direction: column; align-items: stretch; gap: 8px; padding: 12px; }
+  .headerMeta { max-width: none; flex: auto; justify-content: flex-start; }
+  .workspace { display: none; }
+  .actionDock { flex-direction: column; align-items: stretch; }
+  .actionDockButtons { flex: auto; width: 100%; justify-content: stretch; }
+  .actionDockButtons > button { flex: 1 1 auto; }
+  .sectionHeader { flex-wrap: wrap; }
+  .detailGrid { grid-template-columns: minmax(0, 1fr); }
+  .mainTranscriptMessageHeader { flex-wrap: wrap; gap: 6px; }
+  .mainTranscriptMessageMeta { margin-left: auto; }
+}
+
+/* Keep each research view independent while retaining drafts between tabs. */
+.viewPanel, .checkpointControls { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.viewPanel[hidden], .checkpointControls:empty { display: none; }
+.workspaceNav { position: sticky; top: 0; z-index: 10; background: var(--dsw-alias-bg-module-platform); }
+.workspaceNavButton[aria-selected='true'] { background: var(--dsw-alias-interactive-bg-hover-accent); color: var(--dsw-alias-state-business-primary); border-color: var(--dsw-alias-state-business-primary); font-weight: 600; }
+.actionDock { top: 50px; }

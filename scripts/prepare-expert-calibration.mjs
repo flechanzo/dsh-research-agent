@@ -1,0 +1,22 @@
+/** Prepare attributable blank expert packets; no people are assigned or contacted. */
+import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';
+const source=JSON.parse(fs.readFileSync('evaluation/rubric-1.7.0/cases.json','utf8'));
+const out=path.resolve(process.argv[2]);const evidenceRoot=process.argv[3]?path.resolve(process.argv[3]):null;
+if(fs.existsSync(out))throw Error('Use a new immutable packet directory');fs.mkdirSync(out,{recursive:true});
+const hash=value=>createHash('sha256').update(value).digest('hex');
+const domains=[{id:'parameter-efficient-adaptation',name:'参数高效微调',cases:['modern-dora-reproduction','lora-transfer-boundary']},{id:'robustness-and-certification',name:'对抗鲁棒性与认证理论',cases:['smoothing-theory-boundary','adversarial-problem-boundary']}];
+const privateKey=[];
+for(const c of source.cases){
+ const blindId='sample-'+hash(c.id+'|'+source.rubricSha256).slice(0,12);privateKey.push({blindId,caseId:c.id});
+ const notebookFile=evidenceRoot?path.join(evidenceRoot,c.id+'.json'):null;
+ const notebook=notebookFile&&fs.existsSync(notebookFile)?JSON.parse(fs.readFileSync(notebookFile,'utf8')):null;
+ const publicEvidence=(notebook?.readings??[]).map(r=>{const d=r.document;const wrongIdentity=r.url.includes('1306.1809');return {url:r.url,requestedLabel:r.title,coverage:d?.provenance?.coverage??'unavailable',version:d?.provenance?.version??null,versionDate:d?.provenance?.versionDate??null,textSha256:d?.provenance?.textSha256??null,locations:d?.provenance?.locations??[],pdfSha256:d?.attempts?.find(a=>a.sha256&&a.transport==='public-pdf')?.sha256??d?.acquisition?.sha256??null,retrievedAt:d?.acquisition?.fetchedAt??r.at,sourceIdentityVerified:wrongIdentity?false:null,excludedReason:wrongIdentity?'URL 1306.1809 is a cosmology paper; supplied request label is incorrect. Exclude from relevant precedents.':null,error:r.error??d?.errors??null}});
+ const packet={blindId,rubricVersion:source.rubricVersion,rubricSha256:source.rubricSha256,targetTask:c.targetTask,targetTaskDigest:hash(JSON.stringify(c.targetTask)),comparisonPoint:c.comparisonPoint,candidate:c.candidate,sources:c.sources.map(s=>({url:s.url,title:s.title})),publicEvidence,reviewer:null,review:null,instructions:['先独立查新，提交后才看其他评审或旧评分。原论文标题不能完全匿名；盲审针对预设分数、其他意见和历史决定。','公开证据只作定位起点，不代表查新充分；核验真实标题、版本日期及比较时点。按核心贡献完成三轮自适应检索，记录原文页、公式、假设和证明。','先拆最小不可约贡献，再核对分类、必要复杂性、R/J事实去重、高档门槛与主导切换。','证据不足保持insufficient/null，置信度单列；不得以论文影响力预设分数。','有数值时新增scorerInput并由既有确定性scorer核验；无数值时不填该字段。','提交专业背景、利益冲突、独立性声明及真实时间。同源模型不计独立专家。'],submissionTemplate:{caseId:blindId,targetTaskDigest:hash(JSON.stringify(c.targetTask)),comparisonPoint:c.comparisonPoint,rubricSha256:source.rubricSha256,reviewer:{id:null,kind:'human-domain-expert',affiliation:null,expertise:null,independenceDeclaration:null},reviewedAt:null,actualNetworkAudit:[],status:'insufficient',score:null,mainId:null,categories:{},R:{},J:0,disagreements:[],confidence:{level:null,reason:null},unresolvedIssues:[]}};
+ fs.writeFileSync(path.join(out,blindId+'.json'),JSON.stringify(packet,null,2));
+}
+const roster={status:'expert-calibration-not-executed',minimumExpertsPerDomain:3,expertReviews:0,domains:domains.map(d=>({...d,slots:[1,2,3].map(n=>({slot:d.id+'-'+n,reviewer:null,backgroundVerified:false,independenceVerified:false,submission:null}))})),reconciliation:'Collect independently; coordinator maps blindId using PRIVATE-case-key only after submissions. Compare only matched case/task/date/version. Pairwise agreement alone does not establish validity.'};
+fs.writeFileSync(path.join(out,'PRIVATE-case-key.json'),JSON.stringify(privateKey,null,2));fs.writeFileSync(path.join(out,'PRIVATE-reviewer-roster.json'),JSON.stringify(roster,null,2));
+fs.writeFileSync(path.join(out,'empty-reviews.json'),'[]\n');
+fs.writeFileSync(path.join(out,'README.md'),'# 专家校准材料（尚未执行）\n\n每位评审只分发其 sample JSON、Rubric 原文及公开原文入口。PRIVATE 文件、其他评审、旧评分和预设档位不能分发。证据哈希和页位置用于重取核验，coverage 只表示获取完整度，不保证身份或科学内容正确。\n\n两个优先领域各设三名真实独立专家席位；目前无人分配、无审查数据、未联系专家。先独立提交，再由协调员用 PRIVATE-case-key 映射 caseId，按相同任务/时点/版本分组运行 compare-rubric-reviews。不得把多个模型视为专家。数值须经原 scorer，不校准固定门槛。\n');
+fs.copyFileSync('packages/research-agent/resources/rubrics/innovation/rubric_v1.7.0.md',path.join(out,'rubric_v1.7.0.md'));
+console.log(JSON.stringify({packets:privateKey.length,domains:domains.length,blankExpertSlots:6,expertReviews:0,expertCalibrationComplete:false}));

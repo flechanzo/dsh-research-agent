@@ -1,3 +1,6 @@
+export type { ShadowAudit } from './innovation/shadow.ts'
+import type { RubricAssessment, TargetTask } from './innovation/schema.ts'
+export type { RubricAssessment, TargetTask, TargetTaskFields } from './innovation/schema.ts'
 /** Wire vocabulary for the Session-scoped automatic research controller. */
 
 import type { FileAttachmentRef } from '@deepseek-ai/dsh-attachment/types'
@@ -42,6 +45,8 @@ export interface ResearchArtifact {
   /** Optional paper filename or source URL. */
   readonly source?: string
   /** Expert evaluation attached to an innovation candidate. */
+  readonly rubricAssessment?: RubricAssessment
+  readonly paperRefs?: readonly FileAttachmentRef[]
   readonly evaluation?: ResearchInnovationEvaluation
   /** Creation timestamp. */
   readonly createdAt: number
@@ -57,6 +62,8 @@ export interface ResearchInnovationEvaluation {
 
 /** Memory captured when a node is created. */
 export interface ResearchMemorySnapshot {
+  /** Confirmed task copied immutably to future assessments and branches. */
+  readonly targetTask?: TargetTask
   /** Artifact ids available to downstream agents. */
   readonly artifactIds: readonly string[]
   /** Feedback accumulated before this node. */
@@ -161,6 +168,18 @@ export interface ResearchReadRequest {
   readonly sessionId: SessionId
 }
 
+/** Re-export the current durable revision without advancing the DAG. */
+export interface ResearchResyncRequest {
+  readonly sessionId: SessionId
+  readonly expectedRevision: number
+}
+
+/** Non-mutating draft extraction; confirmation rechecks the immutable input digest. */
+export interface ResearchTargetTaskProposal {
+  readonly fields: import('./innovation/schema.ts').TargetTaskFields
+  readonly contextDigest: string
+}
+
 /** Start reading and summarizing one uploaded paper. */
 export interface ResearchUploadRequest {
   readonly sessionId: SessionId
@@ -175,6 +194,8 @@ export interface ResearchUploadRequest {
 
 /** Confirm the selected output and run exactly one next coordinator step. */
 export interface ResearchConfirmRequest {
+  readonly targetTask?: import('./innovation/schema.ts').TargetTaskFields
+  readonly targetTaskContextDigest?: string
   readonly sessionId: SessionId
   readonly expectedRevision: number
   /** Stable reviewer role ids selected before the review step. */

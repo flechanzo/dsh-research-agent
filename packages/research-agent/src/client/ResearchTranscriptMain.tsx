@@ -1,3 +1,4 @@
+import { RubricAssessmentView } from './RubricAssessmentView.tsx'
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
 import type {
@@ -170,38 +171,29 @@ export function ResearchTranscriptMain({ sessionId, research, t }: ResearchTrans
               ].filter(Boolean).join(' ')}
               data-research-main-node={node.nodeId}
               data-expanded={expanded ? 'true' : 'false'}
-              role="button"
-              tabIndex={0}
-              aria-current={selected ? 'step' : undefined}
-              aria-expanded={expanded}
-              onClick={() => { activateNode(node.nodeId) }}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault()
-                  activateNode(node.nodeId)
-                }
-              }}
             >
-              <div className={css.mainTranscriptMessageHeader}>
+              <button
+                type="button"
+                className={css.mainTranscriptMessageHeader}
+                aria-current={selected ? 'step' : undefined}
+                aria-expanded={expanded}
+                onClick={() => { activateNode(node.nodeId) }}
+              >
                 <span className={css.cardTitle}>{stageText(node.stage, t)}</span>
                 <span className={css.mainTranscriptMessageMeta}>
                   <span className={css.subtle}>{statusText(node.status, t)}</span>
                   <span className={css.mainTranscriptToggle}>{expanded ? t('research.collapse') : t('research.expand')}</span>
                 </span>
-              </div>
+              </button>
               {artifacts.length === 0
                 ? <p className={css.mainTranscriptEmpty}>{t('research.emptyArtifact')}</p>
                 : artifacts.map(artifact => (
                   <div key={artifact.artifactId} className={css.mainTranscriptArtifact}>
                     <div className={css.mainTranscriptArtifactTitle}>{artifact.title}</div>
+                    {artifact.rubricAssessment !== undefined && <RubricAssessmentView assessment={artifact.rubricAssessment} />}
                     <div
                       className={css.mainTranscriptContent}
                       data-research-main-content
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        if (event.target instanceof Element && event.target.closest('a,button') !== null) return
-                        toggleNode(node.nodeId)
-                      }}
                     >
                       <MarkdownText text={artifact.content} labels={markdownLabels} />
                     </div>

@@ -1,0 +1,2063 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-02",
+  "timezone": "Asia/Shanghai",
+  "root": "D:\\dsh-research-agent",
+  "head": "f8f3ddfe0b4677815905760ee44e90a2c56c7c86",
+  "sourceVersion": "0.1.5-rc.5",
+  "scope": "仅项目发布产物。排除 node_modules、依赖缓存、pnpm store、用户 home、progress-repo、Git 备份；profile 元数据与受保护数据仅用于引用核验和只读哈希。",
+  "beforeArchiveCount": 37,
+  "beforeArchiveBytes": 2098324253,
+  "entries": [
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\native-web-production-I9znjB\\unpacked\\plugin\\dsh-research-agent-0.1.5-rc.9.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.9.tgz",
+      "type": "TGZ",
+      "bytes": 197573,
+      "sha256": "d43635c5c1b7c13d8931daec09a01e3febce91a99723389be9c51441948f58b8",
+      "category": "B",
+      "version": "0.1.5-rc.9",
+      "oldResearchWeb": false,
+      "oldNativeWeb": true,
+      "historicalPlugin": true,
+      "reason": "4 个已存在的原生 Web 验收 profile 的依赖与锁文件直接引用；不破坏其重装链路。",
+      "profileReferences": [
+        "D:\\dsh-research-agent\\.acceptance\\native-web-production-J5OEXQ\\scenario\\data\\home\\profiles\\web",
+        "D:\\dsh-research-agent\\.acceptance\\native-web-production-KIbOkm\\scenario\\data\\home\\profiles\\web",
+        "D:\\dsh-research-agent\\.acceptance\\native-web-production-LQg8nk\\scenario\\data\\home\\profiles\\web",
+        "D:\\dsh-research-agent\\.acceptance\\native-web-production-stiAKC\\scenario\\data\\home\\profiles\\web"
+      ],
+      "status": "retained_verified",
+      "stage": "旧原生 Web 候选／验收",
+      "referenceState": "4 个已存在的原生 Web 验收 profile 的依赖与锁文件直接引用；不破坏其重装链路。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\run-20261027-RV7z7X\\baseline-0.1.4.tgz",
+      "name": "baseline-0.1.4.tgz",
+      "type": "TGZ",
+      "bytes": 176110,
+      "sha256": "57904ecfc84b4af9a9f925ac2e1d7d662fc8d6707c1b5d62ae2f515b1fbf78f6",
+      "category": "B",
+      "version": "0.1.4",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": ".acceptance/final-integrity.mjs 直接读取的冻结基线包。",
+      "profileReferences": [],
+      "status": "retained_verified",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": ".acceptance/final-integrity.mjs 直接读取的冻结基线包。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\run-20261027-RV7z7X\\dsh-research-agent-0.1.5-rc.4.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.4.tgz",
+      "type": "TGZ",
+      "bytes": 179184,
+      "sha256": "fe3686e1f9eb23462d2b2692599e53c1b3440bcf268a2fff92a5e59aa9a96a7e",
+      "category": "A",
+      "version": "0.1.5-rc.4",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "无当前安装、运行、测试读取或回滚依赖的历史插件包／冗余副本；保留必要的同 SHA256 安装副本及冻结基线。历史报告提及不视为当前执行依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:26.8549923Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\run-ui-v2-20261029-a563b7ce\\release\\0D7F7058EE79\\dsh-research-agent-0.1.5-rc.8.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.8.tgz",
+      "type": "TGZ",
+      "bytes": 191836,
+      "sha256": "0d7f7058ee79a971ae18a16ee0384634efc93f83e48480ff0f11920505fa1e9b",
+      "category": "B",
+      "version": "0.1.5-rc.8",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "run-ui-v2 验收 desktop profile 的依赖和锁文件直接引用。",
+      "profileReferences": [
+        "D:\\dsh-research-agent\\.acceptance\\run-ui-v2-20261029-a563b7ce\\home\\profiles\\desktop"
+      ],
+      "status": "retained_verified",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "run-ui-v2 验收 desktop profile 的依赖和锁文件直接引用。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\run-ui-v2-20261029-a563b7ce\\release\\59BD8E70DECB\\dsh-research-agent-0.1.5-rc.7.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.7.tgz",
+      "type": "TGZ",
+      "bytes": 187623,
+      "sha256": "59bd8e70decb1655c8fd12d4d3ae048a2d805cd86b3c042782086f82a2fea52d",
+      "category": "A",
+      "version": "0.1.5-rc.7",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "无当前安装、运行、测试读取或回滚依赖的历史插件包／冗余副本；保留必要的同 SHA256 安装副本及冻结基线。历史报告提及不视为当前执行依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:26.8630749Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\run-ui-v2-20261029-a563b7ce\\release\\686163927867\\dsh-research-agent-0.1.5-rc.7.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.7.tgz",
+      "type": "TGZ",
+      "bytes": 187625,
+      "sha256": "686163927867bca6ac6995172faaf8d14def80f102f28149106d35584a979256",
+      "category": "A",
+      "version": "0.1.5-rc.7",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "无当前安装、运行、测试读取或回滚依赖的历史插件包／冗余副本；保留必要的同 SHA256 安装副本及冻结基线。历史报告提及不视为当前执行依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:26.8683604Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\run-ui-v2-20261029-a563b7ce\\release\\F38FA6BDB089\\dsh-research-agent-0.1.5-rc.8.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.8.tgz",
+      "type": "TGZ",
+      "bytes": 191513,
+      "sha256": "f38fa6bdb0897e44524e98848140380791bf5f1aada6f8219b756dd70f1f2716",
+      "category": "A",
+      "version": "0.1.5-rc.8",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "无当前安装、运行、测试读取或回滚依赖的历史插件包／冗余副本；保留必要的同 SHA256 安装副本及冻结基线。历史报告提及不视为当前执行依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:26.8733534Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\run-ui-v2-20261029-a563b7ce\\release\\dsh-research-agent-0.1.5-rc.7.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.7.tgz",
+      "type": "TGZ",
+      "bytes": 187395,
+      "sha256": "3c425977cf5ad178c43a485f7ce888b7c1be1fb2ab0445f93bacf5755b093291",
+      "category": "A",
+      "version": "0.1.5-rc.7",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "无当前安装、运行、测试读取或回滚依赖的历史插件包／冗余副本；保留必要的同 SHA256 安装副本及冻结基线。历史报告提及不视为当前执行依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:26.8782404Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\stability-20261029-dO8P90\\release\\0D7F7058EE79\\dsh-research-agent-0.1.5-rc.8.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.8.tgz",
+      "type": "TGZ",
+      "bytes": 191836,
+      "sha256": "0d7f7058ee79a971ae18a16ee0384634efc93f83e48480ff0f11920505fa1e9b",
+      "category": "A",
+      "version": "0.1.5-rc.8",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "无当前安装、运行、测试读取或回滚依赖的历史插件包／冗余副本；保留必要的同 SHA256 安装副本及冻结基线。历史报告提及不视为当前执行依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:26.8828037Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\stability-20261029-dO8P90\\release\\250c021b69b7\\dsh-research-agent-0.1.5-rc.9.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.9.tgz",
+      "type": "TGZ",
+      "bytes": 196347,
+      "sha256": "250c021b69b7613614e09137d63b774a803e3ec5f311777e660f6b8f63a0d3af",
+      "category": "B",
+      "version": "0.1.5-rc.9",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "stability 验收 desktop profile 及 candidate.json 直接引用。",
+      "profileReferences": [
+        "D:\\dsh-research-agent\\.acceptance\\stability-20261029-dO8P90\\home\\profiles\\desktop"
+      ],
+      "status": "retained_verified",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "stability 验收 desktop profile 及 candidate.json 直接引用。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\web-plugin-veFFKg\\bundle\\dsh-research-agent-0.1.5-rc.9.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.9.tgz",
+      "type": "TGZ",
+      "bytes": 197437,
+      "sha256": "ce35931a92d1d81777297bab5fe3edf11f97a87390ce5ca78a4bcfe0e84be0dc",
+      "category": "B",
+      "version": "0.1.5-rc.9",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "web-plugin-veFFKg 验收 desktop profile 的依赖和锁文件直接引用。",
+      "profileReferences": [
+        "D:\\dsh-research-agent\\.acceptance\\web-plugin-veFFKg\\home\\profiles\\desktop"
+      ],
+      "status": "retained_verified",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "web-plugin-veFFKg 验收 desktop profile 的依赖和锁文件直接引用。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\web-rc3-plugin-dSalqm\\bundle\\dsh-research-agent-0.1.5-rc.9.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.9.tgz",
+      "type": "TGZ",
+      "bytes": 197573,
+      "sha256": "d43635c5c1b7c13d8931daec09a01e3febce91a99723389be9c51441948f58b8",
+      "category": "B",
+      "version": "0.1.5-rc.9",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "web-rc3-plugin-dSalqm 验收 desktop profile 的依赖和锁文件直接引用。",
+      "profileReferences": [
+        "D:\\dsh-research-agent\\.acceptance\\web-rc3-plugin-dSalqm\\home\\profiles\\desktop"
+      ],
+      "status": "retained_verified",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "web-rc3-plugin-dSalqm 验收 desktop profile 的依赖和锁文件直接引用。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-native-research-web-0.2.0-rc.1-win32-x64-20261102T025243Z.zip",
+      "name": "dsh-native-research-web-0.2.0-rc.1-win32-x64-20261102T025243Z.zip",
+      "type": "ZIP",
+      "bytes": 234857412,
+      "sha256": "8f82444ef947e21b08377d182a445a6ee14b0cae16e985f01f54c59068ca75a1",
+      "category": "A",
+      "version": "0.2.0-rc.1",
+      "oldResearchWeb": false,
+      "oldNativeWeb": true,
+      "historicalPlugin": false,
+      "reason": "废弃原生 Web 候选 ZIP；使用 rc.9 插件，非当前 rc.5 源码基线；项目文件已有 CRC 一致的解压副本，无当前安装依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:27.9044326Z",
+      "stage": "旧原生 Web 候选／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-native-research-web-0.2.0-rc.1-win32-x64-20261102T025243Z\\plugin\\dsh-research-agent-0.1.5-rc.9.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.9.tgz",
+      "type": "TGZ",
+      "bytes": 197573,
+      "sha256": "d43635c5c1b7c13d8931daec09a01e3febce91a99723389be9c51441948f58b8",
+      "category": "A",
+      "version": "0.1.5-rc.9",
+      "oldResearchWeb": false,
+      "oldNativeWeb": true,
+      "historicalPlugin": true,
+      "reason": "废弃原生 Web 候选目录中的打包 TGZ；只在该旧发布清单中被使用，4 个验收 profile 实际引用的是另一个保留的 .acceptance 副本。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:27.9094793Z",
+      "stage": "旧原生 Web 候选／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.0.tgz",
+      "name": "dsh-research-agent-0.1.0.tgz",
+      "type": "TGZ",
+      "bytes": 90819,
+      "sha256": "8e26cb3c17433c8fda345d399f74d8ed24dad9a788dc6c9ae1f9a00ee9d445e8",
+      "category": "A",
+      "version": "0.1.0",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "无当前安装、运行、测试读取或回滚依赖的历史插件包／冗余副本；保留必要的同 SHA256 安装副本及冻结基线。历史报告提及不视为当前执行依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:27.9135123Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.1.tgz",
+      "name": "dsh-research-agent-0.1.1.tgz",
+      "type": "TGZ",
+      "bytes": 175866,
+      "sha256": "6444792e158525d4a4094cc6b9bafba2f923a3bef72377968edf155301a98a05",
+      "category": "B",
+      "version": "0.1.1",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "回滚事务 plugin-20261027-001949-978-309d0e67 的 previousSpec 仍引用此路径。",
+      "profileReferences": [],
+      "status": "retained_verified",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "回滚事务 plugin-20261027-001949-978-309d0e67 的 previousSpec 仍引用此路径。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.2.tgz",
+      "name": "dsh-research-agent-0.1.2.tgz",
+      "type": "TGZ",
+      "bytes": 176049,
+      "sha256": "678a44c4439a9a39efb58f241505cdaeb410a0cb8c713508262219b56ee0de03",
+      "category": "B",
+      "version": "0.1.2",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "回滚事务 plugin-20261027-003621-973-785e0413 的 previousSpec 仍引用此路径。",
+      "profileReferences": [],
+      "status": "retained_verified",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "回滚事务 plugin-20261027-003621-973-785e0413 的 previousSpec 仍引用此路径。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.3.tgz",
+      "name": "dsh-research-agent-0.1.3.tgz",
+      "type": "TGZ",
+      "bytes": 176097,
+      "sha256": "da2edd750abc97ec2c4c88249456b0ca2d76f63d453de887a2c397ce6fd9621c",
+      "category": "B",
+      "version": "0.1.3",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "回滚事务 plugin-20261027-004326-578-28d4fd6d 的 previousSpec 仍引用此路径。",
+      "profileReferences": [],
+      "status": "retained_verified",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "回滚事务 plugin-20261027-004326-578-28d4fd6d 的 previousSpec 仍引用此路径。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.4.tgz",
+      "name": "dsh-research-agent-0.1.4.tgz",
+      "type": "TGZ",
+      "bytes": 176110,
+      "sha256": "57904ecfc84b4af9a9f925ac2e1d7d662fc8d6707c1b5d62ae2f515b1fbf78f6",
+      "category": "B",
+      "version": "0.1.4",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "正式 Desktop、隔离 web profile 的 package.json 与锁文件直接引用；安装、回滚基线。",
+      "profileReferences": [
+        "D:\\dsh-research-agent\\.isolated\\home\\profiles\\web",
+        "D:\\DeepSeekHarness\\data\\profiles\\desktop"
+      ],
+      "status": "retained_verified",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "正式 Desktop、隔离 web profile 的 package.json 与锁文件直接引用；安装、回滚基线。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.1.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.1.tgz",
+      "type": "TGZ",
+      "bytes": 176651,
+      "sha256": "62aa060ff1b8d6473c14070d33b83caa5df74e8e6f927fc34d07d974af7d53e5",
+      "category": "A",
+      "version": "0.1.5-rc.1",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "无当前安装、运行、测试读取或回滚依赖的历史插件包／冗余副本；保留必要的同 SHA256 安装副本及冻结基线。历史报告提及不视为当前执行依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:27.9185419Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.2.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.2.tgz",
+      "type": "TGZ",
+      "bytes": 178691,
+      "sha256": "859cdec3089e2d5a42e99dc227e1e439693c3de8aead4744d09291255686b537",
+      "category": "A",
+      "version": "0.1.5-rc.2",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "无当前安装、运行、测试读取或回滚依赖的历史插件包／冗余副本；保留必要的同 SHA256 安装副本及冻结基线。历史报告提及不视为当前执行依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:27.9228180Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.3.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.3.tgz",
+      "type": "TGZ",
+      "bytes": 178689,
+      "sha256": "254d151e9157ee3f8e35ff8e092d56c37d9956617f3c982cddefa2a1a52f8bd6",
+      "category": "B",
+      "version": "0.1.5-rc.3",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "当前 README、DEVELOPMENT 仍给出安装命令；.acceptance/package-audit.mjs 直接读取该文件。",
+      "profileReferences": [],
+      "status": "retained_verified",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "当前 README、DEVELOPMENT 仍给出安装命令；.acceptance/package-audit.mjs 直接读取该文件。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.4.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.4.tgz",
+      "type": "TGZ",
+      "bytes": 179184,
+      "sha256": "fe3686e1f9eb23462d2b2692599e53c1b3440bcf268a2fff92a5e59aa9a96a7e",
+      "category": "B",
+      "version": "0.1.5-rc.4",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "回滚事务 plugin-20261028-155700-704-1f76c1cc 的 previousSpec 仍引用此路径。",
+      "profileReferences": [],
+      "status": "retained_verified",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "回滚事务 plugin-20261028-155700-704-1f76c1cc 的 previousSpec 仍引用此路径。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.5.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.5.tgz",
+      "type": "TGZ",
+      "bytes": 180997,
+      "sha256": "c03fab04702513a7745fc3c652416f7eb21ed8beb7f02d3941811b1ae1bdaeb1",
+      "category": "B",
+      "version": "0.1.5-rc.5",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "与当前源码同版本的既有交付证据；隔离 web-preview-rc5-20261102 profile 直接引用。尚未宣称当前源码可复现此包。",
+      "profileReferences": [
+        "D:\\dsh-research-agent\\.isolated\\web-preview-rc5-20261102\\home\\profiles\\web"
+      ],
+      "status": "retained_verified",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "与当前源码同版本的既有交付证据；隔离 web-preview-rc5-20261102 profile 直接引用。尚未宣称当前源码可复现此包。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.6.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.6.tgz",
+      "type": "TGZ",
+      "bytes": 182395,
+      "sha256": "99cf22c941f0b67fc9187320ce05d631da8f80da3ad2200bab94e535ffbd4f46",
+      "category": "B",
+      "version": "0.1.5-rc.6",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": ".acceptance/run-20261027-RV7z7X/home/profiles/desktop 仍安装并直接引用。",
+      "profileReferences": [
+        "D:\\dsh-research-agent\\.acceptance\\run-20261027-RV7z7X\\home\\profiles\\desktop"
+      ],
+      "status": "retained_verified",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": ".acceptance/run-20261027-RV7z7X/home/profiles/desktop 仍安装并直接引用。",
+      "retainedVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.7.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.7.tgz",
+      "type": "TGZ",
+      "bytes": 187625,
+      "sha256": "686163927867bca6ac6995172faaf8d14def80f102f28149106d35584a979256",
+      "category": "A",
+      "version": "0.1.5-rc.7",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "无当前安装、运行、测试读取或回滚依赖的历史插件包／冗余副本；保留必要的同 SHA256 安装副本及冻结基线。历史报告提及不视为当前执行依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:27.9269856Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.8.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.8.tgz",
+      "type": "TGZ",
+      "bytes": 191836,
+      "sha256": "0d7f7058ee79a971ae18a16ee0384634efc93f83e48480ff0f11920505fa1e9b",
+      "category": "A",
+      "version": "0.1.5-rc.8",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "无当前安装、运行、测试读取或回滚依赖的历史插件包／冗余副本；保留必要的同 SHA256 安装副本及冻结基线。历史报告提及不视为当前执行依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:27.9315021Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.9.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.9.tgz",
+      "type": "TGZ",
+      "bytes": 196347,
+      "sha256": "250c021b69b7613614e09137d63b774a803e3ec5f311777e660f6b8f63a0d3af",
+      "category": "A",
+      "version": "0.1.5-rc.9",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "无当前安装、运行、测试读取或回滚依赖的历史插件包／冗余副本；保留必要的同 SHA256 安装副本及冻结基线。历史报告提及不视为当前执行依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:27.9362124Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.1-win32-x64-20261030T014411Z.zip",
+      "name": "dsh-research-web-0.1.0-rc.1-win32-x64-20261030T014411Z.zip",
+      "type": "ZIP",
+      "bytes": 206464872,
+      "sha256": "b22286ba903a39334ac6b976888164c90bd6272df8cf8f31e617cb0da5cd1a05",
+      "category": "A",
+      "version": "0.1.0-rc.1",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": false,
+      "reason": "已放弃的独立 Research Web Windows 发布 ZIP；项目文件与保留的解压副本 CRC 一致，没有唯一源码或用户数据，未发现当前安装或入口依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:28.9017235Z",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.2-win32-x64-20261030T064620Z.zip",
+      "name": "dsh-research-web-0.1.0-rc.2-win32-x64-20261030T064620Z.zip",
+      "type": "ZIP",
+      "bytes": 206480557,
+      "sha256": "da3f9ed350618fb7234bc6d73596cebba93311ff308931e4276138fca5886e18",
+      "category": "A",
+      "version": "0.1.0-rc.2",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": false,
+      "reason": "已放弃的独立 Research Web Windows 发布 ZIP；项目文件与保留的解压副本 CRC 一致，没有唯一源码或用户数据，未发现当前安装或入口依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:29.9526288Z",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.2-win32-x64-20261030T065243Z.zip",
+      "name": "dsh-research-web-0.1.0-rc.2-win32-x64-20261030T065243Z.zip",
+      "type": "ZIP",
+      "bytes": 206480842,
+      "sha256": "a77e58a889fbbe1e6051609ebc2517386082ae0cd72463601df1c1ff4f8e1899",
+      "category": "A",
+      "version": "0.1.0-rc.2",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": false,
+      "reason": "已放弃的独立 Research Web Windows 发布 ZIP；项目文件与保留的解压副本 CRC 一致，没有唯一源码或用户数据，未发现当前安装或入口依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:30.9065031Z",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.3-win32-x64-20261030T091216Z.zip",
+      "name": "dsh-research-web-0.1.0-rc.3-win32-x64-20261030T091216Z.zip",
+      "type": "ZIP",
+      "bytes": 206512922,
+      "sha256": "991b5321dd001a0c3ea53df7474b61c68c6f66abc58e93a8c386121827736d91",
+      "category": "A",
+      "version": "0.1.0-rc.3",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": false,
+      "reason": "已放弃的独立 Research Web Windows 发布 ZIP；项目文件与保留的解压副本 CRC 一致，没有唯一源码或用户数据，未发现当前安装或入口依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:31.8999800Z",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.3-win32-x64-20261030T122754Z.zip",
+      "name": "dsh-research-web-0.1.0-rc.3-win32-x64-20261030T122754Z.zip",
+      "type": "ZIP",
+      "bytes": 206517422,
+      "sha256": "ac12353949576caebed2b801e712858a9c5d112f93e009170d5cda100a7c7354",
+      "category": "A",
+      "version": "0.1.0-rc.3",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": false,
+      "reason": "已放弃的独立 Research Web Windows 发布 ZIP；项目文件与保留的解压副本 CRC 一致，没有唯一源码或用户数据，未发现当前安装或入口依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:32.8913116Z",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.3-win32-x64-20261030T143630Z.zip",
+      "name": "dsh-research-web-0.1.0-rc.3-win32-x64-20261030T143630Z.zip",
+      "type": "ZIP",
+      "bytes": 206520582,
+      "sha256": "9484976a90b25490324f68110c192e32f46b9710aa67f32cb79c0fa651798dc6",
+      "category": "A",
+      "version": "0.1.0-rc.3",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": false,
+      "reason": "已放弃的独立 Research Web Windows 发布 ZIP；项目文件与保留的解压副本 CRC 一致，没有唯一源码或用户数据，未发现当前安装或入口依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:33.8145355Z",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.3-win32-x64-20261030T160438Z.zip",
+      "name": "dsh-research-web-0.1.0-rc.3-win32-x64-20261030T160438Z.zip",
+      "type": "ZIP",
+      "bytes": 206520592,
+      "sha256": "4f90619feeccf7c15e5434d1ed9cfebef4ccfd060a3d8c10fb4768ba1b3d09de",
+      "category": "A",
+      "version": "0.1.0-rc.3",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": false,
+      "reason": "已放弃的独立 Research Web Windows 发布 ZIP；项目文件与保留的解压副本 CRC 一致，没有唯一源码或用户数据，未发现当前安装或入口依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:34.8069535Z",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.3-win32-x64-20261030T160932Z.zip",
+      "name": "dsh-research-web-0.1.0-rc.3-win32-x64-20261030T160932Z.zip",
+      "type": "ZIP",
+      "bytes": 206520708,
+      "sha256": "8099ab4efbf5426769ec3b147f8bbc663925b17a7c13b1ae3e0c16ffddfb98f4",
+      "category": "A",
+      "version": "0.1.0-rc.3",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": false,
+      "reason": "已放弃的独立 Research Web Windows 发布 ZIP；项目文件与保留的解压副本 CRC 一致，没有唯一源码或用户数据，未发现当前安装或入口依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:35.7252889Z",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.3-win32-x64-20261030T162657Z.zip",
+      "name": "dsh-research-web-0.1.0-rc.3-win32-x64-20261030T162657Z.zip",
+      "type": "ZIP",
+      "bytes": 206521363,
+      "sha256": "39ecd8611fda3787b58efca1f7509563feacc37a3bc998a646a3934e1e8e85df",
+      "category": "A",
+      "version": "0.1.0-rc.3",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": false,
+      "reason": "已放弃的独立 Research Web Windows 发布 ZIP；项目文件与保留的解压副本 CRC 一致，没有唯一源码或用户数据，未发现当前安装或入口依赖。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:36.6811323Z",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\archive\\research-web\\apps\\research-web\\dist\\app.css",
+      "name": "app.css",
+      "type": "CSS",
+      "bytes": 34924,
+      "sha256": "992feb89e6c9147b87d9d1fc16ed35a526d86c99722e2fc84a3cceabc6d8e6b6",
+      "category": "A",
+      "version": "0.1.0-rc.3",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": false,
+      "reason": "archive 中仅存的前端生成文件；与保留的旧 Windows 解压发布目录内 web 文件 SHA256 相同，无当前脚本引用；源文件另存于 .acceptance/native-web-20261102/source-before，非唯一源码。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:36.6849050Z",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\archive\\research-web\\apps\\research-web\\dist\\app.js",
+      "name": "app.js",
+      "type": "JS",
+      "bytes": 248277,
+      "sha256": "edf42963311545174e5e7f31f783a6f772553d6228b2a392cd44f54d2cf339fc",
+      "category": "A",
+      "version": "0.1.0-rc.3",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": false,
+      "reason": "archive 中仅存的前端生成文件；与保留的旧 Windows 解压发布目录内 web 文件 SHA256 相同，无当前脚本引用；源文件另存于 .acceptance/native-web-20261102/source-before，非唯一源码。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:36.6894201Z",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\archive\\research-web\\apps\\research-web\\dist\\index.html",
+      "name": "index.html",
+      "type": "HTML",
+      "bytes": 344,
+      "sha256": "059a88c1bc469f904dcdf8bbd3ad0c5f8bc90279d2a87729acfa3ea80801392a",
+      "category": "A",
+      "version": "0.1.0-rc.3",
+      "oldResearchWeb": true,
+      "oldNativeWeb": false,
+      "historicalPlugin": false,
+      "reason": "archive 中仅存的前端生成文件；与保留的旧 Windows 解压发布目录内 web 文件 SHA256 相同，无当前脚本引用；源文件另存于 .acceptance/native-web-20261102/source-before，非唯一源码。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:36.6937963Z",
+      "stage": "旧独立 Research Web Windows 发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.7.tgz.sha256",
+      "name": "dsh-research-agent-0.1.5-rc.7.tgz.sha256",
+      "type": "SHA256",
+      "bytes": 101,
+      "sha256": "fa433aae74b0f3d2eb44efaa307de334d0dec228245fb15d1083ed549e6fea15",
+      "category": "A",
+      "version": "0.1.5-rc.7",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "仅对应本轮删除的 dist 历史 TGZ；未被当前安装或脚本读取，校验信息已完整记入本审计。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:36.6977734Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.8.tgz.sha256",
+      "name": "dsh-research-agent-0.1.5-rc.8.tgz.sha256",
+      "type": "SHA256",
+      "bytes": 101,
+      "sha256": "0970c594f4de564b8b3b696f7d789bc033548a112cc3b01caac99b7a81abc8f4",
+      "category": "A",
+      "version": "0.1.5-rc.8",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "仅对应本轮删除的 dist 历史 TGZ；未被当前安装或脚本读取，校验信息已完整记入本审计。",
+      "profileReferences": [],
+      "status": "deleted",
+      "deletedUtc": "2026-11-02T06:06:36.7010634Z",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "无当前安装、测试读取或回滚依赖；旧发布自引用及历史报告提及与当前执行依赖分开判断。",
+      "absenceVerified": true
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.4.tgz.sha256",
+      "name": "dsh-research-agent-0.1.4.tgz.sha256",
+      "type": "SHA256",
+      "bytes": 95,
+      "sha256": "590ebbf1767caa57a7f5c0a27a2a69aaff2584fd1231bbaf47e961ae8884ba92",
+      "category": "B",
+      "version": "0.1.4",
+      "oldResearchWeb": false,
+      "oldNativeWeb": false,
+      "historicalPlugin": true,
+      "reason": "正式 Desktop 0.1.4 安装包的现有 SHA256 校验文件；内容已核实与保留 TGZ 一致。",
+      "profileReferences": [],
+      "status": "retained_verified",
+      "stage": "科研插件历史发布／验收",
+      "referenceState": "正式 Desktop 0.1.4 安装包的现有 SHA256 校验文件；内容已核实与保留 TGZ 一致。",
+      "retainedVerified": true
+    }
+  ],
+  "processCheck": {
+    "candidateUsers": [],
+    "exclusiveRead": [
+      {
+        "path": "D:\\dsh-research-agent\\.acceptance\\run-20261027-RV7z7X\\dsh-research-agent-0.1.5-rc.4.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\.acceptance\\run-ui-v2-20261029-a563b7ce\\release\\59BD8E70DECB\\dsh-research-agent-0.1.5-rc.7.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\.acceptance\\run-ui-v2-20261029-a563b7ce\\release\\686163927867\\dsh-research-agent-0.1.5-rc.7.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\.acceptance\\run-ui-v2-20261029-a563b7ce\\release\\F38FA6BDB089\\dsh-research-agent-0.1.5-rc.8.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\.acceptance\\run-ui-v2-20261029-a563b7ce\\release\\dsh-research-agent-0.1.5-rc.7.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\.acceptance\\stability-20261029-dO8P90\\release\\0D7F7058EE79\\dsh-research-agent-0.1.5-rc.8.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-native-research-web-0.2.0-rc.1-win32-x64-20261102T025243Z.zip",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-native-research-web-0.2.0-rc.1-win32-x64-20261102T025243Z\\plugin\\dsh-research-agent-0.1.5-rc.9.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.0.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.1.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.2.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.7.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.8.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.9.tgz",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.1-win32-x64-20261030T014411Z.zip",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.2-win32-x64-20261030T064620Z.zip",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.2-win32-x64-20261030T065243Z.zip",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.3-win32-x64-20261030T091216Z.zip",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.3-win32-x64-20261030T122754Z.zip",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.3-win32-x64-20261030T143630Z.zip",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.3-win32-x64-20261030T160438Z.zip",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.3-win32-x64-20261030T160932Z.zip",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-web-0.1.0-rc.3-win32-x64-20261030T162657Z.zip",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\archive\\research-web\\apps\\research-web\\dist\\app.css",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\archive\\research-web\\apps\\research-web\\dist\\app.js",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\archive\\research-web\\apps\\research-web\\dist\\index.html",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.7.tgz.sha256",
+        "exclusiveReadSucceeded": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.8.tgz.sha256",
+        "exclusiveReadSucceeded": true
+      }
+    ],
+    "processes": [
+      {
+        "ProcessId": 28428,
+        "ParentProcessId": 8608,
+        "Name": "DeepSeek Harness.exe",
+        "ExecutablePath": "F:\\deepseek\\DeepSeek Harness.exe"
+      },
+      {
+        "ProcessId": 28332,
+        "ParentProcessId": 28428,
+        "Name": "DeepSeek Harness.exe",
+        "ExecutablePath": "F:\\deepseek\\DeepSeek Harness.exe"
+      },
+      {
+        "ProcessId": 37856,
+        "ParentProcessId": 28428,
+        "Name": "DeepSeek Harness.exe",
+        "ExecutablePath": "F:\\deepseek\\DeepSeek Harness.exe"
+      },
+      {
+        "ProcessId": 41860,
+        "ParentProcessId": 28428,
+        "Name": "DeepSeek Harness.exe",
+        "ExecutablePath": "F:\\deepseek\\DeepSeek Harness.exe"
+      },
+      {
+        "ProcessId": 38980,
+        "ParentProcessId": 28428,
+        "Name": "DeepSeek Harness.exe",
+        "ExecutablePath": "F:\\deepseek\\DeepSeek Harness.exe"
+      },
+      {
+        "ProcessId": 41128,
+        "ParentProcessId": 28428,
+        "Name": "DeepSeek Harness.exe",
+        "ExecutablePath": "F:\\deepseek\\DeepSeek Harness.exe"
+      },
+      {
+        "ProcessId": 14104,
+        "ParentProcessId": 2732,
+        "Name": "node.exe",
+        "ExecutablePath": "C:\\Users\\destiny\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\5c41f77a7900391c\\bin\\node.exe"
+      },
+      {
+        "ProcessId": 38984,
+        "ParentProcessId": 48972,
+        "Name": "cmd.exe",
+        "ExecutablePath": "C:\\WINDOWS\\system32\\cmd.exe"
+      },
+      {
+        "ProcessId": 10440,
+        "ParentProcessId": 38984,
+        "Name": "DeepSeek Harness.exe",
+        "ExecutablePath": "F:\\deepseek\\DeepSeek Harness.exe"
+      },
+      {
+        "ProcessId": 21832,
+        "ParentProcessId": 37336,
+        "Name": "msedge.exe",
+        "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+      },
+      {
+        "ProcessId": 48504,
+        "ParentProcessId": 21832,
+        "Name": "msedge.exe",
+        "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+      },
+      {
+        "ProcessId": 49128,
+        "ParentProcessId": 21832,
+        "Name": "msedge.exe",
+        "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+      },
+      {
+        "ProcessId": 14988,
+        "ParentProcessId": 21832,
+        "Name": "msedge.exe",
+        "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+      },
+      {
+        "ProcessId": 43972,
+        "ParentProcessId": 21832,
+        "Name": "msedge.exe",
+        "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+      },
+      {
+        "ProcessId": 40568,
+        "ParentProcessId": 21832,
+        "Name": "msedge.exe",
+        "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+      },
+      {
+        "ProcessId": 16068,
+        "ParentProcessId": 21832,
+        "Name": "msedge.exe",
+        "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+      },
+      {
+        "ProcessId": 15592,
+        "ParentProcessId": 21832,
+        "Name": "msedge.exe",
+        "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+      },
+      {
+        "ProcessId": 47040,
+        "ParentProcessId": 48796,
+        "Name": "node.exe",
+        "ExecutablePath": "C:\\Users\\destiny\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\5c41f77a7900391c\\bin\\node.exe"
+      },
+      {
+        "ProcessId": 46976,
+        "ParentProcessId": 21832,
+        "Name": "msedge.exe",
+        "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+      }
+    ]
+  },
+  "beforeSnapshot": {
+    "head": "f8f3ddfe0b4677815905760ee44e90a2c56c7c86",
+    "status": "?? .native-web-runtime/\n?? .npm-cache-local/\n?? .npm-cache-v2/\n?? .pnpm-store/\n?? .research-web/\n?? .web-runtime/\n?? docs/CURRENT_STATE_AUDIT_2026-11-02.md\n?? progress-repo/\n",
+    "tracked": {
+      ".gitignore": "6421fe1c0eb60a751e811c4ff4758811aa6c9552a2142e8d3af3d712590c77db",
+      ".oxlintrc.json": "e19cfe44d1e8c63ab50f25a3d120704cc4d291889a46161436ad55164616ab83",
+      "COMPATIBILITY.md": "b392a1be2bdd9a7ba08ef0924497d429b654a96ac466f40df28401af5862d543",
+      "DEVELOPMENT.md": "c6a2c1049157b004fa3c6a3464f9cbfc2333aa209a03719b410105fa66e15ef3",
+      "MIGRATION_AUDIT.md": "39032f98d2ae5edce7455e40b77f3717833a00323754067e8f39f2413138cdf6",
+      "MIGRATION_REPORT.md": "8afedf892891d351e87ada7ad9882010ed4c9685d9f64e1f4712120dd94c0f26",
+      "README.md": "8695f397f7f91d89ffa21fdf301fbe54761bb3ae29ce83132c6cadfbb49eb3f8",
+      "TEST_REPORT.md": "9195e3a6244ef041f6bf5d6f2de64ce819e6a9383424b3087b1a9faa90edbf79",
+      "docs/UI_AUDIT.md": "11b0fff94b5e6e32e18a1c1cf68cc0cefa604b87aea2790093861dda746fbab7",
+      "docs/UI_CHANGELOG.md": "fd1e46c96e377df0f61d863b58db57ac45a4ef61c52a598b30bcbbf84f87e98d",
+      "docs/UI_CHANGESET.md": "8512b1ecb4f6e97ea8cdd0e19c0eb2d53917d890b6f6c52a68b2d2d0342e60d9",
+      "docs/UI_DESIGN.md": "939ef1301cc6091bb2c5a1903307443e0ce11d433048e2fd531b1780a032f505",
+      "docs/UI_TEST_REPORT.md": "1dbf56ebcd9961826f2936b1c5d720d0505191f91d30c53fabfde82565db4714",
+      "docs/acceptance/COVERAGE.md": "963807a4a10a235ca1227ba0bc6ccc2d20ef7b6085387c125158ea4cb2d29dc8",
+      "docs/acceptance/baseline-confirmed.json": "ec43672c5e5378ba45d7484b0b5ef4eac014c39f19a3e73bbdd5c0ace7dcc955",
+      "docs/acceptance/baseline-failures.json": "16188bb3306975f96f39d88fbe8739938241f44c9f4d888402f4ee5d1c7bab4d",
+      "docs/acceptance/baseline-regressions.json": "b39c6c54d0810391268ed19c914bd0e56a973ac50716eb869b1a529233d48e6d",
+      "docs/acceptance/build.txt": "a84431e5836e247afa425e155cfec1c059eef66bb9a611320ea9736618bb4d28",
+      "docs/acceptance/candidate-pack.json": "fed5e4dd70282c05c64acc7a28f894cb398caefab70c93e7bbd6048704b03472",
+      "docs/acceptance/coverage-baseline.json": "87b196bfbe028572839c09f305684cbdefa38cc26e4e5ee9d2b259c52fd643f6",
+      "docs/acceptance/coverage-final.json": "0027ce33fb16b532bafdfeeef5c786f12c752f5336aada11fe6e4c9fd4c10f0b",
+      "docs/acceptance/document-check.json": "af956acbe39339a842b583d6c04d48203f6aeb41c37b2733a3dedc0ed53bcbea",
+      "docs/acceptance/electron-completed.png": "4771adb770207676df6b079bb2e4a5b3d42cf876c1ab86251076c766aade77a4",
+      "docs/acceptance/electron-filesystem-failure.txt": "9feb4484243e8016a4b9e01cfb45de6dc109e350c3f9998717c8c40ca6d222ab",
+      "docs/acceptance/electron-final-console.txt": "cb632c0c1408a8af6503700552c50a2809fe44f20418bb98b9ce6914876ccdf7",
+      "docs/acceptance/electron-final.txt": "fea27fe6c2b244e11faa0960ffedc33bb6155ac2f6ad5304b87664c1f732eef5",
+      "docs/acceptance/electron-identity.json": "be214e91da004c917a03555cca4c72b4f38bd86e92203921bae2adb424aae23e",
+      "docs/acceptance/electron-rc2-console.txt": "1552fde09330d3e75e0a83c9258151ca64920adf11b6cea437cd2cae7189d75e",
+      "docs/acceptance/electron-rc2.txt": "a3043731abe7891131dd952f27746979446891e279fff1a57f0216d5ab3b736e",
+      "docs/acceptance/electron-script-selector-failure.txt": "796ef2fdd31b71d0c7f6b4b6f80e1f7fcf24f749170fcec7575f57b4bc59868d",
+      "docs/acceptance/electron-ui-rc5-eio-rerun-note.txt": "3fe9fea4687e671521359625ff963c3ff0dc4b2bd551a330ffbff5db4037b663",
+      "docs/acceptance/electron-ui-rc5-eio-rerun.txt": "df6afc1a21d9e32eea1a137a89388d9215e5ab18969aca7a49c2c9a4c85b0a1d",
+      "docs/acceptance/electron-ui-rc5-final.txt": "baa03f1c1c5734a4d1deb3bcd6ece37dbf30b444a88f260968adab85d4ddf764",
+      "docs/acceptance/electron-ui-rc5-narrow.txt": "b481204eb8b4f2b8249961a573bf8448f980c6efee3dd84bd4967a23d02c4b9b",
+      "docs/acceptance/electron-ui-rc5-pass.txt": "fedccd56bc3567b006110992b76b0dbceb3c480116ccbd98797eab0300e39aad",
+      "docs/acceptance/f02-before.jsonl": "db1283d84e1643fc5ef47f3f42f2023479359cb303fb289f9a63240b42c72a08",
+      "docs/acceptance/f02-before.txt": "19f3dcb0ecb39d5091f487ca5ff38218579f770e412eea3dca5eef3961bf2fa3",
+      "docs/acceptance/focused-host.json": "8041b1709b602142380c1189408f7fe666e90f04bfa10cda13d5802f47873dad",
+      "docs/acceptance/graph-risk.json": "e47d8e07649687194ea3191f8b08d72727e01b61deafbce816ddb7c369ec5920",
+      "docs/acceptance/integrity-final.json": "524cad0360ee6ff7f123c25450464fcd0e88d1ebb07e2ec62e2b4d4d522ff6b6",
+      "docs/acceptance/isolated-update-final.txt": "aa0789933ae753076c6236fcb230e2d6f495fc8bee3b3fe865766f4c1b6955ba",
+      "docs/acceptance/isolated-update-rc2.txt": "046b63bc1045f512031caca8a9f585896fd2dc7cca3a1652cd97ba6fbf3fcbfa",
+      "docs/acceptance/isolated-update-rc3.txt": "95df72e0a217beb53d716c26b30fd9f4a50c6613e4ccc174d872f37fa2b989b3",
+      "docs/acceptance/legacy-graph.json": "a4cf1291f360182bd6cb330362e2c365eb70ef00349df1708ea3d7c8cb2000bc",
+      "docs/acceptance/legacy-ui-adapted.json": "9e13b4a51891f1fb096fb649916b20bee9fecb106b66666bcda525ddc56976b3",
+      "docs/acceptance/legacy-ui-baseline.json": "4ada5ba625112f4ac18fd706caaad25bac11c5fdcacb5b2fba2c3b4f73c5dc5a",
+      "docs/acceptance/legacy-v1.json": "739d182cd946f25ed634c4227662b036a712c2ba92930860c0e8b8e792817429",
+      "docs/acceptance/lint-final.json": "0a3574299cf8f979cc944129f8b7a43a96831f967c795d1d5846f3df0b54489c",
+      "docs/acceptance/lint-ui-rc5.json": "82298d71e435ce49cb5a3618c4e83048ac2646de2594169166726579ed4ef54e",
+      "docs/acceptance/model-routing.jsonl": "48f8a009eacee9cc94f833e7202fdfa14701c7d329e27fc168af520e09aceb1f",
+      "docs/acceptance/package-final.json": "f125f4416bf3958abbf5d7fa424c324109546de06c38995a2990083ddc409e16",
+      "docs/acceptance/package-ui-rc5.json": "5b528896cf042abc0ddc1790f1e24ccc0141b4a1372e5d63e6b0164bcf93c793",
+      "docs/acceptance/remaining-processes.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "docs/acceptance/repack-comparison.json": "b0a95ba7fa3d563ecfdb039d2bb9f16d06f7f8683c87dfd03fa2b1789cd9f648",
+      "docs/acceptance/sdk-type-gap.json": "3dd87dcc888c3ab2e6f025e575cf6c427ff871224cb034b0868cace2d482dbef",
+      "docs/acceptance/tests-after.json": "eb0a0d6e9e5747a1eb435f662681cfb17c0ce960c249133361dd4b9b29b3b8ca",
+      "docs/acceptance/tests-after.txt": "e45ee6d8678046025950264f0156d1f4ca81b8575367f1e2d576997a331be8ec",
+      "docs/acceptance/typecheck.txt": "7260d395ea8ae02e877af016faa9e21043ba2cc2d0b992631f1fc644b9f271ff",
+      "docs/acceptance/ui-build-rc5.txt": "5c3d96541ef3a70921cf7cfe6c53271cda67eda346d0c0356827e214ce0ed1fe",
+      "docs/acceptance/ui-tests-rc5.txt": "2c4a7d3d6e5a58b267ee4310831a09238179e3a4fcd5e5f9d3f7deda6890c8d6",
+      "docs/acceptance/ui-typecheck-rc5.txt": "7260d395ea8ae02e877af016faa9e21043ba2cc2d0b992631f1fc644b9f271ff",
+      "docs/backup-location.json": "49ea1caa2e0802c6e28a1a5a9494341d467e580bc31c3c9d768886d0760cbebb",
+      "docs/data-integrity.json": "eb3853bde028808940e9f87c1549a7d581166cfb1bc58a3b10c0327a57e78237",
+      "docs/default-without-plugin.png": "14474af5db16245291c8e2ff3afdd0ceb4b5cf5c5359d19cd2d5eb364bda3c85",
+      "docs/full-flow-progress.png": "ecfb2bd452ace8faa22d9655c8b2c6d21010e69aeffb66039e5089caa105b718",
+      "docs/isolated-initial.png": "15871ec47043e280eaf6cf0bade83bb54e516fe1caad89199105b6f2dd9dfcf3",
+      "docs/pack.json": "941b997c84ba25ff36f0c6c64543132b090007cb3e062064a503ad822a80d0d8",
+      "docs/package-audit.json": "92dec734b34da32df21a7c2b69b677aee279d5dbf253b4dca17a074990edf517",
+      "docs/preset-menu.png": "2c10207a40208338fde54d06f3816742e6a23a6ae5d56bc5ce8d5b839f11ff1a",
+      "docs/research-completed.png": "71a6e9850d481f1407d1627f5d89c3dacc2ce47017818f2ee837b76b26ba7515",
+      "docs/research-simulation.png": "5e1310d9568feefb555c686709546d3201359208b4a60c54d58cb9dde08c2c58",
+      "docs/session-state.png": "3ab2a06cace6f6fb38e136a539f66a31a1fcf87289000d9d845c86044dd450ce",
+      "docs/ui-screenshots/after-electron-rc5-dom.txt": "253283f7efcf5b95ae21655bdd0198c548faa3591b6fc4afebc288f1b3cba71c",
+      "docs/ui-screenshots/after-electron-rc5-running.png": "f964cd833631b934b99bddef67241713f696aa16351b469c172c1ce330b92a74",
+      "docs/ui-screenshots/after-electron-rc5.png": "f8fcd33cb1221ff8dfcdbf8067499b1bcdff92a286a9e42d2ce2db4a711c18ee",
+      "docs/ui-screenshots/before-electron-completed.png": "4771adb770207676df6b079bb2e4a5b3d42cf876c1ab86251076c766aade77a4",
+      "docs/ui-screenshots/before-electron-start.png": "9fc42fa99671b8b18930aa70060b2f5c6a00c349049f2466e06c08c719b8bc12",
+      "install.ps1": "a07fd3171807df9c7eddc5c57d02619713e72f5590b3903e186aa2e6c61544b1",
+      "package.json": "49409d54f8990c7150f45bbad95b2a5e961d3f0bcd8632cafd216b13c2a8fd30",
+      "packages/research-agent/COMPATIBILITY.md": "9dac6d8aeca294e0a5ca42f6c3f162e50a4832dcc31e545e3fb73941d1840ece",
+      "packages/research-agent/LICENSE": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be",
+      "packages/research-agent/README.md": "00ebd9850ce372e708bbaeb9d359c5dc84f9de9589d5b724ea7f2c0755228a72",
+      "packages/research-agent/cordis.patch.yml": "9840e180186b3be203d631d0b7e78a709aa919d92ee3426df95bc40765523de3",
+      "packages/research-agent/package.json": "fdfe864a96d644434af2fd22f7e9c089b4359eb8e6b813336c694dbc9ff25a76",
+      "packages/research-agent/presets/research.patch.yml": "e28811763a3e2d5f5857705336e9120d6663fb9e099ce4326641bae119dfad68",
+      "packages/research-agent/src/client/ResearchAction.module.css": "c560d63e7fc93b3b1cc03c6087115aebe1b0a2541cc37f6af2e04ec9f2bf94aa",
+      "packages/research-agent/src/client/ResearchAction.tsx": "332c9203392e7a62a36c075cc808f458546b50d96fbef9f1b9fcf41a4f38c78f",
+      "packages/research-agent/src/client/ResearchBranchAction.module.css": "23bfb15f386e94cd02e04f181115be0cd051c0d8658f5cbcef1c46e8fcbecadc",
+      "packages/research-agent/src/client/ResearchBranchAction.tsx": "0a57baa0c2bc7c842e35f4c90bda86db746427d34f0c39ab334a3e36593f2549",
+      "packages/research-agent/src/client/ResearchBranchList.module.css": "48a3184989e2559c6746e36d1f6ab26000602d4c5bfbe53dfdf2e4869816e9a1",
+      "packages/research-agent/src/client/ResearchBranchList.tsx": "39c2998bcc7863a77e49a148cd7b6402b9064d3cb22fd6390c2dec71bbbe9a71",
+      "packages/research-agent/src/client/ResearchBranchSelector.tsx": "986d73faea23375334e98bfffba86514a629734b55c3411572968e60a55fbe48",
+      "packages/research-agent/src/client/ResearchFlowCanvas.module.css": "959ac841d6578944068849ec499d275db7c175e90c03c1bdbc5e2c97735c4501",
+      "packages/research-agent/src/client/ResearchFlowCanvas.tsx": "ac4195bc951c0fedaa73229b517a54ffb623dc86994e800711f67755d65004b5",
+      "packages/research-agent/src/client/ResearchPanel.module.css": "cce6a7fb780454909d727af9612186b59fbf8d3b0dbe9d2ec719469ac92a13a1",
+      "packages/research-agent/src/client/ResearchPanel.tsx": "6b5cc0abb90a86bb312e907ab4d0e6f399a585e89470baba94dac85c8ac5a518",
+      "packages/research-agent/src/client/ResearchTitle.tsx": "10562590cc006a4d25864f5ce6acb2eed64312ae6f7a808a88cfaa1f9c60ddf1",
+      "packages/research-agent/src/client/ResearchTranscriptMain.tsx": "2c642da02bf911c1a9ee59f5975f36dce35a783096f45c49a936a7abdd70839b",
+      "packages/research-agent/src/client/css.d.ts": "3f68e42782ee958486694c7982949fb2732c026a5c3fb4a6c4abe4a20e11f858",
+      "packages/research-agent/src/client/index.ts": "f002672047def52d5f8773132a3aa91c01541070ecfbb62dc63ef65f36e7f48d",
+      "packages/research-agent/src/client/locales.ts": "be89d09909ce74dd6e74482f20a3930d84cdc326792a6179da3b86f61ab1175f",
+      "packages/research-agent/src/client/remote-types.ts": "1ebe823806ddfb84db44d9f23f6c85a964ba4a5a1a9ef2dc3102280e9316885b",
+      "packages/research-agent/src/client/research-definition.ts": "aef75a1807a7f1b2695389dac0bca883620e01d4540f7e5f9bcfc09a01827a89",
+      "packages/research-agent/src/client/research-session-store.ts": "1abd64241503d8b1c510ea9da5272071de446dc2f5be16f70bca333be1ef1b59",
+      "packages/research-agent/src/client/tsconfig.json": "772ef0ba8644bdb62865ff24621e788dba422b46142e7484b04bb6ac648da78a",
+      "packages/research-agent/src/controller.ts": "917a919020fbbeb4ff9cd5a4b0eaf634d054a823be32e6c6fb09da46eb426530",
+      "packages/research-agent/src/index.ts": "a3048c35b191d77f45316b3ecab93ef22c64aadb7262b1c01a5c670087ce5a66",
+      "packages/research-agent/src/tsconfig.json": "e4a7c182c73e78614f08849680aa6350487108c7fc26434fcfff4f552abbef90",
+      "packages/research-agent/src/types.ts": "785e00cbb9073bff9d615a76fddfcc86dfb264bb2cd2d8a23b1f8016afd79874",
+      "packages/research-agent/src/workflows/index.ts": "bd0ead24eb69e8758e1132a5314a735b9231b6f3e5c983d382660e9010f05cf5",
+      "packages/research-agent/src/workflows/research-coordinator.ts": "f9f2ec9bfecc14aebab8f4a33e12123fea52f2db9d9652e636a678df11a74a03",
+      "packages/research-agent/src/workflows/research-simulation.ts": "558b8599e0f885b5cde8f0ea06f37624d7a926442149d1f1872d2f8973619e91",
+      "packages/research-agent/src/workflows/research.ts": "e796d4c2ca69db7e795f4b4211bdd89613795a4975a193966d0cd731e829112c",
+      "packages/research-agent/src/workflows/subagent-adapter.ts": "3aa70839f2f88db596760c706f05aa42e20633da2c6f8f9ffa6d1341b0a338d9",
+      "packages/research-agent/tsconfig.client.json": "f0a92f4b68974ba7220c4fb5b22525be8a91050909431313987c2fb1efbfe91c",
+      "packages/research-agent/tsconfig.host.json": "09a85019e442663627711081e9f2802bd2c4e5439c0697719a8bf63d9291d3dc",
+      "packages/research-agent/tsconfig.json": "02d0ffd351fd76a2b0ac0676c3593eeda1b91e7622a2d97192cccead90dc645e",
+      "pnpm-lock.yaml": "96fc2ba1217dd341df59a78b41ad113d634796f5bf757e62727f5e80771dce27",
+      "pnpm-workspace.yaml": "8e4f223dd36ff4d401d77849f808c7ad6ca2899969c0b560cc88989ef475c871",
+      "rollback.ps1": "d03e7ca2dc470d38dc1064b7abf2ceaa3b57950fd8fe2ec96e8f8196adf7f58d",
+      "scripts/asar-reader.mjs": "fcf2dfd8976cac3be06608ee0a4ee3ee75c33f7ed58e8b8d75e8b02ac1ebea02",
+      "scripts/backup-initial.mjs": "9ddef8b9b1f958200c89510baf75168acd1300a6d3dc78003b57ed8bb2b6783f",
+      "scripts/branch-flow.mjs": "9b37af909abeebf9a079a8f0c571b53b688f94c2beafded7d7ff45d58a3d36b7",
+      "scripts/browser-helper.mjs": "3e60ad2abc4aa992f25a12f6c1d7f38c343758fa0e3166b8d11d65aae1125639",
+      "scripts/browser-inspect.mjs": "e56fd569c5b521e2e19b4e22e4915eb110454122c853f32bdb3475333a5e4a5f",
+      "scripts/browser-step.mjs": "01144b10f3e1c846da151a0f1cf325dfa5015c18c2eeb1ac474fe8671ffeb2f8",
+      "scripts/build.mjs": "9450f57549b2d514046dacc5f365f79e2c039a1569d641b404942dc41495d242",
+      "scripts/default-smoke.mjs": "6f12aa95f5d75a1e394159732a23d05d9b8504064126687ad7dac2be303408f2",
+      "scripts/extract-source.mjs": "6d8e1b510b387debe7a35e9b7810abb00c8a037291fb97190f9c4e904a08560f",
+      "scripts/extract-target-sdk.mjs": "75e69382a291c9bcf498e8d1331285c085a8fc98e9bb85709bf1ce10e440919e",
+      "scripts/full-flow.mjs": "1c5e1146203b9fc77aa03fc542851e66899afa9d9445d30a834dab4a1c9ca25b",
+      "scripts/generate-protocol.mjs": "0bde250620fc0b459d89b178ad34a525af0dab5aad71c29e1be414a5d17dea5a",
+      "scripts/inspect-panel.mjs": "848de3449e0f3aa52c3c347df6402948145694aa47f7014f6b557b375c1f5f3e",
+      "scripts/manage-plugin.ps1": "0407914a61cb5702fd51440bbe7c7e419be99ea2b746194a3c4d99f6c9f25d08",
+      "scripts/migrate-data.mjs": "f722c78c1ae73974de1f8b689942115eedbe5a3663b4176f1889fc77e520d36d",
+      "scripts/prepare-protocol-sdk.mjs": "2f00a29c2546b8f5fc8bb16d8f57d1962a0db270e2ab144fcb69b67d73fd89bd",
+      "scripts/stage-flow.mjs": "da305d293c77eceb83286a689441318346267bc7a5a82c6c423a9723761179a0",
+      "scripts/start-isolated.ps1": "60a24c4be6f908d3c7b3db931c2b629aa0f3a67ab904f03c2b92065da47e82c0",
+      "tests/acceptance/README.md": "73712aae64a5e8ac498573cbbdb258475acfe037361fcb643c4aaecbcf0950ce",
+      "tests/acceptance/check-baseline.mjs": "fc17cbce78096293da0ac4175b043954c21d671089b82b443ea917b831d6c4e3",
+      "tests/acceptance/coverage-map.mjs": "68ae782f230f053da3dd5063cd2192aec8fbfa8d1e32edc5a9f8e17e8156fe62",
+      "tests/acceptance/electron-candidate.mjs": "8160f8cbdbf03d6994aaefa1b04b4252b865814d5aacadb2a9151a8e39e412ac",
+      "tests/acceptance/electron-flow.mjs": "9c0305d0c2eec4c0b47194ca4c2ed016ace24ee9e89f3cf5609a03721d1f21df",
+      "tests/acceptance/electron-ui-rc5-screenshots.mjs": "de06c2caab17dc37310cc56e90a52eb1b7be4e17ebdb2d7b4fbafddbc1393557",
+      "tests/acceptance/electron-ui-rc5.mjs": "4fb90cb916cea0f8a84ee8817e1e695e9a3f5201c07ca6b0d9ead0811a717086",
+      "tests/acceptance/graph-risk.mjs": "b97b877d7f3713891b4d5cee932ed1ea0e68590396e446106c140aac64e2084c",
+      "tests/acceptance/isolated-context.mjs": "76560c9a62282bb3152ffc3db6e09bf47a94b782f1bd33ab4cfddd76013ba9cf",
+      "tests/acceptance/legacy-records.mjs": "689227eb5158b449dd89ea588e67bee5294fde3db0e41ae832efe5cae6890007",
+      "tests/adapters.spec.ts": "b8e883476fa611ae2fbec9e3bbd17823c9b8ce37a845b938d00d560114261400",
+      "tests/compatibility.spec.ts": "ac6f80948808468c68c1063ddf9d798d7457e64d71ff1942230ea4df309d9f8b",
+      "tests/controller.spec.ts": "e5f819edb9a8dba980bd1fc3f2e384b01088e5990553955cd4870973e8ccec55",
+      "tests/legacy-ui/research-branch-list.client.spec.tsx": "f967677ad385c0c00fdf284704962bec959e70743f2d4504e3cb2060e862acd1",
+      "tests/legacy-ui/research-flow-canvas.client.spec.tsx": "59c18b69795f1ccb57222b56cfeb81141afdb604140d2177d7f87190835dff7d",
+      "tests/legacy-ui/research-panel-styles.client.spec.ts": "26e1262502ca7a1355e447bdef2276d84a7ad426f4d56c6d6bce8a423538736b",
+      "tests/legacy-ui/research-panel.client.spec.tsx": "52e45c51b2233f4ef75bc1b3a6fe7592c264c4522a96aff697b81ae4ec5cfe0e",
+      "tests/legacy-ui/research-session-store.client.spec.tsx": "7819588a3f75649c973a34b3c03ce7f0a6618c291f12a2b2bb5bc8f60c618c9c",
+      "tests/migration.spec.ts": "b081b0c925dfce0e728d384fd21673a1c6b4b4f334bf79679923ffd950fd46d7",
+      "tests/refresh.spec.ts": "5dc69d5def4ef8e790295febc9401fcc062a49d61cece1fbbf894b2292bf4a85",
+      "tests/research-coordinator.spec.ts": "c24e24f2fcc62fe9b05514c12b87486f6139b0fd88cf35856b144ca9647bf494",
+      "tests/research.spec.ts": "2e89755c8288a462bd70ccc0c4b20e94670f5dc2609ed9735b6c6d9298bcaaa1",
+      "tests/support/browse-picker.patch.yml": "79b779589b236f2644b441ca640fb20c5aed284cfaace333523c00d8a8ddd6b3",
+      "tests/support/mock.mjs": "9c060e3d4ed31d1d047c440638cfba1d80ab299ea0639b0489a79ac0bdaef3a3",
+      "tests/support/mock.patch.yml": "592332f2995d3ce48e1bf3f1b0293e3852073a187aa932d8c2e7a63a58e1b091",
+      "tests/support/translate.ts": "c05dbe39355916881dd30ab4b0eea00ff3d09ed17480c14e9d2b3e9c5abdc161",
+      "tests/support/ui-primitives.tsx": "73ac07ebd13cf019e8441dc9505f95921ad93592d6227abfcf0040dfeba05c24",
+      "tests/ui-regressions.spec.tsx": "c01a5330f2d3ba4c9218b513ccc144c879ed974e2a2702ae2f9669c35de26386",
+      "tsconfig.client.json": "3869e35a716cc4736505f59b017cdfd354eed2dec1b7d409410361daa3210081",
+      "tsconfig.host.json": "10e4aa8a4560886c70a28822112bb983f39baeeafebfda7921d2bf0d59095342",
+      "tsconfig.json": "78d9d6104745069a1932ce1ca08b81641180287e2f5fe7c3787e3334c167671f",
+      "tsconfig.lint.json": "6f6e482e748b593834c449ae647360d87d2f9f0b5e26b6f55ef08bd0cc0be48a",
+      "uninstall.ps1": "020253ed78c3b44b84555160445f54be91017d2dbb10cff0f4fb4b8f70d2f182",
+      "update.ps1": "ddbe05a10080c4994aac71f0d0b1def5bc8f8fc343e4813fd77ab956a0c8ae54",
+      "vitest.config.ts": "7efba0262949b342d0ed8b8d93a4eb876cf37c38194766ad013e8a870c6f7d13"
+    },
+    "protected": {
+      "D:\\dsh-research-agent\\.isolated\\web-preview-rc5-20261102\\home": {
+        "exists": true,
+        "files": 11,
+        "bytes": 21513,
+        "digest": "f1a4c39decfbfc634600d339f448d2b2fbd21a2d7cdd32db8d80aa0d0fa7654d"
+      },
+      "D:\\dsh-research-agent\\packages\\research-agent\\lib": {
+        "exists": true,
+        "files": 31,
+        "bytes": 1344667,
+        "digest": "c40d88143a2675ddd44f802a833156f23a4acbf36a2bcea1c110599039e250c0"
+      },
+      "D:\\dsh-research-agent\\.git": {
+        "exists": true,
+        "files": 1159,
+        "bytes": 21265876,
+        "digest": "b7fad09998120eb909c22defdf89a199d19d62abf05b8cf704470c03bfd4ef6b"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\desktop\\node_modules\\dsh-research-agent": {
+        "exists": true,
+        "files": 33,
+        "bytes": 1239878,
+        "digest": "ef6dc951353847b5042660017cc423801d7b836158d9b53424ff16103e3a5648"
+      },
+      "D:\\dsh-research-agent\\.research-web\\home": {
+        "exists": true,
+        "files": 8,
+        "bytes": 31073,
+        "digest": "59ce290f0a1eef802a37d9df8002501977f07d7e7d7fe0a1d5da00de616919b2"
+      },
+      "D:\\dsh-research-agent\\.research-web\\workspace": {
+        "exists": true,
+        "files": 0,
+        "bytes": 0,
+        "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "D:\\dsh-research-agent\\.isolated\\home": {
+        "exists": true,
+        "files": 72,
+        "bytes": 614043,
+        "digest": "2e979121cc54f3849bf1fc47879f5f877305f7ae962fe6120048d1826112f67b"
+      },
+      "D:\\dsh-research-agent\\progress-repo": {
+        "exists": true,
+        "files": 44,
+        "bytes": 206201,
+        "digest": "108e187a6d433d91eef51439dcfc6c3ce28f09a9dfd4a3870ee70be9a8d5e2cc"
+      },
+      "D:\\DeepSeekHarness\\data\\sessions": {
+        "exists": true,
+        "files": 192,
+        "bytes": 17609433,
+        "digest": "cae8fbf57679aa9835809d088f5ff9aae36327bcc11dac5ec87723a2d99da82b"
+      },
+      "D:\\DeepSeekHarness\\data\\storages": {
+        "exists": true,
+        "files": 194,
+        "bytes": 5737916,
+        "digest": "6c9dfe22e8aa3652d0d4201afafca08196ed2604cd0d5f3d1ab9ccbd9a64322a"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles": {
+        "exists": true,
+        "files": 21,
+        "bytes": 1198448,
+        "digest": "71f88e9dd4eb6a3bff9fd29b3baa67920f7d1b2ec3a001e1176feaa02140d2ba"
+      },
+      "D:\\dsh-migration-backup": {
+        "exists": true,
+        "files": 396,
+        "bytes": 3350236,
+        "digest": "e3e59493acc649e869aea4769ae761ea410cbefc6e1e77bbedee4e71d37c776b"
+      }
+    },
+    "files": {
+      "F:\\deepseek\\DeepSeek Harness.exe": {
+        "bytes": 246343144,
+        "sha256": "fd7d298f4ba03ee9bab1719a892afeaef5c09bf50c574a592a64c85f64574c0c"
+      },
+      "F:\\deepseek\\resources\\app.asar": {
+        "bytes": 182434783,
+        "sha256": "04b32e3a872826ba15cfb2081c6a929a8d4ecaa65e09a2543e5a6b30e2eff1f0"
+      },
+      "D:\\dsh-research-agent\\packages\\research-agent\\lib\\index.js": {
+        "bytes": 112875,
+        "sha256": "a292d028549c2306427d29a13e21d3f42628c8d23e780e549561482dfd787509"
+      },
+      "D:\\dsh-research-agent\\packages\\research-agent\\lib\\client.js": {
+        "bytes": 930779,
+        "sha256": "b11d3bd68e91b8c40d2e5677c304a8c0480ac41e1d00aea9058b9e923052d076"
+      },
+      "D:\\dsh-research-agent\\packages\\research-agent\\lib\\types.js": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "D:\\dsh-research-agent\\packages\\research-agent\\lib\\typert.host.js": {
+        "bytes": 113785,
+        "sha256": "8fbb4d6a938b76d8234a3cb15098f0f814645fa1bed596a3c755022d2d3ce714"
+      },
+      "D:\\dsh-research-agent\\packages\\research-agent\\lib\\typert.remote-client.js": {
+        "bytes": 100621,
+        "sha256": "2c4ce0d2cd17bb9346cf3507e60607212581a4d1817ff5e8e51d36b4e072a458"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\desktop\\package.json": {
+        "bytes": 570,
+        "sha256": "5d6e3801e97aad6c6ba1178131c36cb230ee8bc9cc6b2c45cba491f85ee81013"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\desktop\\cordis.yml": {
+        "bytes": 223,
+        "sha256": "c300dcf2ebc5f02062d6591268d29d3db6fe45e0cb138f5467276fe2ba06076e"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\desktop\\cordis.patch.yml": {
+        "bytes": 1478,
+        "sha256": "8cb3495379284aba3d99ef9cd1ed6a348d34199b8be675fcb972e8dc14d50a19"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\desktop\\pnpm-lock.yaml": {
+        "bytes": 16734,
+        "sha256": "b7d04be819f5a9e51c2e034016a474c1e1bbc75aab4ff92c95b49ee65e8572b4"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\web\\package.json": {
+        "bytes": 207,
+        "sha256": "210068ddb9ebc4cdf395ebb53020be6ccaaedb917e74dae16296d62394626398"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\web\\cordis.yml": {
+        "bytes": 223,
+        "sha256": "c300dcf2ebc5f02062d6591268d29d3db6fe45e0cb138f5467276fe2ba06076e"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\web\\cordis.patch.yml": {
+        "bytes": 1507,
+        "sha256": "1cfd021d918c43915fd71ad28cb8b8e83f8787fe1464e55e9f8c45bd62c3a412"
+      }
+    },
+    "runtime": [
+      {
+        "path": "D:\\dsh-research-agent\\.native-web-runtime",
+        "version": "0.1.5-rc.9",
+        "lib": [
+          {
+            "name": "index.js",
+            "same": true
+          },
+          {
+            "name": "client.js",
+            "same": true
+          },
+          {
+            "name": "types.js",
+            "same": true
+          },
+          {
+            "name": "typert.host.js",
+            "same": true
+          },
+          {
+            "name": "typert.remote-client.js",
+            "same": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\dsh-research-agent\\.web-runtime",
+        "version": "0.1.5-rc.9",
+        "lib": [
+          {
+            "name": "index.js",
+            "same": true
+          },
+          {
+            "name": "client.js",
+            "same": true
+          },
+          {
+            "name": "types.js",
+            "same": true
+          },
+          {
+            "name": "typert.host.js",
+            "same": true
+          },
+          {
+            "name": "typert.remote-client.js",
+            "same": true
+          }
+        ]
+      }
+    ]
+  },
+  "zipEvidence": "10 个 ZIP 的全部项目文件（排除第三方 node_modules 和 node 运行时）均与对应保留解压副本 CRC 一致；无项目用户数据成员。归档名索引共 178432 个成员；常规路径检查发现的少量超长路径第三方文档不构成唯一项目源码。",
+  "archiveFrontendEvidence": "archive/research-web 仅有三个生成文件，SHA256 与保留解压发布包的 web 副本相同；原始 src/main.tsx 与 build-web.mjs 另存 .acceptance/native-web-20261102/source-before，均保留。",
+  "startedUtc": "2026-11-02T06:06:26.8297306Z",
+  "status": "completed_verified",
+  "deletionFailures": [],
+  "afterSnapshot": {
+    "head": "f8f3ddfe0b4677815905760ee44e90a2c56c7c86",
+    "status": "?? .native-web-runtime/\n?? .npm-cache-local/\n?? .npm-cache-v2/\n?? .pnpm-store/\n?? .research-web/\n?? .web-runtime/\n?? docs/ARTIFACT_CLEANUP_2026-11-02.json\n?? docs/CURRENT_STATE_AUDIT_2026-11-02.md\n?? progress-repo/\n",
+    "tracked": {
+      ".gitignore": "6421fe1c0eb60a751e811c4ff4758811aa6c9552a2142e8d3af3d712590c77db",
+      ".oxlintrc.json": "e19cfe44d1e8c63ab50f25a3d120704cc4d291889a46161436ad55164616ab83",
+      "COMPATIBILITY.md": "b392a1be2bdd9a7ba08ef0924497d429b654a96ac466f40df28401af5862d543",
+      "DEVELOPMENT.md": "c6a2c1049157b004fa3c6a3464f9cbfc2333aa209a03719b410105fa66e15ef3",
+      "MIGRATION_AUDIT.md": "39032f98d2ae5edce7455e40b77f3717833a00323754067e8f39f2413138cdf6",
+      "MIGRATION_REPORT.md": "8afedf892891d351e87ada7ad9882010ed4c9685d9f64e1f4712120dd94c0f26",
+      "README.md": "8695f397f7f91d89ffa21fdf301fbe54761bb3ae29ce83132c6cadfbb49eb3f8",
+      "TEST_REPORT.md": "9195e3a6244ef041f6bf5d6f2de64ce819e6a9383424b3087b1a9faa90edbf79",
+      "docs/UI_AUDIT.md": "11b0fff94b5e6e32e18a1c1cf68cc0cefa604b87aea2790093861dda746fbab7",
+      "docs/UI_CHANGELOG.md": "fd1e46c96e377df0f61d863b58db57ac45a4ef61c52a598b30bcbbf84f87e98d",
+      "docs/UI_CHANGESET.md": "8512b1ecb4f6e97ea8cdd0e19c0eb2d53917d890b6f6c52a68b2d2d0342e60d9",
+      "docs/UI_DESIGN.md": "939ef1301cc6091bb2c5a1903307443e0ce11d433048e2fd531b1780a032f505",
+      "docs/UI_TEST_REPORT.md": "1dbf56ebcd9961826f2936b1c5d720d0505191f91d30c53fabfde82565db4714",
+      "docs/acceptance/COVERAGE.md": "963807a4a10a235ca1227ba0bc6ccc2d20ef7b6085387c125158ea4cb2d29dc8",
+      "docs/acceptance/baseline-confirmed.json": "ec43672c5e5378ba45d7484b0b5ef4eac014c39f19a3e73bbdd5c0ace7dcc955",
+      "docs/acceptance/baseline-failures.json": "16188bb3306975f96f39d88fbe8739938241f44c9f4d888402f4ee5d1c7bab4d",
+      "docs/acceptance/baseline-regressions.json": "b39c6c54d0810391268ed19c914bd0e56a973ac50716eb869b1a529233d48e6d",
+      "docs/acceptance/build.txt": "a84431e5836e247afa425e155cfec1c059eef66bb9a611320ea9736618bb4d28",
+      "docs/acceptance/candidate-pack.json": "fed5e4dd70282c05c64acc7a28f894cb398caefab70c93e7bbd6048704b03472",
+      "docs/acceptance/coverage-baseline.json": "87b196bfbe028572839c09f305684cbdefa38cc26e4e5ee9d2b259c52fd643f6",
+      "docs/acceptance/coverage-final.json": "0027ce33fb16b532bafdfeeef5c786f12c752f5336aada11fe6e4c9fd4c10f0b",
+      "docs/acceptance/document-check.json": "af956acbe39339a842b583d6c04d48203f6aeb41c37b2733a3dedc0ed53bcbea",
+      "docs/acceptance/electron-completed.png": "4771adb770207676df6b079bb2e4a5b3d42cf876c1ab86251076c766aade77a4",
+      "docs/acceptance/electron-filesystem-failure.txt": "9feb4484243e8016a4b9e01cfb45de6dc109e350c3f9998717c8c40ca6d222ab",
+      "docs/acceptance/electron-final-console.txt": "cb632c0c1408a8af6503700552c50a2809fe44f20418bb98b9ce6914876ccdf7",
+      "docs/acceptance/electron-final.txt": "fea27fe6c2b244e11faa0960ffedc33bb6155ac2f6ad5304b87664c1f732eef5",
+      "docs/acceptance/electron-identity.json": "be214e91da004c917a03555cca4c72b4f38bd86e92203921bae2adb424aae23e",
+      "docs/acceptance/electron-rc2-console.txt": "1552fde09330d3e75e0a83c9258151ca64920adf11b6cea437cd2cae7189d75e",
+      "docs/acceptance/electron-rc2.txt": "a3043731abe7891131dd952f27746979446891e279fff1a57f0216d5ab3b736e",
+      "docs/acceptance/electron-script-selector-failure.txt": "796ef2fdd31b71d0c7f6b4b6f80e1f7fcf24f749170fcec7575f57b4bc59868d",
+      "docs/acceptance/electron-ui-rc5-eio-rerun-note.txt": "3fe9fea4687e671521359625ff963c3ff0dc4b2bd551a330ffbff5db4037b663",
+      "docs/acceptance/electron-ui-rc5-eio-rerun.txt": "df6afc1a21d9e32eea1a137a89388d9215e5ab18969aca7a49c2c9a4c85b0a1d",
+      "docs/acceptance/electron-ui-rc5-final.txt": "baa03f1c1c5734a4d1deb3bcd6ece37dbf30b444a88f260968adab85d4ddf764",
+      "docs/acceptance/electron-ui-rc5-narrow.txt": "b481204eb8b4f2b8249961a573bf8448f980c6efee3dd84bd4967a23d02c4b9b",
+      "docs/acceptance/electron-ui-rc5-pass.txt": "fedccd56bc3567b006110992b76b0dbceb3c480116ccbd98797eab0300e39aad",
+      "docs/acceptance/f02-before.jsonl": "db1283d84e1643fc5ef47f3f42f2023479359cb303fb289f9a63240b42c72a08",
+      "docs/acceptance/f02-before.txt": "19f3dcb0ecb39d5091f487ca5ff38218579f770e412eea3dca5eef3961bf2fa3",
+      "docs/acceptance/focused-host.json": "8041b1709b602142380c1189408f7fe666e90f04bfa10cda13d5802f47873dad",
+      "docs/acceptance/graph-risk.json": "e47d8e07649687194ea3191f8b08d72727e01b61deafbce816ddb7c369ec5920",
+      "docs/acceptance/integrity-final.json": "524cad0360ee6ff7f123c25450464fcd0e88d1ebb07e2ec62e2b4d4d522ff6b6",
+      "docs/acceptance/isolated-update-final.txt": "aa0789933ae753076c6236fcb230e2d6f495fc8bee3b3fe865766f4c1b6955ba",
+      "docs/acceptance/isolated-update-rc2.txt": "046b63bc1045f512031caca8a9f585896fd2dc7cca3a1652cd97ba6fbf3fcbfa",
+      "docs/acceptance/isolated-update-rc3.txt": "95df72e0a217beb53d716c26b30fd9f4a50c6613e4ccc174d872f37fa2b989b3",
+      "docs/acceptance/legacy-graph.json": "a4cf1291f360182bd6cb330362e2c365eb70ef00349df1708ea3d7c8cb2000bc",
+      "docs/acceptance/legacy-ui-adapted.json": "9e13b4a51891f1fb096fb649916b20bee9fecb106b66666bcda525ddc56976b3",
+      "docs/acceptance/legacy-ui-baseline.json": "4ada5ba625112f4ac18fd706caaad25bac11c5fdcacb5b2fba2c3b4f73c5dc5a",
+      "docs/acceptance/legacy-v1.json": "739d182cd946f25ed634c4227662b036a712c2ba92930860c0e8b8e792817429",
+      "docs/acceptance/lint-final.json": "0a3574299cf8f979cc944129f8b7a43a96831f967c795d1d5846f3df0b54489c",
+      "docs/acceptance/lint-ui-rc5.json": "82298d71e435ce49cb5a3618c4e83048ac2646de2594169166726579ed4ef54e",
+      "docs/acceptance/model-routing.jsonl": "48f8a009eacee9cc94f833e7202fdfa14701c7d329e27fc168af520e09aceb1f",
+      "docs/acceptance/package-final.json": "f125f4416bf3958abbf5d7fa424c324109546de06c38995a2990083ddc409e16",
+      "docs/acceptance/package-ui-rc5.json": "5b528896cf042abc0ddc1790f1e24ccc0141b4a1372e5d63e6b0164bcf93c793",
+      "docs/acceptance/remaining-processes.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "docs/acceptance/repack-comparison.json": "b0a95ba7fa3d563ecfdb039d2bb9f16d06f7f8683c87dfd03fa2b1789cd9f648",
+      "docs/acceptance/sdk-type-gap.json": "3dd87dcc888c3ab2e6f025e575cf6c427ff871224cb034b0868cace2d482dbef",
+      "docs/acceptance/tests-after.json": "eb0a0d6e9e5747a1eb435f662681cfb17c0ce960c249133361dd4b9b29b3b8ca",
+      "docs/acceptance/tests-after.txt": "e45ee6d8678046025950264f0156d1f4ca81b8575367f1e2d576997a331be8ec",
+      "docs/acceptance/typecheck.txt": "7260d395ea8ae02e877af016faa9e21043ba2cc2d0b992631f1fc644b9f271ff",
+      "docs/acceptance/ui-build-rc5.txt": "5c3d96541ef3a70921cf7cfe6c53271cda67eda346d0c0356827e214ce0ed1fe",
+      "docs/acceptance/ui-tests-rc5.txt": "2c4a7d3d6e5a58b267ee4310831a09238179e3a4fcd5e5f9d3f7deda6890c8d6",
+      "docs/acceptance/ui-typecheck-rc5.txt": "7260d395ea8ae02e877af016faa9e21043ba2cc2d0b992631f1fc644b9f271ff",
+      "docs/backup-location.json": "49ea1caa2e0802c6e28a1a5a9494341d467e580bc31c3c9d768886d0760cbebb",
+      "docs/data-integrity.json": "eb3853bde028808940e9f87c1549a7d581166cfb1bc58a3b10c0327a57e78237",
+      "docs/default-without-plugin.png": "14474af5db16245291c8e2ff3afdd0ceb4b5cf5c5359d19cd2d5eb364bda3c85",
+      "docs/full-flow-progress.png": "ecfb2bd452ace8faa22d9655c8b2c6d21010e69aeffb66039e5089caa105b718",
+      "docs/isolated-initial.png": "15871ec47043e280eaf6cf0bade83bb54e516fe1caad89199105b6f2dd9dfcf3",
+      "docs/pack.json": "941b997c84ba25ff36f0c6c64543132b090007cb3e062064a503ad822a80d0d8",
+      "docs/package-audit.json": "92dec734b34da32df21a7c2b69b677aee279d5dbf253b4dca17a074990edf517",
+      "docs/preset-menu.png": "2c10207a40208338fde54d06f3816742e6a23a6ae5d56bc5ce8d5b839f11ff1a",
+      "docs/research-completed.png": "71a6e9850d481f1407d1627f5d89c3dacc2ce47017818f2ee837b76b26ba7515",
+      "docs/research-simulation.png": "5e1310d9568feefb555c686709546d3201359208b4a60c54d58cb9dde08c2c58",
+      "docs/session-state.png": "3ab2a06cace6f6fb38e136a539f66a31a1fcf87289000d9d845c86044dd450ce",
+      "docs/ui-screenshots/after-electron-rc5-dom.txt": "253283f7efcf5b95ae21655bdd0198c548faa3591b6fc4afebc288f1b3cba71c",
+      "docs/ui-screenshots/after-electron-rc5-running.png": "f964cd833631b934b99bddef67241713f696aa16351b469c172c1ce330b92a74",
+      "docs/ui-screenshots/after-electron-rc5.png": "f8fcd33cb1221ff8dfcdbf8067499b1bcdff92a286a9e42d2ce2db4a711c18ee",
+      "docs/ui-screenshots/before-electron-completed.png": "4771adb770207676df6b079bb2e4a5b3d42cf876c1ab86251076c766aade77a4",
+      "docs/ui-screenshots/before-electron-start.png": "9fc42fa99671b8b18930aa70060b2f5c6a00c349049f2466e06c08c719b8bc12",
+      "install.ps1": "a07fd3171807df9c7eddc5c57d02619713e72f5590b3903e186aa2e6c61544b1",
+      "package.json": "49409d54f8990c7150f45bbad95b2a5e961d3f0bcd8632cafd216b13c2a8fd30",
+      "packages/research-agent/COMPATIBILITY.md": "9dac6d8aeca294e0a5ca42f6c3f162e50a4832dcc31e545e3fb73941d1840ece",
+      "packages/research-agent/LICENSE": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be",
+      "packages/research-agent/README.md": "00ebd9850ce372e708bbaeb9d359c5dc84f9de9589d5b724ea7f2c0755228a72",
+      "packages/research-agent/cordis.patch.yml": "9840e180186b3be203d631d0b7e78a709aa919d92ee3426df95bc40765523de3",
+      "packages/research-agent/package.json": "fdfe864a96d644434af2fd22f7e9c089b4359eb8e6b813336c694dbc9ff25a76",
+      "packages/research-agent/presets/research.patch.yml": "e28811763a3e2d5f5857705336e9120d6663fb9e099ce4326641bae119dfad68",
+      "packages/research-agent/src/client/ResearchAction.module.css": "c560d63e7fc93b3b1cc03c6087115aebe1b0a2541cc37f6af2e04ec9f2bf94aa",
+      "packages/research-agent/src/client/ResearchAction.tsx": "332c9203392e7a62a36c075cc808f458546b50d96fbef9f1b9fcf41a4f38c78f",
+      "packages/research-agent/src/client/ResearchBranchAction.module.css": "23bfb15f386e94cd02e04f181115be0cd051c0d8658f5cbcef1c46e8fcbecadc",
+      "packages/research-agent/src/client/ResearchBranchAction.tsx": "0a57baa0c2bc7c842e35f4c90bda86db746427d34f0c39ab334a3e36593f2549",
+      "packages/research-agent/src/client/ResearchBranchList.module.css": "48a3184989e2559c6746e36d1f6ab26000602d4c5bfbe53dfdf2e4869816e9a1",
+      "packages/research-agent/src/client/ResearchBranchList.tsx": "39c2998bcc7863a77e49a148cd7b6402b9064d3cb22fd6390c2dec71bbbe9a71",
+      "packages/research-agent/src/client/ResearchBranchSelector.tsx": "986d73faea23375334e98bfffba86514a629734b55c3411572968e60a55fbe48",
+      "packages/research-agent/src/client/ResearchFlowCanvas.module.css": "959ac841d6578944068849ec499d275db7c175e90c03c1bdbc5e2c97735c4501",
+      "packages/research-agent/src/client/ResearchFlowCanvas.tsx": "ac4195bc951c0fedaa73229b517a54ffb623dc86994e800711f67755d65004b5",
+      "packages/research-agent/src/client/ResearchPanel.module.css": "cce6a7fb780454909d727af9612186b59fbf8d3b0dbe9d2ec719469ac92a13a1",
+      "packages/research-agent/src/client/ResearchPanel.tsx": "6b5cc0abb90a86bb312e907ab4d0e6f399a585e89470baba94dac85c8ac5a518",
+      "packages/research-agent/src/client/ResearchTitle.tsx": "10562590cc006a4d25864f5ce6acb2eed64312ae6f7a808a88cfaa1f9c60ddf1",
+      "packages/research-agent/src/client/ResearchTranscriptMain.tsx": "2c642da02bf911c1a9ee59f5975f36dce35a783096f45c49a936a7abdd70839b",
+      "packages/research-agent/src/client/css.d.ts": "3f68e42782ee958486694c7982949fb2732c026a5c3fb4a6c4abe4a20e11f858",
+      "packages/research-agent/src/client/index.ts": "f002672047def52d5f8773132a3aa91c01541070ecfbb62dc63ef65f36e7f48d",
+      "packages/research-agent/src/client/locales.ts": "be89d09909ce74dd6e74482f20a3930d84cdc326792a6179da3b86f61ab1175f",
+      "packages/research-agent/src/client/remote-types.ts": "1ebe823806ddfb84db44d9f23f6c85a964ba4a5a1a9ef2dc3102280e9316885b",
+      "packages/research-agent/src/client/research-definition.ts": "aef75a1807a7f1b2695389dac0bca883620e01d4540f7e5f9bcfc09a01827a89",
+      "packages/research-agent/src/client/research-session-store.ts": "1abd64241503d8b1c510ea9da5272071de446dc2f5be16f70bca333be1ef1b59",
+      "packages/research-agent/src/client/tsconfig.json": "772ef0ba8644bdb62865ff24621e788dba422b46142e7484b04bb6ac648da78a",
+      "packages/research-agent/src/controller.ts": "917a919020fbbeb4ff9cd5a4b0eaf634d054a823be32e6c6fb09da46eb426530",
+      "packages/research-agent/src/index.ts": "a3048c35b191d77f45316b3ecab93ef22c64aadb7262b1c01a5c670087ce5a66",
+      "packages/research-agent/src/tsconfig.json": "e4a7c182c73e78614f08849680aa6350487108c7fc26434fcfff4f552abbef90",
+      "packages/research-agent/src/types.ts": "785e00cbb9073bff9d615a76fddfcc86dfb264bb2cd2d8a23b1f8016afd79874",
+      "packages/research-agent/src/workflows/index.ts": "bd0ead24eb69e8758e1132a5314a735b9231b6f3e5c983d382660e9010f05cf5",
+      "packages/research-agent/src/workflows/research-coordinator.ts": "f9f2ec9bfecc14aebab8f4a33e12123fea52f2db9d9652e636a678df11a74a03",
+      "packages/research-agent/src/workflows/research-simulation.ts": "558b8599e0f885b5cde8f0ea06f37624d7a926442149d1f1872d2f8973619e91",
+      "packages/research-agent/src/workflows/research.ts": "e796d4c2ca69db7e795f4b4211bdd89613795a4975a193966d0cd731e829112c",
+      "packages/research-agent/src/workflows/subagent-adapter.ts": "3aa70839f2f88db596760c706f05aa42e20633da2c6f8f9ffa6d1341b0a338d9",
+      "packages/research-agent/tsconfig.client.json": "f0a92f4b68974ba7220c4fb5b22525be8a91050909431313987c2fb1efbfe91c",
+      "packages/research-agent/tsconfig.host.json": "09a85019e442663627711081e9f2802bd2c4e5439c0697719a8bf63d9291d3dc",
+      "packages/research-agent/tsconfig.json": "02d0ffd351fd76a2b0ac0676c3593eeda1b91e7622a2d97192cccead90dc645e",
+      "pnpm-lock.yaml": "96fc2ba1217dd341df59a78b41ad113d634796f5bf757e62727f5e80771dce27",
+      "pnpm-workspace.yaml": "8e4f223dd36ff4d401d77849f808c7ad6ca2899969c0b560cc88989ef475c871",
+      "rollback.ps1": "d03e7ca2dc470d38dc1064b7abf2ceaa3b57950fd8fe2ec96e8f8196adf7f58d",
+      "scripts/asar-reader.mjs": "fcf2dfd8976cac3be06608ee0a4ee3ee75c33f7ed58e8b8d75e8b02ac1ebea02",
+      "scripts/backup-initial.mjs": "9ddef8b9b1f958200c89510baf75168acd1300a6d3dc78003b57ed8bb2b6783f",
+      "scripts/branch-flow.mjs": "9b37af909abeebf9a079a8f0c571b53b688f94c2beafded7d7ff45d58a3d36b7",
+      "scripts/browser-helper.mjs": "3e60ad2abc4aa992f25a12f6c1d7f38c343758fa0e3166b8d11d65aae1125639",
+      "scripts/browser-inspect.mjs": "e56fd569c5b521e2e19b4e22e4915eb110454122c853f32bdb3475333a5e4a5f",
+      "scripts/browser-step.mjs": "01144b10f3e1c846da151a0f1cf325dfa5015c18c2eeb1ac474fe8671ffeb2f8",
+      "scripts/build.mjs": "9450f57549b2d514046dacc5f365f79e2c039a1569d641b404942dc41495d242",
+      "scripts/default-smoke.mjs": "6f12aa95f5d75a1e394159732a23d05d9b8504064126687ad7dac2be303408f2",
+      "scripts/extract-source.mjs": "6d8e1b510b387debe7a35e9b7810abb00c8a037291fb97190f9c4e904a08560f",
+      "scripts/extract-target-sdk.mjs": "75e69382a291c9bcf498e8d1331285c085a8fc98e9bb85709bf1ce10e440919e",
+      "scripts/full-flow.mjs": "1c5e1146203b9fc77aa03fc542851e66899afa9d9445d30a834dab4a1c9ca25b",
+      "scripts/generate-protocol.mjs": "0bde250620fc0b459d89b178ad34a525af0dab5aad71c29e1be414a5d17dea5a",
+      "scripts/inspect-panel.mjs": "848de3449e0f3aa52c3c347df6402948145694aa47f7014f6b557b375c1f5f3e",
+      "scripts/manage-plugin.ps1": "0407914a61cb5702fd51440bbe7c7e419be99ea2b746194a3c4d99f6c9f25d08",
+      "scripts/migrate-data.mjs": "f722c78c1ae73974de1f8b689942115eedbe5a3663b4176f1889fc77e520d36d",
+      "scripts/prepare-protocol-sdk.mjs": "2f00a29c2546b8f5fc8bb16d8f57d1962a0db270e2ab144fcb69b67d73fd89bd",
+      "scripts/stage-flow.mjs": "da305d293c77eceb83286a689441318346267bc7a5a82c6c423a9723761179a0",
+      "scripts/start-isolated.ps1": "60a24c4be6f908d3c7b3db931c2b629aa0f3a67ab904f03c2b92065da47e82c0",
+      "tests/acceptance/README.md": "73712aae64a5e8ac498573cbbdb258475acfe037361fcb643c4aaecbcf0950ce",
+      "tests/acceptance/check-baseline.mjs": "fc17cbce78096293da0ac4175b043954c21d671089b82b443ea917b831d6c4e3",
+      "tests/acceptance/coverage-map.mjs": "68ae782f230f053da3dd5063cd2192aec8fbfa8d1e32edc5a9f8e17e8156fe62",
+      "tests/acceptance/electron-candidate.mjs": "8160f8cbdbf03d6994aaefa1b04b4252b865814d5aacadb2a9151a8e39e412ac",
+      "tests/acceptance/electron-flow.mjs": "9c0305d0c2eec4c0b47194ca4c2ed016ace24ee9e89f3cf5609a03721d1f21df",
+      "tests/acceptance/electron-ui-rc5-screenshots.mjs": "de06c2caab17dc37310cc56e90a52eb1b7be4e17ebdb2d7b4fbafddbc1393557",
+      "tests/acceptance/electron-ui-rc5.mjs": "4fb90cb916cea0f8a84ee8817e1e695e9a3f5201c07ca6b0d9ead0811a717086",
+      "tests/acceptance/graph-risk.mjs": "b97b877d7f3713891b4d5cee932ed1ea0e68590396e446106c140aac64e2084c",
+      "tests/acceptance/isolated-context.mjs": "76560c9a62282bb3152ffc3db6e09bf47a94b782f1bd33ab4cfddd76013ba9cf",
+      "tests/acceptance/legacy-records.mjs": "689227eb5158b449dd89ea588e67bee5294fde3db0e41ae832efe5cae6890007",
+      "tests/adapters.spec.ts": "b8e883476fa611ae2fbec9e3bbd17823c9b8ce37a845b938d00d560114261400",
+      "tests/compatibility.spec.ts": "ac6f80948808468c68c1063ddf9d798d7457e64d71ff1942230ea4df309d9f8b",
+      "tests/controller.spec.ts": "e5f819edb9a8dba980bd1fc3f2e384b01088e5990553955cd4870973e8ccec55",
+      "tests/legacy-ui/research-branch-list.client.spec.tsx": "f967677ad385c0c00fdf284704962bec959e70743f2d4504e3cb2060e862acd1",
+      "tests/legacy-ui/research-flow-canvas.client.spec.tsx": "59c18b69795f1ccb57222b56cfeb81141afdb604140d2177d7f87190835dff7d",
+      "tests/legacy-ui/research-panel-styles.client.spec.ts": "26e1262502ca7a1355e447bdef2276d84a7ad426f4d56c6d6bce8a423538736b",
+      "tests/legacy-ui/research-panel.client.spec.tsx": "52e45c51b2233f4ef75bc1b3a6fe7592c264c4522a96aff697b81ae4ec5cfe0e",
+      "tests/legacy-ui/research-session-store.client.spec.tsx": "7819588a3f75649c973a34b3c03ce7f0a6618c291f12a2b2bb5bc8f60c618c9c",
+      "tests/migration.spec.ts": "b081b0c925dfce0e728d384fd21673a1c6b4b4f334bf79679923ffd950fd46d7",
+      "tests/refresh.spec.ts": "5dc69d5def4ef8e790295febc9401fcc062a49d61cece1fbbf894b2292bf4a85",
+      "tests/research-coordinator.spec.ts": "c24e24f2fcc62fe9b05514c12b87486f6139b0fd88cf35856b144ca9647bf494",
+      "tests/research.spec.ts": "2e89755c8288a462bd70ccc0c4b20e94670f5dc2609ed9735b6c6d9298bcaaa1",
+      "tests/support/browse-picker.patch.yml": "79b779589b236f2644b441ca640fb20c5aed284cfaace333523c00d8a8ddd6b3",
+      "tests/support/mock.mjs": "9c060e3d4ed31d1d047c440638cfba1d80ab299ea0639b0489a79ac0bdaef3a3",
+      "tests/support/mock.patch.yml": "592332f2995d3ce48e1bf3f1b0293e3852073a187aa932d8c2e7a63a58e1b091",
+      "tests/support/translate.ts": "c05dbe39355916881dd30ab4b0eea00ff3d09ed17480c14e9d2b3e9c5abdc161",
+      "tests/support/ui-primitives.tsx": "73ac07ebd13cf019e8441dc9505f95921ad93592d6227abfcf0040dfeba05c24",
+      "tests/ui-regressions.spec.tsx": "c01a5330f2d3ba4c9218b513ccc144c879ed974e2a2702ae2f9669c35de26386",
+      "tsconfig.client.json": "3869e35a716cc4736505f59b017cdfd354eed2dec1b7d409410361daa3210081",
+      "tsconfig.host.json": "10e4aa8a4560886c70a28822112bb983f39baeeafebfda7921d2bf0d59095342",
+      "tsconfig.json": "78d9d6104745069a1932ce1ca08b81641180287e2f5fe7c3787e3334c167671f",
+      "tsconfig.lint.json": "6f6e482e748b593834c449ae647360d87d2f9f0b5e26b6f55ef08bd0cc0be48a",
+      "uninstall.ps1": "020253ed78c3b44b84555160445f54be91017d2dbb10cff0f4fb4b8f70d2f182",
+      "update.ps1": "ddbe05a10080c4994aac71f0d0b1def5bc8f8fc343e4813fd77ab956a0c8ae54",
+      "vitest.config.ts": "7efba0262949b342d0ed8b8d93a4eb876cf37c38194766ad013e8a870c6f7d13"
+    },
+    "protected": {
+      "D:\\dsh-research-agent\\.isolated\\web-preview-rc5-20261102\\home": {
+        "exists": true,
+        "files": 11,
+        "bytes": 21513,
+        "digest": "f1a4c39decfbfc634600d339f448d2b2fbd21a2d7cdd32db8d80aa0d0fa7654d"
+      },
+      "D:\\dsh-research-agent\\packages\\research-agent\\lib": {
+        "exists": true,
+        "files": 31,
+        "bytes": 1344667,
+        "digest": "c40d88143a2675ddd44f802a833156f23a4acbf36a2bcea1c110599039e250c0"
+      },
+      "D:\\dsh-research-agent\\.git": {
+        "exists": true,
+        "files": 1159,
+        "bytes": 21265876,
+        "digest": "b7fad09998120eb909c22defdf89a199d19d62abf05b8cf704470c03bfd4ef6b"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\desktop\\node_modules\\dsh-research-agent": {
+        "exists": true,
+        "files": 33,
+        "bytes": 1239878,
+        "digest": "ef6dc951353847b5042660017cc423801d7b836158d9b53424ff16103e3a5648"
+      },
+      "D:\\dsh-research-agent\\.research-web\\home": {
+        "exists": true,
+        "files": 8,
+        "bytes": 31073,
+        "digest": "59ce290f0a1eef802a37d9df8002501977f07d7e7d7fe0a1d5da00de616919b2"
+      },
+      "D:\\dsh-research-agent\\.research-web\\workspace": {
+        "exists": true,
+        "files": 0,
+        "bytes": 0,
+        "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "D:\\dsh-research-agent\\.isolated\\home": {
+        "exists": true,
+        "files": 72,
+        "bytes": 614043,
+        "digest": "2e979121cc54f3849bf1fc47879f5f877305f7ae962fe6120048d1826112f67b"
+      },
+      "D:\\dsh-research-agent\\progress-repo": {
+        "exists": true,
+        "files": 44,
+        "bytes": 206201,
+        "digest": "108e187a6d433d91eef51439dcfc6c3ce28f09a9dfd4a3870ee70be9a8d5e2cc"
+      },
+      "D:\\DeepSeekHarness\\data\\sessions": {
+        "exists": true,
+        "files": 192,
+        "bytes": 17609433,
+        "digest": "cae8fbf57679aa9835809d088f5ff9aae36327bcc11dac5ec87723a2d99da82b"
+      },
+      "D:\\DeepSeekHarness\\data\\storages": {
+        "exists": true,
+        "files": 194,
+        "bytes": 5737916,
+        "digest": "6c9dfe22e8aa3652d0d4201afafca08196ed2604cd0d5f3d1ab9ccbd9a64322a"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles": {
+        "exists": true,
+        "files": 21,
+        "bytes": 1198448,
+        "digest": "71f88e9dd4eb6a3bff9fd29b3baa67920f7d1b2ec3a001e1176feaa02140d2ba"
+      },
+      "D:\\dsh-migration-backup": {
+        "exists": true,
+        "files": 396,
+        "bytes": 3350236,
+        "digest": "e3e59493acc649e869aea4769ae761ea410cbefc6e1e77bbedee4e71d37c776b"
+      }
+    },
+    "files": {
+      "F:\\deepseek\\DeepSeek Harness.exe": {
+        "bytes": 246343144,
+        "sha256": "fd7d298f4ba03ee9bab1719a892afeaef5c09bf50c574a592a64c85f64574c0c"
+      },
+      "F:\\deepseek\\resources\\app.asar": {
+        "bytes": 182434783,
+        "sha256": "04b32e3a872826ba15cfb2081c6a929a8d4ecaa65e09a2543e5a6b30e2eff1f0"
+      },
+      "D:\\dsh-research-agent\\packages\\research-agent\\lib\\index.js": {
+        "bytes": 112875,
+        "sha256": "a292d028549c2306427d29a13e21d3f42628c8d23e780e549561482dfd787509"
+      },
+      "D:\\dsh-research-agent\\packages\\research-agent\\lib\\client.js": {
+        "bytes": 930779,
+        "sha256": "b11d3bd68e91b8c40d2e5677c304a8c0480ac41e1d00aea9058b9e923052d076"
+      },
+      "D:\\dsh-research-agent\\packages\\research-agent\\lib\\types.js": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "D:\\dsh-research-agent\\packages\\research-agent\\lib\\typert.host.js": {
+        "bytes": 113785,
+        "sha256": "8fbb4d6a938b76d8234a3cb15098f0f814645fa1bed596a3c755022d2d3ce714"
+      },
+      "D:\\dsh-research-agent\\packages\\research-agent\\lib\\typert.remote-client.js": {
+        "bytes": 100621,
+        "sha256": "2c4ce0d2cd17bb9346cf3507e60607212581a4d1817ff5e8e51d36b4e072a458"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\desktop\\package.json": {
+        "bytes": 570,
+        "sha256": "5d6e3801e97aad6c6ba1178131c36cb230ee8bc9cc6b2c45cba491f85ee81013"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\desktop\\cordis.yml": {
+        "bytes": 223,
+        "sha256": "c300dcf2ebc5f02062d6591268d29d3db6fe45e0cb138f5467276fe2ba06076e"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\desktop\\cordis.patch.yml": {
+        "bytes": 1478,
+        "sha256": "8cb3495379284aba3d99ef9cd1ed6a348d34199b8be675fcb972e8dc14d50a19"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\desktop\\pnpm-lock.yaml": {
+        "bytes": 16734,
+        "sha256": "b7d04be819f5a9e51c2e034016a474c1e1bbc75aab4ff92c95b49ee65e8572b4"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\web\\package.json": {
+        "bytes": 207,
+        "sha256": "210068ddb9ebc4cdf395ebb53020be6ccaaedb917e74dae16296d62394626398"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\web\\cordis.yml": {
+        "bytes": 223,
+        "sha256": "c300dcf2ebc5f02062d6591268d29d3db6fe45e0cb138f5467276fe2ba06076e"
+      },
+      "D:\\DeepSeekHarness\\data\\profiles\\web\\cordis.patch.yml": {
+        "bytes": 1507,
+        "sha256": "1cfd021d918c43915fd71ad28cb8b8e83f8787fe1464e55e9f8c45bd62c3a412"
+      }
+    },
+    "runtime": [
+      {
+        "path": "D:\\dsh-research-agent\\.native-web-runtime",
+        "version": "0.1.5-rc.9",
+        "lib": [
+          {
+            "name": "index.js",
+            "same": true
+          },
+          {
+            "name": "client.js",
+            "same": true
+          },
+          {
+            "name": "types.js",
+            "same": true
+          },
+          {
+            "name": "typert.host.js",
+            "same": true
+          },
+          {
+            "name": "typert.remote-client.js",
+            "same": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\dsh-research-agent\\.web-runtime",
+        "version": "0.1.5-rc.9",
+        "lib": [
+          {
+            "name": "index.js",
+            "same": true
+          },
+          {
+            "name": "client.js",
+            "same": true
+          },
+          {
+            "name": "types.js",
+            "same": true
+          },
+          {
+            "name": "typert.host.js",
+            "same": true
+          },
+          {
+            "name": "typert.remote-client.js",
+            "same": true
+          }
+        ]
+      }
+    ]
+  },
+  "verification": {
+    "headUnchanged": true,
+    "trackedFilesUnchanged": true,
+    "trackedFileCount": 173,
+    "keyFilesUnchanged": true,
+    "protectedTrees": [
+      {
+        "path": "D:\\dsh-research-agent\\.isolated\\web-preview-rc5-20261102\\home",
+        "files": 11,
+        "bytes": 21513,
+        "before": "f1a4c39decfbfc634600d339f448d2b2fbd21a2d7cdd32db8d80aa0d0fa7654d",
+        "after": "f1a4c39decfbfc634600d339f448d2b2fbd21a2d7cdd32db8d80aa0d0fa7654d",
+        "unchanged": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\packages\\research-agent\\lib",
+        "files": 31,
+        "bytes": 1344667,
+        "before": "c40d88143a2675ddd44f802a833156f23a4acbf36a2bcea1c110599039e250c0",
+        "after": "c40d88143a2675ddd44f802a833156f23a4acbf36a2bcea1c110599039e250c0",
+        "unchanged": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\.git",
+        "files": 1159,
+        "bytes": 21265876,
+        "before": "b7fad09998120eb909c22defdf89a199d19d62abf05b8cf704470c03bfd4ef6b",
+        "after": "b7fad09998120eb909c22defdf89a199d19d62abf05b8cf704470c03bfd4ef6b",
+        "unchanged": true
+      },
+      {
+        "path": "D:\\DeepSeekHarness\\data\\profiles\\desktop\\node_modules\\dsh-research-agent",
+        "files": 33,
+        "bytes": 1239878,
+        "before": "ef6dc951353847b5042660017cc423801d7b836158d9b53424ff16103e3a5648",
+        "after": "ef6dc951353847b5042660017cc423801d7b836158d9b53424ff16103e3a5648",
+        "unchanged": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\.research-web\\home",
+        "files": 8,
+        "bytes": 31073,
+        "before": "59ce290f0a1eef802a37d9df8002501977f07d7e7d7fe0a1d5da00de616919b2",
+        "after": "59ce290f0a1eef802a37d9df8002501977f07d7e7d7fe0a1d5da00de616919b2",
+        "unchanged": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\.research-web\\workspace",
+        "files": 0,
+        "bytes": 0,
+        "before": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "after": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "unchanged": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\.isolated\\home",
+        "files": 72,
+        "bytes": 614043,
+        "before": "2e979121cc54f3849bf1fc47879f5f877305f7ae962fe6120048d1826112f67b",
+        "after": "2e979121cc54f3849bf1fc47879f5f877305f7ae962fe6120048d1826112f67b",
+        "unchanged": true
+      },
+      {
+        "path": "D:\\dsh-research-agent\\progress-repo",
+        "files": 44,
+        "bytes": 206201,
+        "before": "108e187a6d433d91eef51439dcfc6c3ce28f09a9dfd4a3870ee70be9a8d5e2cc",
+        "after": "108e187a6d433d91eef51439dcfc6c3ce28f09a9dfd4a3870ee70be9a8d5e2cc",
+        "unchanged": true
+      },
+      {
+        "path": "D:\\DeepSeekHarness\\data\\sessions",
+        "files": 192,
+        "bytes": 17609433,
+        "before": "cae8fbf57679aa9835809d088f5ff9aae36327bcc11dac5ec87723a2d99da82b",
+        "after": "cae8fbf57679aa9835809d088f5ff9aae36327bcc11dac5ec87723a2d99da82b",
+        "unchanged": true
+      },
+      {
+        "path": "D:\\DeepSeekHarness\\data\\storages",
+        "files": 194,
+        "bytes": 5737916,
+        "before": "6c9dfe22e8aa3652d0d4201afafca08196ed2604cd0d5f3d1ab9ccbd9a64322a",
+        "after": "6c9dfe22e8aa3652d0d4201afafca08196ed2604cd0d5f3d1ab9ccbd9a64322a",
+        "unchanged": true
+      },
+      {
+        "path": "D:\\DeepSeekHarness\\data\\profiles",
+        "files": 21,
+        "bytes": 1198448,
+        "before": "71f88e9dd4eb6a3bff9fd29b3baa67920f7d1b2ec3a001e1176feaa02140d2ba",
+        "after": "71f88e9dd4eb6a3bff9fd29b3baa67920f7d1b2ec3a001e1176feaa02140d2ba",
+        "unchanged": true
+      },
+      {
+        "path": "D:\\dsh-migration-backup",
+        "files": 396,
+        "bytes": 3350236,
+        "before": "e3e59493acc649e869aea4769ae761ea410cbefc6e1e77bbedee4e71d37c776b",
+        "after": "e3e59493acc649e869aea4769ae761ea410cbefc6e1e77bbedee4e71d37c776b",
+        "unchanged": true
+      }
+    ],
+    "retainedAllVerified": true,
+    "deletedAllAbsent": true,
+    "archiveRescanMatchesExpected": true,
+    "scanErrors": [],
+    "desktopInstalledVersion": "0.1.4",
+    "formalWebHasResearch": false,
+    "libStillMatchesRc9": true,
+    "backupExists": true,
+    "officialDesktopProcessesStillPresent": [
+      {
+        "pid": 28428,
+        "present": true
+      },
+      {
+        "pid": 28332,
+        "present": true
+      },
+      {
+        "pid": 37856,
+        "present": true
+      },
+      {
+        "pid": 41860,
+        "present": true
+      },
+      {
+        "pid": 38980,
+        "present": true
+      },
+      {
+        "pid": 41128,
+        "present": true
+      },
+      {
+        "pid": 10440,
+        "present": true
+      }
+    ],
+    "processRecheckSucceeded": true
+  },
+  "summary": {
+    "deletedFiles": 28,
+    "deletedBytes": 2096025737,
+    "deletedArchives": 23,
+    "deletedZIP": 10,
+    "deletedTGZ": 13,
+    "deletedAncillary": 5,
+    "remainingArchives": 14,
+    "remainingArchiveBytes": 2582263,
+    "logicalFreedGiB": 1.9520760858431458,
+    "diskFreeAfter": 462721949696,
+    "diskFreeBefore": null,
+    "diskDeltaCaveat": "删除前净可用空间未持久化；释放量按已验证不存在的文件原始字节长度精确合计，不宣称实测 NTFS 净可用空间差值。"
+  },
+  "remainingArchiveInventory": [
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\native-web-production-I9znjB\\unpacked\\plugin\\dsh-research-agent-0.1.5-rc.9.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.9.tgz",
+      "bytes": 197573,
+      "sha256": "d43635c5c1b7c13d8931daec09a01e3febce91a99723389be9c51441948f58b8",
+      "mtime": 1793589142.339607
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\run-20261027-RV7z7X\\baseline-0.1.4.tgz",
+      "name": "baseline-0.1.4.tgz",
+      "bytes": 176110,
+      "sha256": "57904ecfc84b4af9a9f925ac2e1d7d662fc8d6707c1b5d62ae2f515b1fbf78f6",
+      "mtime": 1793033005.6984184
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\run-ui-v2-20261029-a563b7ce\\release\\0D7F7058EE79\\dsh-research-agent-0.1.5-rc.8.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.8.tgz",
+      "bytes": 191836,
+      "sha256": "0d7f7058ee79a971ae18a16ee0384634efc93f83e48480ff0f11920505fa1e9b",
+      "mtime": 1793273156.9253864
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\stability-20261029-dO8P90\\release\\250c021b69b7\\dsh-research-agent-0.1.5-rc.9.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.9.tgz",
+      "bytes": 196347,
+      "sha256": "250c021b69b7613614e09137d63b774a803e3ec5f311777e660f6b8f63a0d3af",
+      "mtime": 1793279121.1740987
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\web-plugin-veFFKg\\bundle\\dsh-research-agent-0.1.5-rc.9.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.9.tgz",
+      "bytes": 197437,
+      "sha256": "ce35931a92d1d81777297bab5fe3edf11f97a87390ce5ca78a4bcfe0e84be0dc",
+      "mtime": 1793338773.6502979
+    },
+    {
+      "path": "D:\\dsh-research-agent\\.acceptance\\web-rc3-plugin-dSalqm\\bundle\\dsh-research-agent-0.1.5-rc.9.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.9.tgz",
+      "bytes": 197573,
+      "sha256": "d43635c5c1b7c13d8931daec09a01e3febce91a99723389be9c51441948f58b8",
+      "mtime": 1793350126.5534387
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.1.tgz",
+      "name": "dsh-research-agent-0.1.1.tgz",
+      "bytes": 175866,
+      "sha256": "6444792e158525d4a4094cc6b9bafba2f923a3bef72377968edf155301a98a05",
+      "mtime": 1793030796.0663495
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.2.tgz",
+      "name": "dsh-research-agent-0.1.2.tgz",
+      "bytes": 176049,
+      "sha256": "678a44c4439a9a39efb58f241505cdaeb410a0cb8c713508262219b56ee0de03",
+      "mtime": 1793031511.1748822
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.3.tgz",
+      "name": "dsh-research-agent-0.1.3.tgz",
+      "bytes": 176097,
+      "sha256": "da2edd750abc97ec2c4c88249456b0ca2d76f63d453de887a2c397ce6fd9621c",
+      "mtime": 1793032537.8340256
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.4.tgz",
+      "name": "dsh-research-agent-0.1.4.tgz",
+      "bytes": 176110,
+      "sha256": "57904ecfc84b4af9a9f925ac2e1d7d662fc8d6707c1b5d62ae2f515b1fbf78f6",
+      "mtime": 1793033005.6984184
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.3.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.3.tgz",
+      "bytes": 178689,
+      "sha256": "254d151e9157ee3f8e35ff8e092d56c37d9956617f3c982cddefa2a1a52f8bd6",
+      "mtime": 1793065101.3054998
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.4.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.4.tgz",
+      "bytes": 179184,
+      "sha256": "fe3686e1f9eb23462d2b2692599e53c1b3440bcf268a2fff92a5e59aa9a96a7e",
+      "mtime": 1793070163.4651048
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.5.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.5.tgz",
+      "bytes": 180997,
+      "sha256": "c03fab04702513a7745fc3c652416f7eb21ed8beb7f02d3941811b1ae1bdaeb1",
+      "mtime": 1793175791.7011433
+    },
+    {
+      "path": "D:\\dsh-research-agent\\dist\\dsh-research-agent-0.1.5-rc.6.tgz",
+      "name": "dsh-research-agent-0.1.5-rc.6.tgz",
+      "bytes": 182395,
+      "sha256": "99cf22c941f0b67fc9187320ce05d631da8f80da3ad2200bab94e535ffbd4f46",
+      "mtime": 1793184889.0409656
+    }
+  ],
+  "verificationFailures": [],
+  "completedUtc": "2026-11-02T06:27:21.656364+00:00",
+  "executionNote": "所有28项删除成功且逐次持久化。原PowerShell在最终Measure-Object统计字典字段时失败；本次仅补齐报告与哈希复核，不重复删除任何文件。"
+}

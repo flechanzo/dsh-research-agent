@@ -1,3 +1,5 @@
+import type { RubricAssessment, TargetTask } from '../innovation/schema.ts'
+import type { FileAttachmentRef } from '@deepseek-ai/dsh-attachment/types'
 /**
  * Durable state vocabulary for the human-in-the-loop research workflow.
  *
@@ -114,6 +116,8 @@ export interface ResearchArtifact {
   /** Optional paper filename or source URL. */
   readonly source?: string
   /** Structured innovation evaluation, when this artifact is a scored idea. */
+  readonly rubricAssessment?: RubricAssessment
+  readonly paperRefs?: readonly FileAttachmentRef[]
   readonly evaluation?: ResearchInnovationEvaluation
   /** Stable creation time supplied by the coordinator. */
   readonly createdAt: number
@@ -133,6 +137,8 @@ export interface ResearchInnovationEvaluation {
 
 /** Snapshot of the memory available when a node was created. */
 export interface ResearchMemorySnapshot {
+  /** Confirmed task copied immutably to future assessments and branches. */
+  readonly targetTask?: TargetTask
   /** Artifact ids visible to agents at this point in the branch. */
   readonly artifactIds: readonly string[]
   /** User feedback accumulated before this node. */
@@ -210,6 +216,8 @@ export interface ResearchOutputInput {
   readonly content: string
   readonly kind: ResearchArtifact['kind']
   readonly source?: string
+  readonly rubricAssessment?: RubricAssessment
+  readonly paperRefs?: readonly FileAttachmentRef[]
   readonly evaluation?: ResearchInnovationEvaluation
   readonly status?: ResearchNodeStatus
 }
@@ -277,6 +285,8 @@ export function appendResearchOutput(
     title: input.title,
     content: input.content,
     ...(input.source === undefined ? {} : { source: input.source }),
+    ...(input.rubricAssessment === undefined ? {} : { rubricAssessment: input.rubricAssessment }),
+    ...(input.paperRefs === undefined ? {} : { paperRefs: input.paperRefs }),
     ...(input.evaluation === undefined ? {} : { evaluation: input.evaluation }),
     createdAt,
   }
@@ -294,6 +304,7 @@ export function appendResearchOutput(
       directionWeights: parent.memorySnapshot.directionWeights,
       literatureSources: parent.memorySnapshot.literatureSources,
       directionFocuses: parent.memorySnapshot.directionFocuses,
+      ...(parent.memorySnapshot.targetTask === undefined ? {} : { targetTask: parent.memorySnapshot.targetTask }),
     },
   }
   const branch = state.branches[state.activeBranchId]

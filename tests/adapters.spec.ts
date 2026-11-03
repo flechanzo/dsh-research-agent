@@ -14,3 +14,23 @@ it('cancels a published activation once and observes teardown failures',async()=
  const signal=new AbortController();const failure=Error('cleanup failed');const dispose=vi.fn(async()=>{throw failure});const runtime={startActivation:vi.fn(async()=>({childId:SessionId('child'),result:new Promise(()=>{}),dispose}))};
  const run=await startResearchRun(runtime as never,'spawn',{signal:signal.signal,parent:{} as never,prompt:'fixture'} as never);signal.abort();await expect(run.dispose()).rejects.toBe(failure);expect(dispose).toHaveBeenCalledOnce();expect(runtime.startActivation.mock.calls[0]?.[0]).toMatchObject({delivery:'caller'});
 });
+
+it('Host cancellation bypasses the operation queue and only cancels the exact session revision',async()=>{
+ const ctx=new Context();const records=new Map();const put=vi.fn(async(k,v)=>{records.set(k,v)})
+ const domain={table:()=>({get:k=>records.get(k),put}),close:async()=>{}}
+ ctx.provide('storageDomain',{open:async()=>domain} as never)
+ ctx.provide('sessionController',{resolveAgent:async()=>({agent:{ctx:{get:()=>undefined},session:{header:{},seq:0}}})} as never)
+ let started!:()=>void;const reading=new Promise<void>(resolve=>{started=resolve})
+ ctx.provide('attachments',{async *readFileStream(_paper,signal){started();await new Promise((_resolve,reject)=>{signal.addEventListener('abort',()=>reject(signal.reason),{once:true})});yield Buffer.from('unreachable')}} as never)
+ const controller=new ResearchController(ctx),sessionId=SessionId('host-explicit-cancel')
+ try{
+  const run=controller.upload({sessionId,expectedRevision:0,papers:[{attachmentId:'sha256:synthetic',name:'cancel.txt',bytes:1} as never]},new AbortController().signal)
+  await reading
+  expect(controller.cancel({sessionId,expectedRevision:1})).toBe(false)
+  expect(controller.cancel({sessionId:SessionId('another'),expectedRevision:0})).toBe(false)
+  expect(controller.cancel({sessionId,expectedRevision:0})).toBe(true)
+  await expect(run).rejects.toThrow('科研任务已由用户取消')
+  expect(put).not.toHaveBeenCalled()
+  expect(controller.cancel({sessionId,expectedRevision:0})).toBe(false)
+ }finally{await ctx.fiber.dispose()}
+})

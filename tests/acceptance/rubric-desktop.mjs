@@ -1,0 +1,99 @@
+(async function desktopTest() {
+ const fs=await import('node:fs'),path=await import('node:path'),assert=(await import('node:assert/strict')).default;
+ const {_electron:electron}=await import('playwright');
+ const {assertFreshBuild}=await import('../../scripts/build-provenance.mjs');
+ const manifest=assertFreshBuild();
+ let lock;
+ const c=JSON.parse(fs.readFileSync('.acceptance/rubric170-20261102/context.json','utf8'));
+ const beforePaths=new Set(fs.readdirSync(c.workspace,{recursive:true}).map(String));
+ const evidence=path.join(c.evidence,'rubric-e2e');fs.mkdirSync(evidence,{recursive:true});
+ const env=Object.fromEntries(Object.entries(process.env).filter(([k])=>!/(KEY|TOKEN|SECRET|PASSWORD)/i.test(k)&&!/^DSH_|^RESEARCH_/i.test(k)&&k!=='ELECTRON_RUN_AS_NODE'));
+ Object.assign(env,{DSH_HOME:c.home,DSH_DESKTOP_UPDATE_JOURNAL_DIR:path.join(c.root,'update-journal'),RESEARCH_ACCEPTANCE_TRACE:path.join(evidence,'model-routing.jsonl'),RESEARCH_NETWORK_TRACE:path.join(evidence,'network.jsonl'),RESEARCH_NETWORK_BODIES:path.join(evidence,'network-bodies'),RESEARCH_OFFLINE_SWITCH:path.join(c.root,'offline.flag')});
+ const log=(name,value)=>{const line=JSON.stringify({at:new Date().toISOString(),name,value});console.log(line);fs.appendFileSync(path.join(evidence,'workflow.log'),line+'\n')};
+ let app,page,panel;
+ const identity=async()=>{const v=await app.evaluate(({app})=>({desktop:app.getVersion(),electron:process.versions.electron,node:process.versions.node,pid:process.pid,exe:process.execPath,userData:app.getPath('userData'),appPath:app.getAppPath(),home:process.env.DSH_HOME}));assert.equal(v.desktop,c.targetVersion);assert.equal(path.resolve(v.exe),path.resolve(c.executable));assert.equal(path.resolve(v.userData),path.resolve(c.userData));assert.equal(v.home,c.home);fs.writeFileSync(path.join(evidence,'identity-'+v.pid+'.json'),JSON.stringify(v,null,2));log('identity',v)};
+ const launch=async()=>{app=await electron.launch({executablePath:c.executable,args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:60000});app.process().stdout?.on('data',b=>fs.appendFileSync(path.join(evidence,'desktop-stdout.log'),b));app.process().stderr?.on('data',b=>fs.appendFileSync(path.join(evidence,'desktop-stderr.log'),b));await identity();page=await app.firstWindow();await page.locator('[data-composer-input=true][contenteditable=true]').waitFor({timeout:60000});page.on('pageerror',e=>log('pageerror',e.message))};
+ const openPanel=async()=>{panel=page.locator('[data-research-panel]:visible').last();if(!await panel.count())await page.getByRole('button',{name:'打开自动科研流程',exact:true}).click();await panel.waitFor({timeout:30000});await idle()};
+ const idle=async()=>{await page.waitForFunction(()=>[...document.querySelectorAll('[data-research-panel]')].filter(p=>p.checkVisibility()).at(-1)?.getAttribute('aria-busy')==='false',null,{timeout:150000})};
+ const step=async()=>{await idle();const before=await panel.getAttribute('data-research-selected-node');await panel.getByRole('button',{name:'确认并进入下一步',exact:true}).click();await page.waitForFunction(old=>{const p=[...document.querySelectorAll('[data-research-panel]')].filter(p=>p.checkVisibility()).at(-1);return p?.getAttribute('aria-busy')==='false'&&(p.getAttribute('data-research-selected-node')!==old||p.querySelector('[role=alert]'))},before,{timeout:180000});if(await panel.locator('[role=alert]').count())throw Error(await panel.locator('[role=alert]').first().innerText());log('stage',await panel.getAttribute('data-research-selected-node'))};
+ const assessment=async()=>JSON.parse(await panel.locator('[data-rubric-json]').last().textContent());
+ try{
+  fs.writeFileSync(path.join(evidence,'tested-build-manifest.json'),JSON.stringify(manifest,null,2));
+  assert.equal(fs.realpathSync(path.join(c.profile,'node_modules/dsh-research-agent')),fs.realpathSync('packages/research-agent'));
+  await launch();
+  await page.getByText('新会话',{exact:true}).first().click();
+  const preview=page.getByRole('button',{name:'继续',exact:true});if(await preview.isVisible())await preview.click();
+  await page.getByTitle('选择新任务使用的 Agent 预设').click();await page.getByText('自动科研',{exact:true}).click();
+  const input=page.locator('[data-composer-input=true][contenteditable=true]');
+  const title='Rubric公开DoRA验证-20261102';
+  await input.fill(title);await input.press('Enter');await page.getByText('合成科研输出',{exact:false}).first().waitFor({timeout:30000});
+  await page.screenshot({path:path.join(evidence,'native-research.png'),timeout:15000});
+  const current=page.getByText(/科研合成夹具 [AB]/,{exact:true}).last();
+  if(await current.innerText()!=='科研合成夹具 B'){const label=await current.innerText();await current.click();await page.getByText(label,{exact:true}).last().click();await page.getByText('科研合成夹具 B',{exact:true}).last().click()}
+  await openPanel();
+  await panel.locator('input[type=file]').setInputFiles(path.join(c.attachments,'DoRA-2402.09353v2-public.txt'));
+  await panel.locator('[data-research-node-detail="node-2"]').waitFor({timeout:60000});await idle();log('upload','public arXiv 2402.09353v2, source fetched over actual HTTPS');
+  await step();await step();
+  const editor=panel.locator('[data-target-task-editor]');await editor.waitFor();await editor.getByLabel('具体任务或问题',{exact:true}).waitFor({timeout:45000});
+  const constraints=editor.getByLabel('约束',{exact:true});const edited=(await constraints.inputValue())+'；验收只评定公开方法复用候选，保持近邻等价问题范围。';
+  await constraints.fill(edited);
+  await editor.getByRole('checkbox',{name:'我已核对并确认目标任务及比较范围'}).check();
+  await page.screenshot({path:path.join(evidence,'target-task-confirmed.png'),timeout:15000});log('target-task','draft extracted, edited and explicitly confirmed');
+  await step();
+  const online=await assessment();fs.writeFileSync(path.join(evidence,'online-assessment.json'),JSON.stringify(online,null,2));
+  assert.equal(online.assessmentStatus,'complete',online.uncertainties.join('; '));assert.equal(online.score.S,0);
+  assert.equal(online.targetTask.constraints,edited);assert.equal(online.legacyComparison.score,88);assert.equal(online.legacyComparison.threshold,70);assert.equal(online.legacyComparison.pass,true);
+  assert.deepEqual(online.searchAudit.map(r=>r.round),[1,2,3]);assert(online.searchAudit.every(r=>r.completed));
+  assert.equal(new Set(online.searchAudit.flatMap(r=>r.queries)).size,3);
+  const acquired=fs.readFileSync(env.RESEARCH_NETWORK_TRACE,'utf8').trim().split('\n').map(s=>JSON.parse(s)).filter(r=>r.kind==='actual-https');
+  assert(acquired.filter(r=>r.url.includes('api.openalex.org/works')).length>=3);
+  for(const round of online.searchAudit)for(const source of round.sources)assert(acquired.some(r=>r.sha256===source.acquisition.sha256&&r.status===200));
+  const view=panel.locator('[data-rubric-assessment]').last();await view.locator('details[data-rubric-audit] > summary').click();await view.locator('[data-rubric-round="3"] > summary').click();
+  await page.screenshot({path:path.join(evidence,'three-round-online.png'),timeout:15000});log('online-complete',{score:online.score.S,rounds:online.searchAudit.length,actualHttpsRequests:acquired.length});
+  const revision=await panel.getAttribute('data-research-revision');
+  const sidecarRelative=fs.readdirSync(c.workspace,{recursive:true}).map(String).find(f=>f.endsWith('research-state.json')&&!beforePaths.has(f));
+  assert(sidecarRelative);
+  const {spawn}=await import('node:child_process');
+  lock=spawn(c.executable,['tests/acceptance/hold-sidecar.cjs',path.join(c.workspace,sidecarRelative),path.join(c.desktopRoot,'resources/app.asar'),c.workspace],{cwd:process.cwd(),env:{...env,ELECTRON_RUN_AS_NODE:'1'},windowsHide:true,stdio:['pipe','pipe','pipe']});
+  await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('synthetic sidecar lock timed out')),10000);lock.stdout.on('data',b=>{if(String(b).includes('READY')){clearTimeout(timer);resolve()}});lock.once('error',reject);lock.stderr.on('data',b=>log('lock-stderr',String(b)))});
+  const callsBefore=fs.readFileSync(env.RESEARCH_ACCEPTANCE_TRACE,'utf8').trim().split('\n').length;
+  await panel.getByRole('button',{name:'重新同步科研文件',exact:true}).click();await idle();
+  assert.match(await panel.locator('[role=alert]').first().innerText(),/ReplaceFileW|FS_IO_ERROR/);
+  assert.equal(await panel.getAttribute('data-research-revision'),revision);
+  await page.screenshot({path:path.join(evidence,'resync-native-error.png'),timeout:15000});
+  lock.stdin.end('\n');await new Promise(resolve=>lock.once('exit',resolve));lock=undefined;
+  log('resync-real-failure','external synthetic handle caused an observable native replacement failure; revision unchanged');
+  const checkModelCalls=()=>assert.equal(fs.readFileSync(env.RESEARCH_ACCEPTANCE_TRACE,'utf8').trim().split('\n').length,callsBefore);
+  checkModelCalls();
+  for(let i=0;i<2;i++){await panel.getByRole('button',{name:'重新同步科研文件',exact:true}).click();await idle();assert.equal(await panel.getAttribute('data-research-revision'),revision);assert.match(await panel.innerText(),/已同步科研文件/)}
+  checkModelCalls();
+  log('resync','two explicit resyncs preserved revision '+revision+' and made no model calls');
+  fs.writeFileSync(env.RESEARCH_OFFLINE_SWITCH,'isolated acceptance');
+  await step();
+  const offline=await assessment();fs.writeFileSync(path.join(evidence,'offline-assessment.json'),JSON.stringify(offline,null,2));
+  assert.equal(offline.assessmentStatus,'insufficient');assert.equal(offline.score.S,null);assert.equal(offline.legacyComparison.pass,true);
+  await page.screenshot({path:path.join(evidence,'offline-null.png'),timeout:15000});log('offline-insufficient',offline.uncertainties);
+  fs.unlinkSync(env.RESEARCH_OFFLINE_SWITCH);
+  for(let i=0;i<5;i++){
+   await idle();const write=panel.getByRole('button',{name:'确认并写入 Markdown 文件',exact:true});
+   if(await write.count()){await write.click();await panel.getByText('科研方案已写入文件：',{exact:false}).waitFor({timeout:30000});break}
+   await step();
+  }
+  assert.match(await panel.innerText(),/科研方案已写入文件：/);
+  const statePaths=fs.readdirSync(c.workspace,{recursive:true}).map(String).filter(f=>f.endsWith('research-state.json')&&!beforePaths.has(f));
+  assert.equal(statePaths.length,1);
+  const statePath=path.join(c.workspace,statePaths[0]);const sessionId=path.basename(path.dirname(statePath));
+  const row=()=>JSON.parse(fs.readFileSync(path.join(c.researchData,'research.json'),'utf8')).tables.sessions[sessionId];
+  const durable=row();assert(Object.values(durable.state.artifacts).some(a=>a.rubricAssessment?.score.S===0));assert(Object.values(durable.state.artifacts).some(a=>a.rubricAssessment?.score.S===null));
+  fs.writeFileSync(path.join(evidence,'tested-session.json'),JSON.stringify({sessionId,title,statePath,revision:durable.revision},null,2));
+  fs.copyFileSync(path.join(c.researchData,'research.json'),path.join(evidence,'research-final.json'));
+  await page.reload();await page.locator('[data-composer-input=true][contenteditable=true]').waitFor({timeout:45000});await openPanel();assert.match(await panel.innerText(),/科研方案已写入文件：/);
+  const win=await app.browserWindow(page);await win.evaluate(w=>w.setSize(880,760));await page.screenshot({path:path.join(evidence,'narrow-restored.png'),timeout:15000});await win.evaluate(w=>w.setSize(1440,960));
+  await app.close();app=undefined;log('true-exit','closed first real Electron instance');
+  await launch();await openPanel();assert.match(await panel.innerText(),/科研方案已写入文件：/);assert.equal(row().revision,durable.revision);
+  const restored=await assessment();assert.equal(restored.score.S,null);
+  await page.screenshot({path:path.join(evidence,'true-restart-restored.png'),timeout:15000});log('restart-restored',{sessionId,revision:row().revision});
+  fs.writeFileSync(path.join(evidence,'result.json'),JSON.stringify({status:'passed',sourceSha256:manifest.sourceSha256,sessionId,online:{status:online.assessmentStatus,S:online.score.S},offline:{status:offline.assessmentStatus,S:offline.score.S},legacyScore:88,legacyThreshold:70,network:'actual HTTPS; local Mock reasoning; no paid model',revisionPreservedOnResync:true,fullPlanFlow:true,reload:true,restart:true},null,2));
+ }catch(e){log('failure',e.stack);if(page){fs.writeFileSync(path.join(evidence,'failure-dom.txt'),await page.locator('body').innerText().catch(()=>''));await page.screenshot({path:path.join(evidence,'failure.png'),timeout:10000}).catch(()=>{})}process.exitCode=1}
+ finally{if(lock){lock.stdin.end('\n');lock.kill()}if(app)await app.close().catch(e=>log('close-failure',String(e)))}
+})().catch(e=>{console.error(e);process.exitCode=1});

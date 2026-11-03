@@ -10,3 +10,13 @@ packages/*/lib/
 packages/.protocol-sdk/
 .local-pack.json
 .acceptance/
+
+.build/
+
+# Local runtimes, caches and the independent progress repository
+.native-web-runtime/
+.web-runtime/
+.research-web/
+.npm-cache*/
+.pnpm-store/
+progress-repo/
