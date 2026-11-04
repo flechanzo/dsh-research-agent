@@ -19,7 +19,7 @@ it('Host cancellation bypasses the operation queue and only cancels the exact se
  const ctx=new Context();const records=new Map();const put=vi.fn(async(k,v)=>{records.set(k,v)})
  const domain={table:()=>({get:k=>records.get(k),put}),close:async()=>{}}
  ctx.provide('storageDomain',{open:async()=>domain} as never)
- ctx.provide('sessionController',{resolveAgent:async()=>({agent:{ctx:{get:()=>undefined},session:{header:{},seq:0}}})} as never)
+ ctx.provide('sessionController',{resolveAgent:async()=>({agent:{ctx:{get:()=>undefined},session:{header:{},seq:0,requestHeader:()=>undefined}}})} as never)
  let started!:()=>void;const reading=new Promise<void>(resolve=>{started=resolve})
  ctx.provide('attachments',{async *readFileStream(_paper,signal){started();await new Promise((_resolve,reject)=>{signal.addEventListener('abort',()=>reject(signal.reason),{once:true})});yield Buffer.from('unreachable')}} as never)
  const controller=new ResearchController(ctx),sessionId=SessionId('host-explicit-cancel')

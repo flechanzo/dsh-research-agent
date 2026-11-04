@@ -18,7 +18,8 @@ class LocalReasoning extends LlmAdapter {
   const prompt=all.filter(t=>t.includes('[rubric-stage:')).at(-1)??all.join('\n');
   const stage=prompt.match(/\[rubric-stage:([^\]]+)\]/)?.[1];
   let text;
-  if(stage==='target-task-extractor')text=JSON.stringify(taskFields);
+  if(prompt.includes('[research-stage:literature-query]'))text=JSON.stringify({query:'DoRA low rank adaptation'});
+  else if(stage==='target-task-extractor')text=JSON.stringify(taskFields);
   else if(stage){const marker=prompt.lastIndexOf('\n输入：');if(marker<0)throw Error('Rubric stage input missing');const payload=JSON.parse(prompt.slice(marker+4));text=JSON.stringify(rubricFixture(stage,payload,{live:true,duplicate:true}));}
   else if(all.join('\n').includes('完全独立的创新性专家'))text=JSON.stringify({score:88,overlap:false,rationale:'本地旧评分夹具：固定88仅验证旧流程与shadow分歧，不作为科研判断。'});
   else text='# 合成科研输出\n\n创新点：复用公开DoRA论文的幅度/方向分解与低秩方向更新关系，作为重复负对照候选。\n\n公开来源：DoRA, arXiv:2402.09353。此为本地推理夹具，仅验证流程、证据和数值计算，不代表对DoRA整篇论文打分。';

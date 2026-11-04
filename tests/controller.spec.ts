@@ -154,7 +154,7 @@ it('F06 exports a shared artifact once and F12 preserves plans from two branches
  const ctx=new Context();contexts.push(ctx)
  ctx.provide('storageDomain',{open:async()=>({table:()=>({get:(id:SessionId)=>records.get(id),put:async(id:SessionId,row:ResearchRecord)=>{records.set(id,row)}}),close:async()=>{}})} as never)
  ctx.provide('fs',fs as never);ctx.provide('attachments',{} as never);ctx.provide('web',{} as never);ctx.provide('subagents',{} as never)
- ctx.provide('sessionController',{resolveAgent:async()=>({agent:{session:{header:{cwd:'C:/isolated-F12'},seq:0},ctx:{get:()=>undefined}}})} as never)
+ ctx.provide('sessionController',{resolveAgent:async()=>({agent:{session:{header:{cwd:'C:/isolated-F12'},seq:0,requestHeader:()=>undefined},ctx:{get:()=>undefined}}})} as never)
  const controller=new ResearchController(ctx)
  const first=await controller.confirm({sessionId,expectedRevision:1},new AbortController().signal)
  const firstPath=[...files.keys()].find(x=>x.endsWith('research-plan.md'))!;expect(files.get(firstPath)).toBe('# UNIQUE_PLAN')

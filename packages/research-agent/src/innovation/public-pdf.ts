@@ -1,13 +1,8 @@
-/** Explicit binary transport: official DSH Web currently exposes HTML/text only. */
+/** Bounded public binary transport, using the same host-wide gates as scholarly indexes. */
 import { createHash } from 'node:crypto'
+import { sharedSourceCoordinator, type SourceCoordinator, type SourceEvent } from './source-coordinator.ts'
 import type { Acquisition } from './schema.ts'
-export const DEFAULT_PDF_ORIGINS = [
-  'https://arxiv.org',
-  'https://export.arxiv.org',
-  'https://openreview.net',
-  'https://aclanthology.org',
-  'https://proceedings.mlr.press',
-]
+export const DEFAULT_PDF_ORIGINS = ['https://arxiv.org', 'https://export.arxiv.org', 'https://openreview.net', 'https://aclanthology.org', 'https://proceedings.mlr.press', 'https://raw.githubusercontent.com', 'https://scholarworks.sjsu.edu', 'https://www.mdpi.com']
 export interface PublicPdfOptions {
   beforeRequest?: () => void
   enabled?: boolean
@@ -16,47 +11,21 @@ export interface PublicPdfOptions {
   timeoutMs?: number
   fetch?: typeof globalThis.fetch
   minIntervalMs?: number
+  coordinator?: SourceCoordinator
+  onSourceEvent?: (event: SourceEvent) => void
+  onAcquisition?: (acquisition: Acquisition) => void
 }
 export interface PublicPdfResult {
   bytes: Uint8Array
   acquisition: Acquisition
 }
 export class AcquisitionFetchError extends Error {
-  readonly acquisition: Acquisition
-  constructor(message: string, acquisition: Acquisition) {
-    super(message)
-    this.acquisition = acquisition
-  }
+  constructor(message: string, readonly acquisition: Acquisition) { super(message) }
 }
-const gates = new Map<string, Promise<void>>()
-const lastRequest = new Map<string, number>()
-async function pause(ms: number, signal: AbortSignal): Promise<void> {
-  signal.throwIfAborted()
-  await new Promise<void>((resolve, reject) => {
-    const finish = (): void => {
-      signal.removeEventListener('abort', abort)
-      resolve()
-    }
-    const timer = setTimeout(finish, ms)
-    const abort = (): void => {
-      clearTimeout(timer)
-      signal.removeEventListener('abort', abort)
-      reject(signal.reason instanceof Error ? signal.reason : new Error('Paper request aborted'))
-    }
-    signal.addEventListener('abort', abort, { once: true })
-  })
-}
-export async function respectSourceInterval(
-  url: string,
-  signal: AbortSignal,
-  configuredInterval?: number,
-): Promise<void> {
-  const u = new URL(url)
-  const interval = configuredInterval ?? (u.hostname.endsWith('arxiv.org') ? 3100 : 1000)
-  const now = Date.now()
-  const scheduled = Math.max(now, (lastRequest.get(u.origin) ?? 0) + interval)
-  lastRequest.set(u.origin, scheduled)
-  await pause(scheduled - now, signal)
+/** Compatibility helper for standalone acquisition scripts. Runtime transports use request() instead. */
+export async function respectSourceInterval(url: string, signal: AbortSignal, configuredInterval?: number): Promise<void> {
+  await sharedSourceCoordinator.request(url, signal, () => Promise.resolve({ value: undefined, status: 200 }),
+    { intervalMs: configuredInterval })
 }
 function admitted(url: string, origins: ReadonlySet<string>): URL {
   const u = new URL(url)
@@ -67,75 +36,68 @@ function admitted(url: string, origins: ReadonlySet<string>): URL {
 export function createPublicPdfTransport(options: PublicPdfOptions = {}) {
   const origins = new Set(options.origins ?? DEFAULT_PDF_ORIGINS)
   for (const origin of origins)
-    if (admitted(origin, origins).origin !== origin) throw new Error('PDF origins must be exact HTTPS origins')
+    if (admitted(origin, origins).origin !== origin)
+      throw new Error('PDF origins must be exact HTTPS origins')
   const maxBytes = options.maxBytes ?? 20 * 1024 * 1024
-  if (!Number.isSafeInteger(maxBytes) || maxBytes < 5) throw new Error('Invalid PDF byte limit')
+  if (!Number.isSafeInteger(maxBytes) || maxBytes < 5)
+    throw new Error('Invalid PDF byte limit')
+  const coordinator = options.coordinator ?? sharedSourceCoordinator
   return async function read(url: string, parentSignal?: AbortSignal): Promise<PublicPdfResult> {
-    if (options.enabled === false) throw new Error('Public PDF transport disabled')
+    if (options.enabled === false)
+      throw new Error('Public PDF transport disabled')
     const deadline = AbortSignal.timeout(options.timeoutMs ?? 20000)
-    const signal = parentSignal === undefined ? deadline : AbortSignal.any([parentSignal, deadline])
+    const signal = parentSignal ? AbortSignal.any([parentSignal, deadline]) : deadline
     let current = admitted(url, origins)
+    type Outcome = {
+      redirect: string
+    } | {
+      paper: PublicPdfResult
+    } | {
+      failure: Acquisition
+    }
     for (let redirect = 0; redirect <= 3; redirect++) {
       signal.throwIfAborted()
-      const origin = current.origin
-      const prior = gates.get(origin) ?? Promise.resolve()
-      let release: () => void = () => {}
-      const own = new Promise<void>((resolve) => {
-        release = resolve
-      })
-      const queued = prior.then(() => own)
-      gates.set(origin, queued)
-      let response: Response
-      try {
-        await prior
-        signal.throwIfAborted()
-        await respectSourceInterval(current.href, signal, options.minIntervalMs)
+      const outcome = await coordinator.request<Outcome>(current.href, signal, async () => {
         options.beforeRequest?.()
-        response = await (options.fetch ?? globalThis.fetch)(current, {
-          redirect: 'manual',
-          credentials: 'omit',
-          signal,
-          headers: { accept: 'application/pdf', 'user-agent': 'DSH-Research-Agent/0.1 public-paper-validation' },
-        })
+        const response = await (options.fetch ?? globalThis.fetch)(current, { redirect: 'manual', credentials: 'omit', signal,
+          headers: { accept: 'application/pdf', 'user-agent': 'DSH-Research-Agent/0.1 public-paper-validation' } })
+        const acquisition: Acquisition = { url: current.href, at: new Date().toISOString(), status: response.status,
+          sha256: '', transport: 'public-pdf', truncated: false, bodyAvailable: false, bytes: 0 }
         if ([301, 302, 303, 307, 308].includes(response.status)) {
           const location = response.headers.get('location')
           await response.body?.cancel()
-          if (!location) throw new Error('PDF redirect has no location')
-          current = admitted(new URL(location, current).href, origins)
-          continue
+          options.onAcquisition?.(acquisition)
+          if (!location)
+            throw new Error('PDF redirect has no location')
+          return { value: { redirect: admitted(new URL(location, current).href, origins).href }, status: response.status }
         }
         if (!response.ok) {
           await response.body?.cancel()
-          throw new AcquisitionFetchError('PDF HTTP ' + String(response.status), {
-            url: current.href,
-            at: new Date().toISOString(),
-            status: response.status,
-            sha256: '',
-            transport: 'public-pdf',
-            truncated: false,
-            bodyAvailable: false,
-            bytes: 0,
-          })
+          options.onAcquisition?.(acquisition)
+          return { value: { failure: acquisition }, status: response.status, retryAfter: response.headers.get('retry-after') }
         }
-        const length = Number(response.headers.get('content-length') ?? 0)
-        if (length > maxBytes) {
+        if (Number(response.headers.get('content-length') ?? 0) > maxBytes) {
           await response.body?.cancel()
           throw new Error('PDF exceeds byte limit')
         }
         const reader = response.body?.getReader()
-        if (!reader) throw new Error('PDF response has no body')
+        if (!reader)
+          throw new Error('PDF response has no body')
         const chunks: Uint8Array[] = []
         let total = 0
         try {
           for (;;) {
             signal.throwIfAborted()
             const item = await reader.read()
-            if (item.done) break
+            if (item.done)
+              break
             total += item.value.length
-            if (total > maxBytes) throw new Error('PDF exceeds byte limit')
+            if (total > maxBytes)
+              throw new Error('PDF exceeds byte limit')
             chunks.push(item.value)
           }
-        } finally {
+        }
+        finally {
           await reader.cancel()
           reader.releaseLock()
         }
@@ -147,22 +109,15 @@ export function createPublicPdfTransport(options: PublicPdfOptions = {}) {
         }
         if (new TextDecoder().decode(bytes.subarray(0, 5)) !== '%PDF-')
           throw new Error('Public endpoint did not return a PDF (login/paywall/HTML)')
-        return {
-          bytes,
-          acquisition: {
-            url: current.href,
-            at: new Date().toISOString(),
-            status: response.status,
-            sha256: createHash('sha256').update(bytes).digest('hex'),
-            transport: 'public-pdf',
-            truncated: false,
-            bytes: total,
-          },
-        }
-      } finally {
-        release()
-        if (gates.get(origin) === queued) gates.delete(origin)
-      }
+        Object.assign(acquisition, { sha256: createHash('sha256').update(bytes).digest('hex'), bytes: total, bodyAvailable: true })
+        options.onAcquisition?.(acquisition)
+        return { value: { paper: { bytes, acquisition } }, status: response.status }
+      }, { intervalMs: options.minIntervalMs, onEvent: options.onSourceEvent })
+      if ('paper' in outcome)
+        return outcome.paper
+      if ('failure' in outcome)
+        throw new AcquisitionFetchError('PDF HTTP ' + String(outcome.failure.status), outcome.failure)
+      current = admitted(outcome.redirect, origins)
     }
     throw new Error('PDF redirect limit exceeded')
   }

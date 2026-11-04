@@ -1,3 +1,4 @@
+import { launchIsolatedDesktop as launchIsolated } from './desktop-isolation.mjs';
 (async function desktopTest() {
  const fs=await import('node:fs'),path=await import('node:path'),assert=(await import('node:assert/strict')).default;
  const {_electron:electron}=await import('playwright');
@@ -15,8 +16,9 @@
  env.RESEARCH_REVIEW_FAULT_SWITCH=path.join(c.root,'review-failure.flag');
  env.RESEARCH_CASE_SWITCH=path.join(c.root,'case-mode.txt');env.RESEARCH_BOUNDARY_TRACE=path.join(evidence,'boundary-arithmetic.json');
  let app,page,panel;
+ const screenshot=async(options)=>{try{await page.screenshot({...options,animations:'disabled',timeout:15000})}catch(error){log('screenshot-retry',String(error));const win=await app.browserWindow(page);await win.evaluate(w=>{if(w.isMinimized())w.restore();w.show()});await page.bringToFront();await page.screenshot({...options,animations:'disabled',timeout:15000})}};
  const identity=async()=>{const v=await app.evaluate(({app})=>({desktop:app.getVersion(),electron:process.versions.electron,node:process.versions.node,pid:process.pid,exe:process.execPath,userData:app.getPath('userData'),appPath:app.getAppPath(),home:process.env.DSH_HOME}));assert.equal(v.desktop,c.targetVersion);assert.equal(path.resolve(v.exe),path.resolve(c.executable));assert.equal(path.resolve(v.userData),path.resolve(c.userData));assert.equal(v.home,c.home);fs.writeFileSync(path.join(evidence,'identity-'+v.pid+'.json'),JSON.stringify(v,null,2));log('identity',v)};
- const launch=async()=>{app=await electron.launch({executablePath:c.executable,args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:60000});app.process().stdout?.on('data',b=>fs.appendFileSync(path.join(evidence,'desktop-stdout.log'),b));app.process().stderr?.on('data',b=>fs.appendFileSync(path.join(evidence,'desktop-stderr.log'),b));await identity();page=await app.firstWindow();await page.locator('[data-composer-input=true][contenteditable=true]').waitFor({timeout:60000});page.on('pageerror',e=>log('pageerror',e.message))};
+ const launch=async()=>{app=await launchIsolated({executablePath:c.executable,args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:60000});app.process().stdout?.on('data',b=>fs.appendFileSync(path.join(evidence,'desktop-stdout.log'),b));app.process().stderr?.on('data',b=>fs.appendFileSync(path.join(evidence,'desktop-stderr.log'),b));await identity();page=await app.firstWindow();await page.locator('[data-composer-input=true][contenteditable=true]').waitFor({timeout:60000});page.on('pageerror',e=>log('pageerror',e.message))};
  const openPanel=async()=>{panel=page.locator('[data-research-panel]:visible').last();if(!await panel.count())await page.getByRole('button',{name:'打开自动科研流程',exact:true}).click();await panel.waitFor({timeout:30000});await idle()};
  const idle=async()=>{await page.waitForFunction(()=>[...document.querySelectorAll('[data-research-panel]')].filter(p=>p.checkVisibility()).at(-1)?.getAttribute('aria-busy')==='false',null,{timeout:450000})};
  const step=async()=>{await idle();const before=await panel.getAttribute('data-research-selected-node');await panel.getByRole('button',{name:'确认并进入下一步',exact:true}).click();await page.waitForFunction(old=>{const p=[...document.querySelectorAll('[data-research-panel]')].filter(p=>p.checkVisibility()).at(-1);return p?.getAttribute('aria-busy')==='false'&&(p.getAttribute('data-research-selected-node')!==old||p.querySelector('[role=alert]'))},before,{timeout:180000});if(await panel.locator('[role=alert]').count())throw Error(await panel.locator('[role=alert]').first().innerText());log('stage',await panel.getAttribute('data-research-selected-node'))};
@@ -29,20 +31,20 @@
   const preview=page.getByRole('button',{name:'继续',exact:true});if(await preview.isVisible())await preview.click();
   await page.getByTitle('选择新任务使用的 Agent 预设').click();await page.getByText('自动科研',{exact:true}).click();
   const input=page.locator('[data-composer-input=true][contenteditable=true]');
-  const title='Rubric原文与拒绝对照-20261103';
+  const title='Rubric原文与拒绝对照-'+new Date().toISOString().slice(0,10);
   await input.fill(title);await input.press('Enter');await page.getByText('合成科研输出',{exact:false}).first().waitFor({timeout:30000});
-  await page.screenshot({path:path.join(evidence,'native-research.png'),timeout:45000});
+  await screenshot({path:path.join(evidence,'native-research.png'),timeout:45000});
   const current=page.getByText(/科研合成夹具 [AB]/,{exact:true}).last();
   if(await current.innerText()!=='科研合成夹具 B'){const label=await current.innerText();await current.click();await page.getByText(label,{exact:true}).last().click();await page.getByText('科研合成夹具 B',{exact:true}).last().click()}
   await openPanel();
   await panel.locator('input[type=file]').setInputFiles(path.join(c.attachments,'DoRA-2402.09353v2-public.pdf'));
-  await panel.locator('[data-research-node-detail="node-2"]').waitFor({timeout:60000});await idle();assert(fs.readdirSync(c.workspace,{recursive:true}).some(f=>String(f).endsWith('research-state.json')),'Research export must be inside isolated workspace immediately after upload');log('upload','public arXiv 2402.09353v2, source fetched over actual HTTPS');
+  await panel.locator('[data-research-node-detail="node-2"]').waitFor({state:'attached',timeout:60000});await idle();assert(fs.readdirSync(c.workspace,{recursive:true}).some(f=>String(f).endsWith('research-state.json')),'Research export must be inside isolated workspace immediately after upload');log('upload','public arXiv 2402.09353v2, source fetched over actual HTTPS');
   await step();await step();
   const editor=panel.locator('[data-target-task-editor]');await editor.waitFor();await editor.getByLabel('具体任务或问题',{exact:true}).waitFor({timeout:45000});
   const constraints=editor.getByLabel('约束',{exact:true});const edited=(await constraints.inputValue())+'；验收只评定公开方法复用候选，保持近邻等价问题范围。';
   await constraints.fill(edited);
   await editor.getByRole('checkbox',{name:'我已核对并确认目标任务及比较范围'}).check();
-  await page.screenshot({path:path.join(evidence,'target-task-confirmed.png'),timeout:45000});log('target-task','draft extracted, edited and explicitly confirmed');
+  await screenshot({path:path.join(evidence,'target-task-confirmed.png'),timeout:45000});log('target-task','draft extracted, edited and explicitly confirmed');
   fs.writeFileSync(env.RESEARCH_CASE_SWITCH,'reject-then-pass');
   await step();
   const online=await assessment();fs.writeFileSync(path.join(evidence,'online-assessment.json'),JSON.stringify(online,null,2));
@@ -50,11 +52,11 @@
   assert.equal(online.targetTask.constraints,edited);assert.equal(online.legacyComparison.score,88);assert.equal(online.legacyComparison.threshold,70);assert.equal(online.legacyComparison.pass,true);
   assert.deepEqual(online.searchAudit.map(r=>r.round),[1,2,3]);assert(online.searchAudit.every(r=>r.completed));
   assert.equal(new Set(online.searchAudit.flatMap(r=>r.queries)).size,3);
-  const acquired=fs.readFileSync(env.RESEARCH_NETWORK_TRACE,'utf8').trim().split('\n').map(s=>JSON.parse(s)).filter(r=>r.kind==='actual-https'||r.kind==='actual-pdf-https');
-  assert(acquired.filter(r=>r.url.includes('api.openalex.org/works')).length>=3);
+  const acquired=fs.readdirSync(c.evidence).map(name=>path.join(c.evidence,name,'network.jsonl')).filter(file=>fs.existsSync(file)).flatMap(file=>fs.readFileSync(file,'utf8').trim().split('\n').filter(Boolean).map(JSON.parse)).filter(r=>r.kind==='actual-https'||r.kind==='actual-pdf-https');
+  assert(online.searchAudit.every(r=>r.acquisitions.some(a=>a.status===200&&acquired.some(observed=>observed.sha256===a.sha256&&observed.status===200))),'Every completed round needs a successfully observed index response; cooldown fallback may choose another index');
   for(const round of online.searchAudit)for(const source of round.sources)assert(acquired.some(r=>r.sha256===source.acquisition.sha256&&r.status===200));
   const view=panel.locator('[data-rubric-assessment]').last();await view.locator('details[data-rubric-audit] > summary').click();await view.locator('[data-rubric-round="3"] > summary').click();
-  await page.screenshot({path:path.join(evidence,'three-round-online.png'),timeout:45000});log('online-complete',{score:online.score.S,rounds:online.searchAudit.length,actualHttpsRequests:acquired.length});
+  await screenshot({path:path.join(evidence,'three-round-online.png'),timeout:45000});log('online-complete',{score:online.score.S,rounds:online.searchAudit.length,actualHttpsRequests:acquired.length});
   const audits=JSON.parse(fs.readFileSync(path.join(c.researchData,'research_shadow.json'),'utf8')).tables.audits;const freshSidecar=fs.readdirSync(c.workspace,{recursive:true}).map(String).find(f=>f.endsWith('research-state.json')&&!beforePaths.has(f));assert(freshSidecar);const activeSession=path.basename(path.dirname(path.join(c.workspace,freshSidecar)));const values=Object.values(audits).filter(a=>a.sessionId===activeSession);assert.deepEqual(values.map(a=>a.legacy.status),['reject','pass']);assert(values.every(a=>a.assessment?.score.S===0),JSON.stringify(values.map(a=>({state:a.lifecycle,reasons:a.assessment?.uncertainties}))));fs.writeFileSync(path.join(evidence,'pass-reject-audits.json'),JSON.stringify(values,null,2));log('pass-reject-shadow',{old:values.map(a=>a.legacy.status),S:values.map(a=>a.assessment.score.S)});
   const revision=await panel.getAttribute('data-research-revision');
   const sidecarRelative=fs.readdirSync(c.workspace,{recursive:true}).map(String).find(f=>f.endsWith('research-state.json')&&!beforePaths.has(f));
@@ -66,12 +68,12 @@
   await panel.getByRole('button',{name:'重新同步科研文件',exact:true}).click();await idle();
   assert.match(await panel.locator('[role=alert]').first().innerText(),/ReplaceFileW|FS_IO_ERROR/);
   assert.equal(await panel.getAttribute('data-research-revision'),revision);
-  await page.screenshot({path:path.join(evidence,'resync-native-error.png'),timeout:45000});
+  await screenshot({path:path.join(evidence,'resync-native-error.png'),timeout:45000});
   lock.stdin.end('\n');await new Promise(resolve=>lock.once('exit',resolve));lock=undefined;
   log('resync-real-failure','external synthetic handle caused an observable native replacement failure; revision unchanged');
   const checkModelCalls=()=>assert.equal(fs.readFileSync(env.RESEARCH_ACCEPTANCE_TRACE,'utf8').trim().split('\n').length,callsBefore);
   checkModelCalls();
-  for(let i=0;i<2;i++){await panel.getByRole('button',{name:'重新同步科研文件',exact:true}).click();await idle();assert.equal(await panel.getAttribute('data-research-revision'),revision);assert.match(await panel.innerText(),/已同步科研文件/)}
+  for(let i=0;i<2;i++){await panel.getByRole('button',{name:'重新同步科研文件',exact:true}).click();await idle();assert.equal(await panel.getAttribute('data-research-revision'),revision);assert.match(await panel.innerText(),/科研文件已同步/)}
   checkModelCalls();
   log('resync','two explicit resyncs preserved revision '+revision+' and made no model calls');
   fs.writeFileSync(env.RESEARCH_CASE_SWITCH,'offline-pass');
@@ -79,9 +81,11 @@
   await step();
   const offline=await assessment();fs.writeFileSync(path.join(evidence,'offline-assessment.json'),JSON.stringify(offline,null,2));
   assert.equal(offline.assessmentStatus,'insufficient');assert.equal(offline.score.S,null);assert.equal(offline.legacyComparison.pass,true);
-  await page.screenshot({path:path.join(evidence,'offline-null.png'),timeout:45000});log('offline-insufficient',offline.uncertainties);
+  await screenshot({path:path.join(evidence,'offline-null.png'),timeout:45000});log('offline-insufficient',offline.uncertainties);
   fs.unlinkSync(env.RESEARCH_OFFLINE_SWITCH);
   await step(); // targeted literature
+  // Ideation now durably checkpoints completed model work in the same recovery domain.
+  if(fs.existsSync(checkpointFile))for(const id of Object.keys(JSON.parse(fs.readFileSync(checkpointFile,'utf8')).tables.checkpoints))priorReviewIds.add(id);
   fs.writeFileSync(env.RESEARCH_REVIEW_FAULT_SWITCH,'isolated partial-review fault');
   const reviewRevision=await panel.getAttribute('data-research-revision');
   await panel.getByRole('button',{name:'确认并进入下一步',exact:true}).click();await idle();
@@ -92,7 +96,7 @@
   assert.equal(Object.values(savedReviews).filter(r=>!priorReviewIds.has(r.id)&&r.status==='succeeded').length,2);
   assert.equal(Object.values(savedReviews).filter(r=>!priorReviewIds.has(r.id)&&r.status==='failed').length,1);
   fs.writeFileSync(path.join(evidence,'partial-review-checkpoints.json'),JSON.stringify(savedReviews,null,2));
-  await page.screenshot({path:path.join(evidence,'partial-review-failure.png')});
+  await screenshot({path:path.join(evidence,'partial-review-failure.png')});
   const beforeReviewCalls=fs.readFileSync(env.RESEARCH_ACCEPTANCE_TRACE,'utf8').trim().split('\n').map(JSON.parse).filter(r=>r.stage==='parallel-review');
   await app.close();app=undefined;log('partial-review-exit','saved successes and failed role; no DAG advance');
   fs.unlinkSync(env.RESEARCH_REVIEW_FAULT_SWITCH);
@@ -117,12 +121,12 @@
   fs.writeFileSync(path.join(evidence,'tested-session.json'),JSON.stringify({sessionId,title,statePath,revision:durable.revision},null,2));
   fs.copyFileSync(path.join(c.researchData,'research.json'),path.join(evidence,'research-final.json'));
   await page.reload();await page.locator('[data-composer-input=true][contenteditable=true]').waitFor({timeout:45000});await openPanel();assert.match(await panel.innerText(),/科研方案已写入文件：/);
-  const win=await app.browserWindow(page);await win.evaluate(w=>w.setSize(880,760));await page.screenshot({path:path.join(evidence,'narrow-restored.png'),timeout:45000});await win.evaluate(w=>w.setSize(1440,960));
+  const win=await app.browserWindow(page);await win.evaluate(w=>w.setSize(880,760));await screenshot({path:path.join(evidence,'narrow-restored.png'),timeout:45000});await win.evaluate(w=>w.setSize(1440,960));
   await app.close();app=undefined;log('true-exit','closed first real Electron instance');
   await launch();await openPanel();assert.match(await panel.innerText(),/科研方案已写入文件：/);assert.equal(row().revision,durable.revision);
   const restored=await assessment();assert.equal(restored.score.S,null);const savedAudits=JSON.parse(fs.readFileSync(path.join(c.researchData,'research_shadow.json'),'utf8')).tables.audits;assert.equal(Object.values(savedAudits).filter(a=>a.sessionId===sessionId&&a.legacy.status==='reject').length,1);assert.equal(Object.values(savedAudits).filter(a=>a.sessionId===sessionId&&a.assessment?.score.S===0).length,2);
-  await page.screenshot({path:path.join(evidence,'true-restart-restored.png'),timeout:45000});log('restart-restored',{sessionId,revision:row().revision});
+  await screenshot({path:path.join(evidence,'true-restart-restored.png'),timeout:45000});log('restart-restored',{sessionId,revision:row().revision});
   fs.writeFileSync(path.join(evidence,'result.json'),JSON.stringify({status:'passed',sourceSha256:manifest.sourceSha256,sessionId,oldRejectedAndAcceptedShadow:true,realPublicPdfUpload:true,online:{status:online.assessmentStatus,S:online.score.S},offline:{status:offline.assessmentStatus,S:offline.score.S},legacyScore:88,legacyThreshold:70,network:'actual HTTPS; local Mock reasoning; no paid model',revisionPreservedOnResync:true,fullPlanFlow:true,partialReviewRestart:true,successfulReviewRolesReused:2,reload:true,restart:true},null,2));
- }catch(e){log('failure',e.stack);if(page){fs.writeFileSync(path.join(evidence,'failure-dom.txt'),await page.locator('body').innerText().catch(()=>''));await page.screenshot({path:path.join(evidence,'failure.png'),timeout:10000}).catch(()=>{})}process.exitCode=1}
+ }catch(e){log('failure',e.stack);if(page){fs.writeFileSync(path.join(evidence,'failure-dom.txt'),await page.locator('body').innerText().catch(()=>''));await screenshot({path:path.join(evidence,'failure.png'),timeout:10000}).catch(()=>{})}process.exitCode=1}
  finally{if(lock){lock.stdin.end('\n');lock.kill()}if(app)await app.close().catch(e=>log('close-failure',String(e)))}
 })().catch(e=>{console.error(e);process.exitCode=1});

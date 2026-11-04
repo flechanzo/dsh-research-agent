@@ -1,3 +1,4 @@
+import { launchIsolatedDesktop as launchIsolated } from './desktop-isolation.mjs';
 (async function legacyTest(){
  const fs=await import('node:fs'),path=await import('node:path'),assert=(await import('node:assert/strict')).default;
  const {_electron:electron}=await import('playwright');
@@ -8,7 +9,7 @@
  Object.assign(env,{DSH_HOME:c.home,DSH_DESKTOP_UPDATE_JOURNAL_DIR:path.join(c.root,'update-journal'),RESEARCH_ACCEPTANCE_TRACE:path.join(evidence,'routing.jsonl')});
  let app,page,panel;
  const log=(name,value)=>{console.log(name,JSON.stringify(value??null));fs.appendFileSync(path.join(evidence,'run.log'),JSON.stringify({name,value,at:new Date().toISOString()})+'\n')};
- const launch=async()=>{app=await electron.launch({executablePath:c.executable,args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:60000});const id=await app.evaluate(({app})=>({version:app.getVersion(),exe:process.execPath,home:process.env.DSH_HOME,pid:process.pid}));assert.equal(id.version,c.targetVersion);assert.equal(path.resolve(id.exe),path.resolve(c.executable));log('identity',id);page=await app.firstWindow();await page.locator('[data-composer-input=true][contenteditable=true]').waitFor({timeout:60000})};
+ const launch=async()=>{app=await launchIsolated({executablePath:c.executable,args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:60000});const id=await app.evaluate(({app})=>({version:app.getVersion(),exe:process.execPath,home:process.env.DSH_HOME,pid:process.pid}));assert.equal(id.version,c.targetVersion);assert.equal(path.resolve(id.exe),path.resolve(c.executable));log('identity',id);page=await app.firstWindow();await page.locator('[data-composer-input=true][contenteditable=true]').waitFor({timeout:60000})};
  const open=async()=>{panel=page.locator('[data-research-panel]:visible').last();if(!await panel.count())await page.getByRole('button',{name:'打开自动科研流程',exact:true}).click();await panel.waitFor();await page.waitForFunction(()=>[...document.querySelectorAll('[data-research-panel]')].filter(p=>p.checkVisibility()).at(-1)?.getAttribute('aria-busy')==='false')};
  try{
   await launch();await page.getByText('新会话',{exact:true}).first().click();await page.getByTitle('选择新任务使用的 Agent 预设').click();await page.getByText('自动科研',{exact:true}).click();

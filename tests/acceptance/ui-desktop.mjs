@@ -1,3 +1,4 @@
+import { launchIsolatedDesktop as launchIsolated } from './desktop-isolation.mjs';
 
 import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {_electron as electron} from 'playwright';import {assertFreshBuild} from '../../scripts/build-provenance.mjs';
 const build=assertFreshBuild(),c=JSON.parse(fs.readFileSync(process.env.DSH_ACCEPTANCE_CONTEXT,'utf8'));
@@ -8,7 +9,7 @@ let app,page,panel;const events=[];
 const record=(name,data)=>{events.push({name,data});console.log(name,JSON.stringify(data??null));fs.writeFileSync(path.join(evidence,'results.json'),JSON.stringify(events,null,2))};
 const idle=()=>page.waitForFunction(()=>[...document.querySelectorAll('[data-research-panel]')].filter(p=>p.checkVisibility()).at(-1)?.getAttribute('aria-busy')==='false',null,{timeout:90000});
 const launch=async()=>{
- app=await electron.launch({executablePath:c.executable,args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:60000});
+ app=await launchIsolated({executablePath:c.executable,args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:60000});
  app.process().stdout?.on('data',b=>fs.appendFileSync(path.join(evidence,'stdout.log'),b));app.process().stderr?.on('data',b=>fs.appendFileSync(path.join(evidence,'stderr.log'),b));
  const id=await app.evaluate(({app})=>({version:app.getVersion(),exe:process.execPath,home:process.env.DSH_HOME,userData:app.getPath('userData'),node:process.versions.node,electron:process.versions.electron}));
  assert.equal(id.version,c.targetVersion);assert.equal(path.resolve(id.home),path.resolve(c.home));record('official-identity',id);

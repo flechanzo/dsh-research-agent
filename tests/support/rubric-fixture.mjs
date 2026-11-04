@@ -15,7 +15,7 @@ function quote(doc,round=1){
 export function rubricFixture(stage,p,options={}){
  const duplicate=options.duplicate??false;
  if(stage==='target-task-extractor')return taskFields;
- if(stage==='contribution-extractor')return {paperVersion:p.papers[0]?.title??'Synthetic public-method test',comparisonPoint:p.targetTask.comparisonPoint,coreReadable:true,mainline:'固定目标任务下，核验权重分解与低秩方向更新这一不可约关系。',noveltyUnit:'幅度/方向分解以及低秩方向更新的关系',contributions:[{id:'c1',claim:'以已公开的幅度/方向分解及低秩更新关系构建候选方案',kind:'algorithm',core:true,evidence:[quote(p.papers[0])]}]};
+ if(stage==='contribution-extractor')return {paperVersion:p.papers[0]?.title??'Synthetic public-method test',comparisonPoint:p.targetTask.comparisonPoint,coreReadable:true,mainline:'固定目标任务下，核验权重分解与低秩方向更新这一不可约关系。',noveltyUnit:'幅度/方向分解以及低秩方向更新的关系',contributions:[{id:'c1',claim:'以已公开的幅度/方向分解及低秩更新关系构建候选方案',kind:'algorithm',core:true,evidence:[quote(p.papers[0]),{sourceId:'candidate',location:'proposal',quote:p.candidate}]}]};
  if(stage==='search-planner'){
   const queries=options.live?[
     'DoRA Weight-Decomposed Low-Rank Adaptation',
@@ -34,7 +34,7 @@ export function rubricFixture(stage,p,options={}){
   const d=p.documents.find(d=>/2402\.09353/.test(d.url??''))??p.documents[0];
   return {sufficiency:{coreVerified:true,methodReadings:[quote(d,p.round)],earlierWorkCheck:'本地夹具只验证早期工作审查字段与已取原文关联，不声称完成科学检索充分性。',isomorphismCheck:'本地夹具核验字段和逐字引用；科学同构判断需独立审查。',closestPrecedentCheck:'本地夹具读取已获取的最近机制位置，仅作为工程验收。',alternativeDecisions:p.documents.filter(x=>x.id!==d.id).map(x=>({url:x.url,disposition:'read',reason:'实际获取第二工作原文，夹具验证跨来源核验工程路径。',evidence:[quote(x)]})),unresolvedAlternatives:[]},nearestPrecedents:[d.id],support:duplicate?[]:['合成用例中的局部规则存在可核验结构变化。'],counterexamples:duplicate?['候选方案的幅度/方向分解及低秩方向更新已经出现在取得的DoRA原文中。']:[],exclusions:duplicate?['不排除命中的相同关系；它直接否定候选新增。']:[],changeFromPrevious:p.round===1?'定位最近原文，暂不计算分数。':p.round===2?'主动核对归一化来源及训练方式差别；候选重复关系仍未消除。':'原文变量初始化和低秩更新关系已交叉核验。',readings:[quote(d,p.round)],criticalMissingSources:[]};
  }
- if(stage==='validity-reviewer'){
+ if(stage==='originality-reviewer'){
   const d=p.documents.find(d=>d.primary&&d.url)??p.documents[0];
   return {findings:[{contributionId:'c1',result:duplicate?'duplicate':'verified',scope:duplicate?'只核验这一候选复用了已公开计算关系；不声称论文全部贡献已无效。':'合成结构事实支持局部规则变化。',evidence:[quote(d)]}],criticalUncertainties:[],nonDecisiveDisputes:options.provisional?['非决定性争议：合成局部规则的命名解释仍待讨论。']:[]};
  }

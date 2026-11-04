@@ -5,12 +5,13 @@ import { extractPaperBytes } from '../workflows/paper-reader.ts'
 import { textDigest, paperProvenance, workIdentity } from './documents.ts'
 import {
   createPublicPdfTransport,
-  respectSourceInterval,
   AcquisitionFetchError,
   type PublicPdfOptions,
 } from './public-pdf.ts'
 import type { Acquisition, DocumentProvenance } from './schema.ts'
 import type { RubricDocument, RubricNetwork, RubricSource } from './pipeline.ts'
+import { sharedSourceCoordinator } from './source-coordinator.ts'
+import { findCachedPaper, makePaperCacheEntry, sharedPublicPaperCache, withPaperCacheLock, type PublicPaperCacheStore } from './paper-cache.ts'
 export function rubricSourceText(html: string): string {
   return html
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>|<style\b[^>]*>[\s\S]*?<\/style>/giu, ' ')
@@ -67,7 +68,11 @@ function htmlDocument(
       try {
         const link = publicUrl(new URL(href.replace(/&amp;/gu, '&'), url).href)
         if (!links.includes(link)) links.push(link)
-        if (name === 'citation_pdf_url' || /\.pdf(?:[?#]|$)|openreview\.net\/pdf\?/iu.test(link)) pdfs.push(link)
+        const linked = new URL(link)
+        const repositoryDownload = linked.origin === new URL(url).origin && linked.pathname === '/cgi/viewcontent.cgi' &&
+          linked.searchParams.has('article') && linked.searchParams.has('context')
+        if (name === 'citation_pdf_url' || a.type === 'application/pdf' || repositoryDownload ||
+          /\.pdf(?:[?#]|$)|openreview\.net\/pdf\?/iu.test(link)) pdfs.push(link)
       } catch {
         /* Non-public/relative invalid references are not followed. */
       }
@@ -124,6 +129,11 @@ function htmlDocument(
   }
 }
 export interface RubricNetworkOptions extends PublicPdfOptions {
+  onTiming?: (event: { kind: 'network' | 'extraction'; url: string; milliseconds: number; cpuMilliseconds?: number }) => void
+  cacheStore?: PublicPaperCacheStore
+  comparisonDate?: string
+  cacheMaxAgeMs?: number
+  onCacheEvent?: (event: { kind: 'hit' | 'miss' | 'stored'; url: string; milliseconds: number }) => void
   webTransport?: 'dsh-web' | 'public-web'
   onText?: (content: string, acquisition: Acquisition) => Promise<void>
   onPdf?: (bytes: Uint8Array, acquisition: Acquisition) => Promise<void>
@@ -132,31 +142,59 @@ export interface RubricNetworkOptions extends PublicPdfOptions {
   maxCharacters?: number
   onDocument?: (document: RubricDocument, bytes?: Uint8Array) => Promise<void>
 }
-export function createRubricNetwork(web: WebRuntime, options: RubricNetworkOptions = {}): RubricNetwork {
+export function createRubricNetwork(web: WebRuntime, inputOptions: RubricNetworkOptions = {}): RubricNetwork {
+  const statistics: Record<string, number> = {}
+  const add = (key: string, value = 1): void => { statistics[key] = (statistics[key] || 0) + value }
+  const options: RubricNetworkOptions = { ...inputOptions,
+    onSourceEvent: (event) => {
+      if (event.kind === 'request') add('transportRequests')
+      if (event.kind === 'wait') add('sourceQueueMilliseconds', event.milliseconds ?? 0)
+      if (event.kind === 'response') { add('http' + String(event.status)); add('sourceActionMilliseconds', event.milliseconds ?? 0) }
+      if (event.kind === 'cooldown') add('cooldownSkips')
+      if (event.kind === 'circuit-open') add('circuitSkips')
+      if (event.kind === 'failure') add('failureEvents')
+      inputOptions.onSourceEvent?.(event)
+    },
+    onTiming: (event) => {
+      add(event.kind + 'Milliseconds', event.milliseconds)
+      if (event.cpuMilliseconds !== undefined) add(event.kind + 'ProcessCpuMilliseconds', event.cpuMilliseconds)
+      inputOptions.onTiming?.(event)
+    },
+    onCacheEvent: (event) => { add('cache_' + event.kind); add('cacheLookupMilliseconds', event.milliseconds); inputOptions.onCacheEvent?.(event) },
+  }
   const pdf = createPublicPdfTransport(options)
-  async function fetchText(url: string, signal?: AbortSignal): Promise<{ content: string; acquisition: Acquisition }> {
+  const coordinator = options.coordinator ?? sharedSourceCoordinator
+  const originalBodies = new Map<string, string>()
+  async function fetchText(url: string, signal?: AbortSignal,
+    records?: Acquisition[]): Promise<{ content: string; acquisition: Acquisition }> {
     publicUrl(url)
     const bounded = signal
       ? AbortSignal.any([signal, AbortSignal.timeout(options.timeoutMs ?? 20000)])
       : AbortSignal.timeout(options.timeoutMs ?? 20000)
-    await respectSourceInterval(url, bounded, options.minIntervalMs)
-    options.beforeRequest?.()
-    const r = await web.fetch({ url }, bounded)
-    publicUrl(r.url)
-    const acquisition: Acquisition = {
-      url: r.url,
-      at: new Date().toISOString(),
-      status: r.statusCode,
-      sha256: textDigest(r.body.content),
-      transport: options.webTransport ?? 'dsh-web',
-      truncated: r.truncated,
-    }
-    await options.onText?.(r.body.content, acquisition)
-    if (r.statusCode < 200 || r.statusCode >= 300)
-      throw new AcquisitionFetchError('HTTP ' + String(r.statusCode) + ' ' + url, acquisition)
-    return { content: r.body.content, acquisition }
+    const result = await coordinator.request(url, bounded, async () => {
+      options.beforeRequest?.()
+      const networkStarted = Date.now()
+      const r = await web.fetch({ url }, bounded)
+      options.onTiming?.({ kind: 'network', url, milliseconds: Date.now() - networkStarted })
+      publicUrl(r.url)
+      const acquisition: Acquisition = { url: r.url, at: new Date().toISOString(), status: r.statusCode,
+        sha256: textDigest(r.body.content), transport: options.webTransport ?? 'dsh-web', truncated: r.truncated }
+      records?.push(acquisition)
+      options.onAcquisition?.(acquisition)
+      await options.onText?.(r.body.content, acquisition)
+      if (r.statusCode >= 200 && r.statusCode < 300 &&
+        !/api\.openalex|api\.semanticscholar|export\.arxiv/u.test(url)) originalBodies.set(acquisition.sha256,
+        r.body.content)
+      return { value: { content: r.body.content, acquisition }, status: r.statusCode }
+      // DSH Web v0.2.1-rc.5 exposes no headers: its cooldown never invents Retry-After.
+    }, { intervalMs: options.minIntervalMs, waitForCooldown: !/api\.openalex|api\.semanticscholar|export\.arxiv/u.test(url),
+      onEvent: options.onSourceEvent })
+    if (result.acquisition.status < 200 || result.acquisition.status >= 300)
+      throw new AcquisitionFetchError('HTTP ' + String(result.acquisition.status) + ' ' + url, result.acquisition)
+    return result
   }
   const network: RubricNetwork = {
+    statistics,
     async search(query, signal) {
       const acquisitions: Acquisition[] = []
       const errors: string[] = []
@@ -164,9 +202,8 @@ export function createRubricNetwork(web: WebRuntime, options: RubricNetworkOptio
       try {
         const r = await fetchText(
           'https://api.openalex.org/works?search=' + encodeURIComponent(query) + '&per-page=5',
-          signal,
+          signal, acquisitions,
         )
-        acquisitions.push(r.acquisition)
         if (r.acquisition.truncated) throw new Error('OpenAlex response truncated')
         const data = JSON.parse(r.content) as {
           results?: {
@@ -175,6 +212,7 @@ export function createRubricNetwork(web: WebRuntime, options: RubricNetworkOptio
             doi?: string
             best_oa_location?: { landing_page_url?: string; pdf_url?: string }
             primary_location?: { landing_page_url?: string; pdf_url?: string }
+            locations?: { landing_page_url?: string; pdf_url?: string }[]
           }[]
         }
         if (!Array.isArray(data.results)) throw new Error('Invalid OpenAlex response')
@@ -189,6 +227,9 @@ export function createRubricNetwork(web: WebRuntime, options: RubricNetworkOptio
               title: item.title ?? url,
               publicationDate: item.publication_date ?? null,
               ...(loc?.pdf_url ? { pdfUrl: loc.pdf_url.replace(/^http:/u, 'https:') } : {}),
+              alternateUrls: [...new Set((item.locations ?? []).flatMap(l => [l.landing_page_url, l.pdf_url])
+                .filter((u): u is string => typeof u === 'string' && /^https?:\/\//u.test(u))
+                .map(u => publicUrl(u.replace(/^http:/u, 'https:'))))].filter(u => u !== url).slice(0, 8),
             })
         }
       } catch (e) {
@@ -201,9 +242,8 @@ export function createRubricNetwork(web: WebRuntime, options: RubricNetworkOptio
             'https://api.semanticscholar.org/graph/v1/paper/search?query=' +
               encodeURIComponent(query) +
               '&limit=5&fields=title,url,year,publicationDate,openAccessPdf,externalIds',
-            signal,
+            signal, acquisitions,
           )
-          acquisitions.push(r.acquisition)
           if (r.acquisition.truncated) throw new Error('Semantic Scholar response truncated')
           const data = JSON.parse(r.content) as {
             data?: {
@@ -239,9 +279,8 @@ export function createRubricNetwork(web: WebRuntime, options: RubricNetworkOptio
             'https://export.arxiv.org/api/query?search_query=' +
               encodeURIComponent(query.split(/\s+/u).filter(Boolean).map(term => 'all:"' + term.replace(/["\\]/gu, '') + '"').join(' AND ')) +
               '&start=0&max_results=5',
-            signal,
+            signal, acquisitions,
           )
-          acquisitions.push(r.acquisition)
           if (r.acquisition.truncated || !/<feed\b/u.test(r.content)) throw new Error('Invalid/truncated arXiv Atom')
           for (const entry of r.content.matchAll(/<entry>([\s\S]*?)<\/entry>/gu)) {
             const body = entry.at(1) ?? ''
@@ -262,7 +301,7 @@ export function createRubricNetwork(web: WebRuntime, options: RubricNetworkOptio
           errors.push('arXiv: ' + String(e))
         }
       }
-      return { sources, acquisitions, errors }
+      return { sources, acquisitions, errors, status: sources.length ? 'found' : acquisitions.some(a => a.status === 429) ? 'rate-limited' : errors.length ? 'unavailable' : 'empty' }
     },
     async read(source, signal) {
       const original = new URL(publicUrl(source.url))
@@ -285,22 +324,37 @@ export function createRubricNetwork(web: WebRuntime, options: RubricNetworkOptio
       } else if (/\.pdf$/iu.test(original.pathname)) pdfUrls.push(source.url)
       else urls.push(source.url)
       if (source.pdfUrl) pdfUrls.push(source.pdfUrl)
+      // These addresses belong to the same index work; do not substitute merely similar titles.
+      for (const alternate of source.alternateUrls ?? []) {
+        const u = new URL(publicUrl(alternate))
+        if (/\.pdf$/iu.test(u.pathname) || u.pathname === '/pdf' || u.pathname.startsWith('/pdf/')) pdfUrls.unshift(u.href)
+        else if (u.hostname !== 'doi.org' && !/(^|\.)arxiv\.org$/u.test(u.hostname)) urls.unshift(u.href)
+      }
       if (original.hostname === 'aclanthology.org' && !original.pathname.endsWith('.pdf'))
         pdfUrls.push(source.url.replace(/\/$/u, '') + '.pdf')
       let best: RubricDocument | undefined
       const finish = async (d: RubricDocument, bytes?: Uint8Array): Promise<RubricDocument> => {
         const result = { ...d, attempts: [...acquisitions], errors: [...errors] }
         await options.onDocument?.(result, bytes)
+        const original = bytes ?? (d.acquisition ? originalBodies.get(d.acquisition.sha256) : undefined)
+        if (original !== undefined) {
+          const entry = makePaperCacheEntry(source, result, original, comparisonDate, extractionIdentity)
+          if (entry) { await cacheStore.put(entry); options.onCacheEvent?.({ kind: 'stored', url: source.url, milliseconds: 0 }) }
+        }
+        if (d.acquisition) originalBodies.delete(d.acquisition.sha256)
         return result
       }
       for (const url of urls) {
         try {
           const r = await fetchText(url, signal)
           acquisitions.push(r.acquisition)
+          const parseStarted = Date.now(), parseCpu = process.cpuUsage()
           const d = htmlDocument(r.content, r.acquisition.url, r.acquisition.truncated, options.maxCharacters ?? 180000)
+          const cpu = process.cpuUsage(parseCpu)
+          options.onTiming?.({ kind: 'extraction', url, milliseconds: Date.now() - parseStarted, cpuMilliseconds: (cpu.user + cpu.system) / 1000 })
           pdfUrls.push(...d.pdfs)
           best = {
-            id: 'source-' + textDigest(r.acquisition.url).slice(0, 20),
+            id: 'source-' + textDigest(r.acquisition.url + '|' + textDigest(d.text)).slice(0, 20),
             title: source.title,
             text: d.text,
             url: r.acquisition.url,
@@ -322,10 +376,13 @@ export function createRubricNetwork(web: WebRuntime, options: RubricNetworkOptio
           const r = await pdf(publicUrl(url), signal)
           acquisitions.push(r.acquisition)
           await options.onPdf?.(r.bytes, r.acquisition)
+          const extractStarted = Date.now(), cpuStarted = process.cpuUsage()
           const paper = await extractPaperBytes(r.bytes.slice(), 'public-paper.pdf', options.paperOptions, signal, {
             ...options.paperContext,
             allowPartial: true,
           })
+          const cpu = process.cpuUsage(cpuStarted)
+          options.onTiming?.({ kind: 'extraction', url, milliseconds: Date.now() - extractStarted, cpuMilliseconds: (cpu.user + cpu.system) / 1000 })
           const at = r.acquisition.at
           const id = new URL(r.acquisition.url).pathname.match(/\/(?:pdf)\/([^/]+)/u)?.[1]
           const provenance = paperProvenance(paper, source.url, at, id ?? 'unversioned PDF endpoint; retrieved ' + at)
@@ -337,7 +394,7 @@ export function createRubricNetwork(web: WebRuntime, options: RubricNetworkOptio
           provenance.textSha256 = textDigest(text)
           provenance.locations = provenance.locations.filter(l => l.end <= text.length)
           const d: RubricDocument = {
-            id: 'source-' + textDigest(r.acquisition.url).slice(0, 20),
+            id: 'source-' + textDigest(r.acquisition.url + '|' + textDigest(text)).slice(0, 20),
             url: r.acquisition.url,
             title: source.title,
             text,
@@ -380,16 +437,19 @@ export function createRubricNetwork(web: WebRuntime, options: RubricNetworkOptio
       )
     },
   }
-  const cache = new Map<string, RubricDocument>()
+  const cacheStore = options.cacheStore ?? sharedPublicPaperCache
+  const comparisonDate = options.comparisonDate ?? new Date().toISOString().slice(0, 10)
+  const extractionIdentity = JSON.stringify({ maxCharacters: options.maxCharacters ?? 180000,
+    maxPdfPages: options.paperOptions?.maxPdfPages ?? 12, extraction: 'paper-reader-v1', ocrAllowed: options.paperContext?.allowOcr ?? false })
   const read = network.read.bind(network)
-  network.read = async (source, signal) => {
+  network.read = async (source, signal) => withPaperCacheLock(cacheStore, source.url, signal, async () => {
     signal?.throwIfAborted()
-    const cached = cache.get(source.url)
-    if (cached) return cached
-    const doc = await read(source, signal)
-    cache.set(source.url, doc)
-    if(doc.url)cache.set(doc.url,doc)
-    return doc
-  }
+    const start = Date.now()
+    const cached = await findCachedPaper(cacheStore, source, comparisonDate, extractionIdentity, options.cacheMaxAgeMs ?? 24 * 3600000)
+    signal?.throwIfAborted()
+    options.onCacheEvent?.({ kind: cached ? 'hit' : 'miss', url: source.url, milliseconds: Date.now() - start })
+    if (cached) { await options.onDocument?.(cached); return cached }
+    return read(source, signal)
+  })
   return network
 }

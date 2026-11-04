@@ -1,3 +1,4 @@
+import { launchIsolatedDesktop as launchIsolated } from './desktop-isolation.mjs';
 import {isolatedContext} from './isolated-context.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,7 +16,7 @@ let app;
 const log=[];
 const record=(...items)=>{const line=items.map(x=>typeof x==='string'?x:JSON.stringify(x)).join(' ');log.push(line);console.log(line);};
 try {
- app=await electron.launch({executablePath:'F:/deepseek/DeepSeek Harness.exe',args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:45000});
+ app=await launchIsolated({executablePath:'F:/deepseek/DeepSeek Harness.exe',args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:45000});
  const identity=await app.evaluate(({app})=>({version:app.getVersion(),userData:app.getPath('userData'),appPath:app.getAppPath()}));
  assert.equal(path.resolve(identity.userData),path.resolve(c.userData));
  assert.match(identity.appPath,/F:[\\/]deepseek[\\/]resources[\\/]app.asar/);

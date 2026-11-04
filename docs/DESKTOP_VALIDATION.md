@@ -32,7 +32,7 @@ lib/build-manifest.json 记录 HEAD、实际工作树输入 SHA256、精确 SDK�
 
 每轮新建独立 DSH_HOME、desktop profile、Electron userData、workspace、科研 JSON 和附件目录。显式固定 workspace-controller.documentsDirectory；不能只改 DSH_HOME。清除继承的凭据环境变量，禁用收费 provider，仅使用合成 TXT/PDF 和本地 Mock。不得复制私人论文、正式 API Key、科研记录或可写 Session。
 
-先启动该官方 EXE 初始化 profile，正常退出后使用其内置 CLI 的 plugin --profile desktop add <本地插件目录> --ignore-scripts。支持的开发链接优先；若只能用临时测试包，包只用于隔离验收，不发布。保存 CLI 安装记录、profile 包与 Bundle 元数据、插件真实路径和 build manifest。若链接无法按官方共享包机制解析 peer，改用受支持的 file 包方式并重新核验。
+在第一次启动官方 EXE 前，用 tests/acceptance/desktop-isolation.mjs 创建带归属标识的隔离根目录，完成 DSH_HOME、profile、userData、workspace 及 workspace-controller.documentsDirectory 配置和运行时路径守卫。任何缺失、默认回退或解析后的路径逃逸都拒绝启动或写入。使用官方内置 CLI 的 plugin --profile desktop add <本地插件目录> --ignore-scripts 安装插件；CLI 同样使用隔离 DSH_HOME。支持的开发链接优先；若只能用临时测试包，包只用于隔离验收，不发布。保存 CLI 安装记录、profile 包与 Bundle 元数据、插件真实路径和 build manifest。若链接无法按官方共享包机制解析 peer，改用受支持的 file 包方式并重新核验。
 
 验证原生输入框、模型选择器/设置、会话切换、“自动科研”预设和科研面板。执行上传、摘要、问题、文献、创新评估、完善、定向检索、评审、计划预览与确认导出；核验无重复、历史不变、多分支文件不覆盖、重新加载和真实退出重启恢复。单独验证禁用插件后普通功能。UI V2 未实现项逐项标注，不借相似功能宣布通过。
 

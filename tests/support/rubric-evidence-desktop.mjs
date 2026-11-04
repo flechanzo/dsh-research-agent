@@ -24,7 +24,8 @@ class LocalReasoning extends LlmAdapter {
   let text;
   const reviewer=all.join('\n').match(/以“([^”]+)”审查者身份评审下面/);
   if(reviewer){trace(process.env.RESEARCH_ACCEPTANCE_TRACE,{stage:'parallel-review',label:reviewer[1]});if(/novelty|创新/.test(reviewer[1])&&process.env.RESEARCH_REVIEW_FAULT_SWITCH&&fs.existsSync(process.env.RESEARCH_REVIEW_FAULT_SWITCH))throw Error('Synthetic single-reviewer failure for durable recovery acceptance');}
-  if(stage==='target-task-extractor')text=JSON.stringify(taskFields);
+  if(prompt.includes('[research-stage:literature-query]'))text=JSON.stringify({query:'DoRA low rank adaptation'});
+  else if(stage==='target-task-extractor')text=JSON.stringify({...taskFields,comparisonPoint:new Date().toISOString().slice(0,10)});
   else if(stage){if(mode==='delay-shadow'&&stage==='contribution-extractor'){trace(process.env.RESEARCH_ACCEPTANCE_TRACE,{stage:'waiting-shadow-cancellation',phase:mode,signalPresent:!!options.signal});options.signal?.addEventListener('abort',()=>trace(process.env.RESEARCH_ACCEPTANCE_TRACE,{stage:'shadow-model-aborted',phase:mode}),{once:true});await new Promise((_,reject)=>{const timer=setTimeout(()=>reject(Error('Acceptance fixture safety deadline')),45000);timer.unref();if(options.signal?.aborted)reject(options.signal.reason);else options.signal?.addEventListener('abort',()=>reject(options.signal.reason),{once:true})})}const marker=prompt.lastIndexOf('\n输入：');if(marker<0)throw Error('Rubric stage input missing');const payload=JSON.parse(prompt.slice(marker+4));text=JSON.stringify(rubricFixture(stage,payload,{live:true,duplicate:true}));}
   else if(all.join('\n').includes('完全独立的创新性专家')){const score=mode==='all-reject'?25:mode==='reject-then-pass'&&legacyCount++===0?35:88;text=JSON.stringify({score,overlap:false,rationale:'本地旧评分工程夹具，不作为科研判断。'});trace(process.env.RESEARCH_ACCEPTANCE_TRACE,{stage:'legacy-evaluation',phase:mode,score})}
   else text='# 合成科研输出\n\n创新点：复用公开DoRA论文的幅度/方向分解与低秩方向更新关系，作为重复负对照候选。\n\n公开来源：DoRA, arXiv:2402.09353。此为本地推理夹具，仅验证流程、证据和数值计算，不代表对DoRA整篇论文打分。';
@@ -47,7 +48,7 @@ export function apply(ctx){
   if(process.env.RESEARCH_OFFLINE_SWITCH&&fs.existsSync(process.env.RESEARCH_OFFLINE_SWITCH)){
    trace(process.env.RESEARCH_NETWORK_TRACE,{kind:'blocked-offline',url:request.url});throw Error('acceptance network deliberately disabled');
   }
-  const allow=new Set(['api.openalex.org','api.semanticscholar.org','arxiv.org','export.arxiv.org','ar5iv.labs.arxiv.org','openreview.net','aclanthology.org','doi.org']);
+  const allow=new Set(['api2.openreview.net','api.openalex.org','api.semanticscholar.org','arxiv.org','export.arxiv.org','ar5iv.labs.arxiv.org','openreview.net','aclanthology.org','doi.org']);
   let url=request.url;
   for(let redirect=0;redirect<5;redirect++){
    const parsed=new URL(url);if(parsed.protocol!=='https:'||!allow.has(parsed.hostname))throw Error('Only public test-paper HTTPS origins allowed');

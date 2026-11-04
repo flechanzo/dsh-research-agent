@@ -1,3 +1,4 @@
+import { launchIsolatedDesktop as launchIsolated } from './desktop-isolation.mjs';
 import {assertFreshBuild} from '../../scripts/build-provenance.mjs';
 const buildManifest=assertFreshBuild();
 import fs from 'node:fs';
@@ -18,7 +19,7 @@ let app;
 const log=[];
 const record=(...items)=>{const line=items.map(x=>typeof x==='string'?x:JSON.stringify(x)).join(' ');log.push(line);console.log(line);};
 try {
- app=await electron.launch({executablePath:c.executable,args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:45000});
+ app=await launchIsolated({executablePath:c.executable,args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:45000});
  app.process().stdout?.on('data',b=>fs.appendFileSync(path.join(c.evidence,'desktop-stdout.log'),b));
  app.process().stderr?.on('data',b=>fs.appendFileSync(path.join(c.evidence,'desktop-stderr.log'),b));
  const identity=await app.evaluate(({app})=>({version:app.getVersion(),electron:process.versions.electron,node:process.versions.node,exe:process.execPath,pid:process.pid,home:process.env.DSH_HOME,userData:app.getPath('userData'),appPath:app.getAppPath()}));

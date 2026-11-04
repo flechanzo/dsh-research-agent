@@ -1,4 +1,5 @@
 import { ShadowAuditView } from './ShadowAuditView.tsx'
+import { consumeResearchStream } from './research-stream.ts'
 import { TargetTaskEditor, type ConfirmableTarget } from './TargetTaskEditor.tsx'
 import { ResearchTranscriptMain } from './ResearchTranscriptMain.tsx'
 import { ResearchBranchSelector } from './ResearchBranchSelector.tsx'
@@ -22,6 +23,7 @@ import type {
   ResearchRemote,
   ResearchStage,
   ResearchState,
+  ResearchSaveAsSessionValue,
 } from 'dsh-research-agent/client'
 import type { FileUploadService } from '@deepseek-ai/dsh-client-file-upload/client'
 import type { RemoteResult } from '@deepseek-ai/dsh-typert-protocol'
@@ -263,9 +265,9 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
     selected.memorySnapshot.directionFocuses,
   ])
 
-  const execute = async (
-    operation: (signal: AbortSignal) => Promise<RemoteResult<ResearchCommandValue>>,
-  ): Promise<ResearchCommandValue | undefined> => {
+  const execute = async <T extends ResearchCommandValue>(
+    operation: (signal: AbortSignal) => Promise<RemoteResult<T>>,
+  ): Promise<T | undefined> => {
     if (operationRef.current !== undefined) return undefined
     const controller = new AbortController()
     operationRef.current = controller
@@ -291,8 +293,8 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
         publishResearchSession(workflowSessionId, result.value.snapshot)
       }
       return result.value
-    } catch {
-      setError(t('research.error.request'))
+    } catch (error) {
+      setError(error instanceof Error ? error.message : t('research.error.request'))
       await loadResearchSession(research, workflowSessionId)
       return undefined
     } finally {
@@ -313,25 +315,29 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
         if (!uploaded.ok) return uploaded
         papers.push(uploaded.value.file)
       }
-      return research.upload({
+      const request = {
         sessionId: workflowSessionId,
         expectedRevision: revision,
         papers,
         ...(selected.stage === 'literature-search' || selected.stage === 'targeted-literature-search' ? { supplemental: true } : {}),
-      }, signal)
+      }
+      return typeof research.uploadStream === 'function' ? consumeResearchStream(research.uploadStream(request, signal)) : research.upload(request, signal)
     })
   }
 
   const confirm = (): void => {
     if (selected.stage === 'literature-search' && targetDraft?.confirmed !== true && selected.memorySnapshot.targetTask === undefined) { setError('请编辑并确认目标任务'); return }
-    void execute(signal => research.confirm({
-      sessionId: workflowSessionId, expectedRevision: revision,
-      ...(selected.stage === 'literature-search' && targetDraft?.confirmed === true ? { targetTask: targetDraft.proposal.fields, targetTaskContextDigest: targetDraft.proposal.contextDigest } : {}),
-      ...(selected.stage === 'targeted-literature-search' ? { reviewerRoles: reviewers } : {}),
-      ...(selected.stage === 'problem-summary' ? { directionWeights, literatureSources } : {}),
-      ...(selected.stage === 'problem-summary' ? { directionFocuses } : {}),
-      ...(selected.stage === 'simulation-or-final-plan' ? { finalChoice: choice } : {}),
-    }, signal))
+    void execute((signal) => {
+      const request = {
+        sessionId: workflowSessionId, expectedRevision: revision,
+        ...(selected.stage === 'literature-search' && targetDraft?.confirmed === true ? { targetTask: targetDraft.proposal.fields, targetTaskContextDigest: targetDraft.proposal.contextDigest } : {}),
+        ...(selected.stage === 'targeted-literature-search' ? { reviewerRoles: reviewers } : {}),
+        ...(selected.stage === 'problem-summary' ? { directionWeights, literatureSources } : {}),
+        ...(selected.stage === 'problem-summary' ? { directionFocuses } : {}),
+        ...(selected.stage === 'simulation-or-final-plan' ? { finalChoice: choice } : {}),
+      }
+      return typeof research.confirmStream === 'function' ? consumeResearchStream(research.confirmStream(request, signal)) : research.confirm(request, signal)
+    })
   }
 
   const submitFeedback = (): void => {
@@ -342,10 +348,13 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
   }
 
   const reject = (): void => {
-    void execute(signal => research.reject({
-      sessionId: workflowSessionId, expectedRevision: revision,
-      ...(feedback.trim() === '' ? {} : { reason: feedback }),
-    }, signal))
+    void execute((signal) => {
+      const request = {
+        sessionId: workflowSessionId, expectedRevision: revision,
+        ...(feedback.trim() === '' ? {} : { reason: feedback }),
+      }
+      return typeof research.rejectStream === 'function' ? consumeResearchStream(research.rejectStream(request, signal)) : research.reject(request, signal)
+    })
   }
 
   const selectBranch = (branchId: string): void => {
@@ -358,6 +367,13 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
 
   const continueFromNode = (nodeId: string): void => {
     void execute(() => research.continueFromNode({ sessionId: workflowSessionId, expectedRevision: revision, nodeId }))
+  }
+
+  const saveAsSession = (): void => {
+    void execute(() => research.saveAsSession({ sessionId: workflowSessionId, expectedRevision: revision }))
+      .then((result: ResearchSaveAsSessionValue | undefined) => {
+        if (result !== undefined) setSyncMessage(t('research.savedAsSession', { sessionId: String(result.savedSessionId) }))
+      })
   }
 
   const needsConfirm = canMutate && ((selected.status === 'awaiting-confirmation' || selected.status === 'confirmed')
@@ -478,6 +494,11 @@ export function ResearchPanel({ useTabInfo, sessionId, research, fileUpload, t }
           {needsConfirm && (
             <button type="button" className={css.primaryButton} disabled={busy || loading} onClick={confirm}>
               <IconCheckOutlineRegular size={14} /> {actionLabel}
+            </button>
+          )}
+          {artifact?.kind === 'plan' && (
+            <button type="button" className={css.button} disabled={busy || loading} onClick={saveAsSession}>
+              {t('research.saveAsSession')}
             </button>
           )}
           {canMutate && ideaNeedsReview && (

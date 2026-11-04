@@ -1,0 +1,172 @@
+{
+  "recordedAt": "2026-11-04T06:47:28.470Z",
+  "version": "0.1.6-rc.12",
+  "sourceSha256": "d5a6f03f7bc296c9f04c772e157ccd4d12b6d7e98bbcca9ab5fc507e25ead812",
+  "sessionId": "session-c60b0266-5320-4cf4-9733-73edc6fd530c",
+  "mainFlow": {
+    "revision": 13,
+    "branchId": "branch-2",
+    "selectedNodeId": "node-12",
+    "stage": "final-plan",
+    "status": "completed",
+    "plan": "F:/Documents/deepseek-harness/default-workspace/research-projects/session-c60b0266-5320-4cf4-9733-73edc6fd530c/plans/branch-2/revision-13/research-plan.md",
+    "planExists": true
+  },
+  "rubric": {
+    "auditId": "8c2064de-5303-4e07-b166-cd1e7cb338e0",
+    "assessmentId": "333be567-57d0-4065-b000-57154b43d728",
+    "reviewScope": "originality-only",
+    "status": "insufficient",
+    "score": null,
+    "legacyScore": null,
+    "queries": [
+      {
+        "round": 1,
+        "queries": [
+          "DoRA: Weight-Decomposed Low-Rank Adaptation",
+          "DoRA detached norm gradient ablation",
+          "adaptive selective normalization gradient LoRA"
+        ],
+        "passed": true
+      },
+      {
+        "round": 2,
+        "queries": [
+          "adaptive rank allocation LoRA importance",
+          "NormTune weight update norm gradient",
+          "DoRAN noise injection auxiliary networks"
+        ],
+        "passed": true
+      },
+      {
+        "round": 3,
+        "queries": [
+          "NormTune weight update norm",
+          "radial gradient selective norm detachment LoRA",
+          "DoRAN: Stabilizing Weight-Decomposed Low-Rank Adaptation via Noise Injection and Auxiliary Networks"
+        ],
+        "passed": false
+      }
+    ],
+    "primarySources": [
+      {
+        "id": "source-ab7e1d27aa13528baa36",
+        "title": "DoRA: Weight-Decomposed Low-Rank Adaptation",
+        "url": "https://arxiv.org/pdf/2402.09353v6",
+        "pages": 23,
+        "coverage": "core-complete"
+      },
+      {
+        "id": "source-66fe4cc7bea13847e575",
+        "title": "BiDoRA: Bi-level Optimization-Based Weight-Decomposed Low-Rank Adaptation",
+        "url": "https://arxiv.org/pdf/2410.09758v2",
+        "pages": 25,
+        "coverage": "core-complete"
+      },
+      {
+        "id": "source-fdffd4bd858fb456aa87",
+        "title": "BoRA: Bi-dimensional Weight-Decomposed Low-Rank Adaptation",
+        "url": "https://arxiv.org/pdf/2412.06441v1",
+        "pages": 13,
+        "coverage": "core-complete"
+      },
+      {
+        "id": "source-147ab09b5e5fdbd02162",
+        "title": "Understanding and Guiding Layer Placement in Parameter-Efficient Fine-Tuning of Large Language Models",
+        "url": "https://arxiv.org/pdf/2602.04019v2",
+        "pages": 29,
+        "coverage": "core-complete"
+      },
+      {
+        "id": "source-87873de5c83a17894de5",
+        "title": "NormTune: Norm-Guided Parameter-Efficient Fine-Tuning for Reasoning-Intensive Tasks",
+        "url": "https://arxiv.org/pdf/2610.29134v1",
+        "pages": 22,
+        "coverage": "core-complete"
+      }
+    ],
+    "criticalMissingSources": [
+      "https://openreview.net/forum?id=rPqBKvqITW：缺少动态秩分配方法正文，无法核对评分及选择对象。",
+      "https://arxiv.org/abs/2609.25058v1：缺少ChainDoRA方法正文。",
+      "https://arxiv.org/abs/2510.04331v2：缺少DoRAN方法正文，且本轮获取记录缺失。",
+      "https://openreview.net/forum?id=3n9nfmmLmI：该页面正文未取得，与已读NormTune arXiv版本的对应关系未核实。",
+      "前轮新发现的梯度重要性及自适应秩分配技术近邻缺少方法正文；若其机制影响矩阵选择或梯度路径归属，仍须补核。"
+    ],
+    "unresolvedAlternatives": [
+      "动态秩分配工作的原文、评分公式及选择对象未取得。",
+      "ChainDoRA和DoRAN的方法正文未取得，不能排查同构范数梯度门控。",
+      "NormTune的OpenReview URL与已读arXiv正文之间的版本对应关系未核实。",
+      "前轮发现的其他梯度重要性及自适应秩分配近邻仍只有检索信息，尚不能作方法级排除。"
+    ],
+    "stopReason": [
+      "三轮查询后关键材料/替代解释仍未解决，不能以次数代替充分性"
+    ],
+    "modelStages": [
+      "contribution-extractor",
+      "search-planner",
+      "search-plan-reviewer",
+      "source-selector",
+      "source-verifier",
+      "search-planner",
+      "search-plan-reviewer",
+      "source-selector",
+      "adversarial-reviewer",
+      "search-planner",
+      "search-plan-reviewer",
+      "source-selector",
+      "source-verifier"
+    ],
+    "usage": {
+      "storageReadMilliseconds": 1,
+      "storageWriteMilliseconds": 21453,
+      "modelStageAttempts": 13,
+      "promptCharacters": 788018,
+      "reportedInputTokens": 256354,
+      "reportedOutputTokens": 13939,
+      "modelMilliseconds": 334625,
+      "searchMilliseconds": 25989,
+      "readMilliseconds": 129376,
+      "currentBudget_modelCalls": 13,
+      "currentBudget_networkOperations": 35,
+      "currentBudget_promptCharacters": 788018,
+      "currentBudget_ocrPages": 0,
+      "currentBudget_milliseconds": 512422,
+      "currentBudget_network_sourceQueueMilliseconds": 11427,
+      "currentBudget_network_transportRequests": 35,
+      "currentBudget_network_networkMilliseconds": 49612,
+      "currentBudget_network_http429": 6,
+      "currentBudget_network_sourceActionMilliseconds": 76591,
+      "currentBudget_network_failureEvents": 9,
+      "currentBudget_network_http200": 23,
+      "currentBudget_network_cooldownSkips": 12,
+      "currentBudget_network_cache_miss": 10,
+      "currentBudget_network_cacheLookupMilliseconds": 126,
+      "currentBudget_network_extractionMilliseconds": 1532,
+      "currentBudget_network_extractionProcessCpuMilliseconds": 313,
+      "currentBudget_network_cache_stored": 9,
+      "currentBudget_network_cache_hit": 2,
+      "currentBudget_network_http403": 3
+    },
+    "dataReviewScheduled": false,
+    "scientificScoreVerified": false
+  },
+  "engineering": {
+    "testsPassed": 342,
+    "testFiles": 31,
+    "typecheck": true,
+    "sdkTypecheck": true,
+    "lint": true,
+    "desktopResumeEvidence": ".acceptance/ideation-fix-20261104/rubric-efficiency-Cp8SuY/evidence/release-rc12-stage-resume-verified/result.json",
+    "inference": "local deterministic fixture",
+    "score": 0,
+    "modelCallsBeforeRestart": 6,
+    "modelCallsAfterRestart": 11,
+    "totalModelCalls": 17
+  },
+  "limitations": [
+    "未获得真实数值 Rubric 分数。",
+    "未运行数据质量、实验结果、可复现性审查，未运行仿真或实际训练。",
+    "主方案保留历史摘要的 12/23 页说明；Rubric 另行取得完整正文，不改写历史记录。",
+    "真实费用未取得可靠统计，不能填零；令牌数不等于货币费用。"
+  ]
+}

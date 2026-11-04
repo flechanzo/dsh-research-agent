@@ -1,3 +1,4 @@
+import {SourceCoordinator} from '../packages/research-agent/src/innovation/source-coordinator.ts'
 import { describe, expect, it } from 'vitest'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import { AttachmentId } from '@deepseek-ai/dsh-attachment'
@@ -9,7 +10,7 @@ import {
   createNumericalResearchSimulationRunner,
   createSubagentResearchRunner,
   createSubagentResearchOcr,
-  createWebLiteratureSearcher,
+  createWebLiteratureSearcher as createSharedLiteratureSearcher,
   createResearchState,
   rejectIdea,
   ResearchCoordinator,
@@ -20,6 +21,8 @@ import { FileSystem, FsTargetKey, FsVersion, type FsTarget, type FsWriteIntent }
 import { SubagentRuntime } from '@deepseek-ai/dsh-subagent'
 import { WebRuntime } from '@deepseek-ai/dsh-web'
 import type { SandboxExecutionPolicy } from '@deepseek-ai/dsh-sandbox'
+
+const createWebLiteratureSearcher = (web:WebRuntime,maxResults:number)=>createSharedLiteratureSearcher(web,maxResults,new SourceCoordinator({intervalMs:0}))
 
 const parent = {} as Agent
 
@@ -526,7 +529,8 @@ describe('createWebLiteratureSearcher', () => {
     await expect(createWebLiteratureSearcher(web, 4).search('transformer', undefined, { sources: ['arxiv', 'openalex'] })).rejects.toThrow(
       'diagnostics: arxiv=non-public-address; openalex=http-429',
     )
-    expect(calls).toBe(3)
+    // One attempt per source: a 429 enters the shared cooldown instead of a 50ms retry.
+    expect(calls).toBe(2)
   })
 
   it('keeps index results when another index is unavailable', async () => {

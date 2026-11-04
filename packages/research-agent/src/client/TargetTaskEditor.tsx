@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { SessionId, ResearchRemote, ResearchTargetTaskProposal, TargetTaskFields } from 'dsh-research-agent/client'
 import css from './Rubric.module.css'
-const LABELS: Record<keyof TargetTaskFields, string> = {
-  domain: '研究领域', problem: '具体任务或问题', input: '输入', output: '输出', constraints: '约束',
-  conditions: '适用条件', subtaskBoundary: '必要子任务边界', comparisonPoint: '比较时点（YYYY-MM-DD）',
-}
+import { TARGET_TASK_LABELS as LABELS, targetTaskIssues } from '../innovation/target-task.ts'
 export interface ConfirmableTarget {
   readonly proposal: ResearchTargetTaskProposal
   readonly confirmed: boolean
@@ -49,6 +46,7 @@ export function TargetTaskEditor({ research, sessionId, revision, signal, onChan
     }
   }
   useEffect(() => { void load() }, [sessionId, revision])
+  const issues = proposal === undefined ? [] : targetTaskIssues(proposal.fields)
   return <section className={css.card} data-target-task-editor aria-busy={loading}>
     <h3>确认评估范围</h3>
     <p className={css.description}>草稿来自已确认摘要、研究问题和分支记忆。请核对任务范围、邻近等价问题及比较时点；确认后，本次评估固定使用此输入。</p>
@@ -66,8 +64,9 @@ export function TargetTaskEditor({ research, sessionId, revision, signal, onChan
         }}/>
       </label>
     })}</div>
+    {issues.length > 0 && <p role="alert">请先补全评估范围：{issues.join('；')}</p>}
     {proposal !== undefined && <label className={css.confirmation}>
-      <input type="checkbox" checked={confirmed} onChange={(event) => {
+      <input type="checkbox" checked={confirmed} disabled={loading || issues.length > 0} onChange={(event) => {
         setConfirmed(event.target.checked)
         change.current({ proposal, confirmed: event.target.checked })
       }}/><span>我已核对并确认目标任务及比较范围</span></label>}

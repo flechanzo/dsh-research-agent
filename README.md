@@ -1,6 +1,6 @@
 # 自动科研插件
 
-当前版本：**dsh-research-agent 0.1.6-rc.1**，目标为官方 Nightly Desktop **0.2.1-rc.5**。2026-11-03 已重新核验官方更新源；本轮 UI、安装与验收结果见 docs/UI_DESKTOP_RELEASE_2026-11-03.md。下面带历史日期的报告仅对应各自轮次。
+当前版本：**dsh-research-agent 0.1.6-rc.12**，目标为官方 Nightly Desktop **0.2.1-rc.5**。2026-11-04 已重新核验官方更新源；本轮科研流程、安装与验收结果见 docs/IDEATION_FIX_2026-11-04.md。下面带历史日期的报告仅对应各自轮次。
 
 2026-11-02：当前工作树同步官方 Nightly Desktop/SDK 0.2.1-rc.5；[最新开发基线](docs/DEVELOPMENT_BASELINE_2026-11-02.md)和[长期 Desktop 验收规范](docs/DESKTOP_VALIDATION.md)优先于本文历史安装说明。正式应用和 profile 未升级。
 
@@ -8,7 +8,7 @@
 
 ## 使用方式
 
-使用 0.1.6-rc.1 配合官方 Nightly Desktop 0.2.1-rc.5。三个视图分别为科研内容、分支关系、节点详情，每次只显示选中的视图；切换时保留草稿。支持方向键、Home、End 切换分栏。
+使用 0.1.6-rc.12 配合官方 Nightly Desktop 0.2.1-rc.5。三个视图分别为科研内容、分支关系、节点详情，每次只显示选中的视图；切换时保留草稿。支持将当前科研流程保存为新会话；最终方案只输出创新方案、技术路线、审查修订及验证设计，Rubric 在完整方案生成后只评估创新性。
 
 新建会话，在 Agent 选择菜单选择“自动科研”，发送任务后点击会话标题旁的“自动科研流程”。上传 PDF 或 TXT，查看摘要并逐步确认；在问题提炼处调整研究方向、权重和索引，在后续节点查看创新评分、补充文献、选择评审角色。最后先预览计划，再点击“确认并写入 Markdown 文件”。旧会话也可通过标题按钮查看对应科研状态。
 
@@ -20,8 +20,8 @@
 
 ```powershell
 Set-Location D:\dsh-research-agent
-.\install.ps1 -InstallDir F:\deepseek -DshHome D:\DeepSeekHarness\data -Profile desktop -PackagePath D:\dsh-research-agent\dist\dsh-research-agent-0.1.6-rc.1.tgz
-.\update.ps1 -InstallDir F:\deepseek -DshHome D:\DeepSeekHarness\data -Profile desktop -PackagePath D:\dsh-research-agent\dist\dsh-research-agent-0.1.6-rc.1.tgz
+.\install.ps1 -InstallDir F:\deepseek -DshHome D:\DeepSeekHarness\data -Profile desktop -PackagePath D:\dsh-research-agent\dist\dsh-research-agent-0.1.6-rc.12.tgz
+.\update.ps1 -InstallDir F:\deepseek -DshHome D:\DeepSeekHarness\data -Profile desktop -PackagePath D:\dsh-research-agent\dist\dsh-research-agent-0.1.6-rc.12.tgz
 ```
 
 加 -DryRun 可仅检查目标。不传路径时脚本会尝试识别唯一正在运行的官方 Desktop Host；识别不唯一会拒绝操作。更新新代码时先增加包版本，构建新的 tgz，再传入新路径。安装依赖可能需要 npm 网络；不向 npm 发送论文或模型凭据。完成后在任务空闲时正常退出并重开桌面端。重复安装不会追加重复 Bundle。

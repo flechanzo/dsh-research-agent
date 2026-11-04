@@ -1,9 +1,28 @@
 export type { ShadowAudit } from './innovation/shadow.ts'
+import type { ShadowAudit } from './innovation/shadow.ts'
 import type { RubricAssessment, TargetTask } from './innovation/schema.ts'
 export type { RubricAssessment, TargetTask, TargetTaskFields } from './innovation/schema.ts'
 /** Wire vocabulary for the Session-scoped automatic research controller. */
 
 import type { FileAttachmentRef } from '@deepseek-ai/dsh-attachment/types'
+export type ResearchCommandEvent = { readonly type: 'progress' } | { readonly type: 'result'; readonly value: ResearchCommandValue }
+export type ResearchRubricEvent = { readonly type: 'progress' } | { readonly type: 'result'; readonly value: ShadowAudit }
+export interface ResearchRubricResumeRequest {
+  readonly sessionId: SessionId
+  readonly expectedRevision: number
+  readonly assessmentId: string
+  readonly auditId: string
+  /** New explicitly authorized per-resume allowance, never an implicit extension of a prior run. */
+  readonly budget: {
+    readonly maxMilliseconds: number
+    readonly maxStageMilliseconds: number
+    readonly maxModelCalls: number
+    readonly maxNetworkOperations: number
+    readonly maxPromptCharacters: number
+    readonly maxPdfPages: number
+    readonly maxOcrPages: number
+  }
+}
 import type { SessionId } from '@deepseek-ai/dsh-session/types'
 
 export type { SessionId } from '@deepseek-ai/dsh-session/types'
@@ -163,9 +182,20 @@ export interface ResearchCommandValue {
   readonly planFile?: ResearchPlanFile
 }
 
+/** Result of copying a completed research plan into a new ordinary Session. */
+export interface ResearchSaveAsSessionValue extends ResearchCommandValue {
+  readonly savedSessionId: SessionId
+}
+
 /** Read the persisted state without resuming an Agent. */
 export interface ResearchReadRequest {
   readonly sessionId: SessionId
+}
+
+/** Save the selected completed plan as a new ordinary Session. */
+export interface ResearchSaveAsSessionRequest {
+  readonly sessionId: SessionId
+  readonly expectedRevision: number
 }
 
 /** Re-export the current durable revision without advancing the DAG. */

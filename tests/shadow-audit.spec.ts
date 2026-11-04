@@ -3,6 +3,7 @@ import {ResearchCoordinator,createResearchState,appendResearchOutput,confirmRese
 import type {ResearchCoordinatorAdapters} from '../packages/research-agent/src/workflows/research-coordinator.ts'
 import type {ShadowAudit} from '../packages/research-agent/src/innovation/shadow.ts'
 import {taskFields,syntheticText,rubricFixture} from './support/rubric-fixture.mjs'
+import type { ReviewCheckpoint } from '../packages/research-agent/src/workflows/review-checkpoints.ts'
 function fixture(scores=[20,88],policy:ResearchCoordinatorAdapters['shadow']={}){
  const audits:ShadowAudit[]=[];let oldCalls=0;let rubricCalls=0
  const acquisition={url:'https://example.test/original',at:'2026-11-02',status:200,sha256:'a'.repeat(64),transport:'dsh-web' as const,truncated:false}
@@ -53,4 +54,26 @@ it('records pre-evaluation legacy failure without fabricating Rubric completion'
 it('audit storage failure is visible but never rejects an old pass',async()=>{
  const f=fixture([88]);f.adapter.onShadowAudit=async()=>{throw Error('audit disk unavailable')};const warn=vi.spyOn(console,'warn').mockImplementation(()=>{})
  try{expect((await f.run()).artifact?.evaluation?.score).toBe(88);expect(warn).toHaveBeenCalledWith('SHADOW_AUDIT_PERSIST_FAILED',expect.any(String),expect.any(Error))}finally{warn.mockRestore()}
+})
+
+it('resumes an interrupted third candidate without regenerating or rescoring the completed attempts', async () => {
+ const f=fixture([20,20,88],{enabled:false}), rows=new Map<string,ReviewCheckpoint>()
+ Object.assign(f.adapter,{reviewScope:'same-session',reviewCheckpoints:{get:async(id:string)=>rows.get(id),put:async(row:ReviewCheckpoint)=>{rows.set(row.id,structuredClone(row))}}})
+ const original=f.adapter.agents.run;let generations=0,interrupted=false
+ f.adapter.agents.run=async(role,prompt,parent,signal)=>{
+  if(role==='idea-generator')generations++
+  if(role==='innovation-reviewer'&&generations===3&&!interrupted){interrupted=true;throw Error('stage timeout')}
+  return original(role,prompt,parent,signal)
+ }
+ await expect(f.run()).rejects.toThrow('stage timeout')
+ expect(generations).toBe(3);expect(f.calls().oldCalls).toBe(2)
+ const result=await f.run()
+ expect(result.artifact?.evaluation?.score).toBe(88)
+ expect(generations).toBe(3);expect(f.calls().oldCalls).toBe(3)
+})
+
+it('uses the independent rubric PDF page budget when rereading uploaded papers', async () => {
+ const f=fixture([88],{maxPdfPages:30}),read=vi.spyOn(f.adapter.papers,'read')
+ await f.run()
+ expect(read.mock.calls[0]?.[2]?.maxPdfPages).toBe(30)
 })

@@ -188,6 +188,11 @@ export const searchSufficiencySchema = z.object({
   unresolvedAlternatives: z.array(text),
 })
 export const roundReviewSchema = z.object({
+  resolvedPriorConcerns: z.array(z.object({
+    concern: text,
+    resolution: text,
+    evidence: z.array(evidenceSchema).min(1),
+  })).optional(),
   sufficiency: searchSufficiencySchema.optional(),
   nearestPrecedents: ids,
   support: z.array(text),
@@ -213,6 +218,7 @@ export const searchRoundSchema = z.object({
         title: z.string(),
         publicationDate: z.string().nullable(),
         pdfUrl: z.string().optional(),
+        alternateUrls: z.array(z.url()).optional(),
       }),
     )
     .optional(),
@@ -255,6 +261,7 @@ export const rubricAssessmentSchema = z
     rubricVersion: z.literal('1.7.0'),
     rubricSha256: z.string(),
     mode: z.literal('shadow'),
+    reviewScope: z.literal('originality-only').optional(),
     assessedAt: z.string(),
     targetTask: targetTaskSchema.nullable(),
     assessmentStatus: z.enum(['complete', 'provisional', 'insufficient']),

@@ -16,6 +16,37 @@ export interface ReviewCheckpointStore {
 export interface ReviewWork { readonly label: string; readonly prompt: string }
 const hash = (text: string): string => createHash('sha256').update(text).digest('hex')
 
+/** Reuse only successful output for the same scope, role and complete input. */
+export async function runCheckpointedWork(
+  scope: string, work: ReviewWork, run: () => Promise<string>,
+  store?: ReviewCheckpointStore, signal?: AbortSignal,
+): Promise<string> {
+  signal?.throwIfAborted()
+  const promptSha256 = hash(work.prompt)
+  const id = hash(JSON.stringify([scope, work.label, promptSha256]))
+  const saved = await store?.get(id)
+  if (saved) {
+    const row = reviewCheckpointSchema.parse(saved)
+    if (row.id !== id || row.promptSha256 !== promptSha256 || row.label !== work.label)
+      throw new Error('Review checkpoint identity mismatch')
+    if (row.status === 'succeeded') return row.result ?? ''
+  }
+  const base = { id, version: 1 as const, label: work.label, promptSha256 }
+  signal?.throwIfAborted()
+  await store?.put({ ...base, status: 'running', updatedAt: Date.now() })
+  try {
+    signal?.throwIfAborted()
+    const result = await abortable(run(), signal)
+    signal?.throwIfAborted()
+    if (!result.trim()) throw new Error('Model returned empty content')
+    await store?.put({ ...base, status: 'succeeded', result, updatedAt: Date.now() })
+    return result
+  } catch (error) {
+    await store?.put({ ...base, status: signal?.aborted ? 'cancelled' : 'failed', error: String(error), updatedAt: Date.now() })
+    throw error
+  }
+}
+
 /** Bound the caller even if an adapter fails to acknowledge cancellation; no late result is committed. */
 export function abortable<T>(work: Promise<T>, signal?: AbortSignal): Promise<T> {
   if (!signal) return work

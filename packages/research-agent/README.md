@@ -1,6 +1,6 @@
 # 自动科研插件
 
-版本：0.1.6-rc.1。精确目标：官方 Nightly DeepSeek Harness Desktop 0.2.1-rc.5。保留 research Preset、论文读取、文献检索、多角色评审、分支 DAG 与人工确认后的研究计划。科研内容、分支关系、节点详情使用三个独立切换的视图；隐藏视图保留草稿。Rubric v1.7.0 用于可追溯的 Shadow 对照，尚未开启权威裁决。
+版本：0.1.6-rc.12。精确目标：官方 Nightly DeepSeek Harness Desktop 0.2.1-rc.5。保留 research Preset、论文读取、文献检索、多角色评审、分支 DAG 与人工确认后的研究计划。科研内容、分支关系、节点详情使用三个独立切换的视图；隐藏视图保留草稿。科研流程可以保存为新的会话；最终科研方案去除论文摘要、问题总结和文献原文，只保留创新方案、技术路线、审查修订和验证设计；Rubric 在完整方案生成后只评估创新性。
 
 通过官方 dsh plugin 命令安装 Bundle。可变状态保存在 DSH_HOME/storages/research.json 或显式 dataDirectory；导出保存在独立 Session 工作目录。新计划使用 research-projects/<sessionId>/plans/<branchId>/revision-<revision>/<planPath>，已有文件不搬移。
 

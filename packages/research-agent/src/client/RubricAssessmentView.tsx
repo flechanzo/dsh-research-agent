@@ -11,6 +11,7 @@ export function RubricAssessmentView({ assessment: a }: { readonly assessment: R
       data-rubric-score={a.score.S === null ? 'null' : String(a.score.S)}
     >
       <h3>Rubric v1.7.0 创新评估（验证模式）</h3>
+      {a.reviewScope === 'originality-only' && <p>审查范围：仅创新性。包含联网查新与方法差异比较，不包含数据和实验结果审查。</p>}
       <div className={css.scoreRow}>
         <strong className={css.score}>{a.score.S === null ? '—' : a.score.S}<small> / 10</small></strong>
         <span className={css.badge}>{a.score.S === null ? '证据不足，暂不评分' : '创新性评分'}</span>
@@ -96,7 +97,7 @@ export function RubricAssessmentView({ assessment: a }: { readonly assessment: R
         ))}
       </details>
       <details>
-        <summary>贡献、有效性与确定性计算</summary>
+        <summary>{a.reviewScope === 'originality-only' ? '创新贡献、分类与计分' : '贡献、有效性与确定性计算'}</summary>
         <p>
           主导：{a.score.mainId ?? '未确定'}；U_main={a.score.U_main ?? 'null'}；S_main={a.score.S_main ?? 'null'}；J=
           {a.score.J}；M={a.score.M}；S={a.score.S ?? 'null'}

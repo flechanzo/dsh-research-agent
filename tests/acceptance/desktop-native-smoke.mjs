@@ -1,3 +1,4 @@
+import { launchIsolatedDesktop as launchIsolated } from './desktop-isolation.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
@@ -17,7 +18,7 @@ const processSnapshot=label=>{
 };
 let app;
 try{
- app=await electron.launch({executablePath:c.executable,args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:60000});
+ app=await launchIsolated({executablePath:c.executable,args:['--user-data-dir='+c.userData],env,cwd:c.workspace,timeout:60000});
  app.process().stdout?.on('data',b=>fs.appendFileSync(path.join(evidence,'stdout.log'),b));app.process().stderr?.on('data',b=>fs.appendFileSync(path.join(evidence,'stderr.log'),b));
  const identity=await app.evaluate(({app})=>({version:app.getVersion(),electron:process.versions.electron,node:process.versions.node,exe:process.execPath,pid:process.pid,home:process.env.DSH_HOME,userData:app.getPath('userData'),appPath:app.getAppPath()}));assert.equal(identity.version,c.targetVersion);assert.equal(path.resolve(identity.exe),path.resolve(c.executable));record('IDENTITY',identity);
  const page=await app.firstWindow();const input=page.locator('[data-composer-input=true][contenteditable=true]');await input.waitFor({timeout:60000});

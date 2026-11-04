@@ -5,7 +5,9 @@ import type { RubricAssessment } from './schema.ts'
 import type { ResearchInnovationEvaluation } from '../types.ts'
 export const shadowPolicySchema = z.object({
   enabled: z.boolean().default(true),
-  maxMilliseconds: z.number().int().min(1).max(300000).default(90000),
+  maxMilliseconds: z.number().int().min(1).max(900000).default(600000),
+  maxStageMilliseconds: z.number().int().min(1).max(120000).default(120000),
+  maxPdfPages: z.number().int().min(1).max(100).default(30),
   maxCandidates: z.number().int().min(0).max(10).default(3),
   maxModelCalls: z.number().int().min(0).max(500).default(60),
   maxNetworkOperations: z.number().int().min(0).max(200).default(30),
@@ -16,6 +18,7 @@ export type ShadowPolicy = z.infer<typeof shadowPolicySchema>
 export const shadowAuditSchema = z
   .object({
     id: z.string(),
+    assessmentId: z.string().optional(),
     hostRunId: z.string(),
     sessionId: z.string(),
     sourceRevision: z.number().int(),
@@ -137,6 +140,9 @@ export class ShadowBudget {
       this.usage.milliseconds += Date.now() - this.started
       this.started = 0
     }
+  }
+  snapshot(): typeof this.usage {
+    return { ...this.usage, milliseconds: this.usage.milliseconds + (this.started ? Date.now() - this.started : 0) }
   }
   private fail(reason: string): never {
     this.exhausted = reason
