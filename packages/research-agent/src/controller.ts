@@ -399,6 +399,9 @@ export interface Config {
   readonly ocrScale?: number
   /** Maximum width × height for one rendered OCR page. */
   readonly maxOcrPixels?: number
+  /** Opt-in Rubric metric. `shadowEnabled` remains a compatibility alias. */
+  readonly rubricEnabled?: boolean
+  /** Compatibility alias for `rubricEnabled`. */
   readonly shadowEnabled?: boolean
   readonly shadowMaxMilliseconds?: number
   readonly shadowMaxCandidates?: number
@@ -439,7 +442,10 @@ export class ResearchController extends TypertRemoteService {
     maxIdeaAttempts: z.natural().min(1).max(10).default(3),
     maxPdfPages: z.number().step(1).min(1).max(100).default(30),
     ocrScale: z.number().min(0.25).max(4).default(1.5),
-    shadowEnabled: z.boolean().default(true),
+    // Rubric is an optional metric. The legacy originality reviewer has no
+    // corresponding switch and remains mandatory for candidate acceptance.
+    rubricEnabled: z.boolean().default(false),
+    shadowEnabled: z.boolean().default(false),
     shadowMaxMilliseconds: z.number().step(1).min(1).max(900000).default(600000),
     shadowMaxCandidates: z.natural().max(10).default(3),
     shadowMaxModelCalls: z.natural().max(500).default(60),
@@ -475,7 +481,10 @@ export class ResearchController extends TypertRemoteService {
    */
   constructor(ctx: Context, config: Config = {}) {
     super(ctx, 'researchController', { namespace: 'research' })
-    this.config = ResearchController.Config(config)
+    // Prefer the explicit Rubric name while accepting the historical shadow
+    // name. Keep both resolved values in sync for downstream compatibility.
+    const rubricEnabled = config.rubricEnabled ?? config.shadowEnabled ?? false
+    this.config = ResearchController.Config({ ...config, rubricEnabled, shadowEnabled: rubricEnabled })
     validatePlanPath(this.config.planPath)
     validateInnovationMode(this.config.innovationMode)
     let releaseWriter: (() => void) | undefined
@@ -1042,7 +1051,7 @@ export class ResearchController extends TypertRemoteService {
             },
           },
           shadow: {
-            enabled: this.config.shadowEnabled,
+            enabled: this.config.rubricEnabled,
             maxMilliseconds: this.config.shadowMaxMilliseconds,
             maxCandidates: this.config.shadowMaxCandidates,
             maxModelCalls: this.config.shadowMaxModelCalls,

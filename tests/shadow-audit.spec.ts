@@ -4,6 +4,7 @@ import type {ResearchCoordinatorAdapters} from '../packages/research-agent/src/w
 import type {ShadowAudit} from '../packages/research-agent/src/innovation/shadow.ts'
 import {taskFields,syntheticText,rubricFixture} from './support/rubric-fixture.mjs'
 import type { ReviewCheckpoint } from '../packages/research-agent/src/workflows/review-checkpoints.ts'
+import { shadowPolicySchema } from '../packages/research-agent/src/innovation/shadow.ts'
 function fixture(scores=[20,88],policy:ResearchCoordinatorAdapters['shadow']={}){
  const audits:ShadowAudit[]=[];let oldCalls=0;let rubricCalls=0
  const acquisition={url:'https://example.test/original',at:'2026-11-02',status:200,sha256:'a'.repeat(64),transport:'dsh-web' as const,truncated:false}
@@ -35,7 +36,19 @@ it('preserves all three rejected attempts after legacy failure and leaves DAG un
 it.each([{maxModelCalls:0},{maxNetworkOperations:0},{maxPromptCharacters:1},{maxCandidates:0}])('budget %j never changes old pass or produces unsupported score',async policy=>{
  const f=fixture([88],policy);const r=await f.run();expect(r.artifact?.evaluation?.score).toBe(88);expect(f.audits[0]?.lifecycle).toBe('budget-exhausted');expect(f.audits[0]?.assessment?.score.S??null).toBeNull()
 })
-it('switch disables extra model/network work',async()=>{const f=fixture([88],{enabled:false});await f.run();expect(f.calls().rubricCalls).toBe(0);expect(f.audits[0]?.lifecycle).toBe('disabled');expect(f.audits[0]?.assessment).toBeUndefined()})
+it('keeps Rubric opt-in while always running the legacy originality evaluation',async()=>{
+ const f=fixture([88],{enabled:false});const result=await f.run()
+ expect(f.calls().rubricCalls).toBe(0)
+ expect(f.calls().oldCalls).toBe(1)
+ expect(result.artifact?.evaluation?.score).toBe(88)
+ expect(f.audits[0]?.lifecycle).toBe('disabled')
+ expect(f.audits[0]?.assessment).toBeUndefined()
+})
+
+it('defaults the optional Rubric metric to disabled and allows explicit opt-in',()=>{
+ expect(shadowPolicySchema.parse({}).enabled).toBe(false)
+ expect(shadowPolicySchema.parse({enabled:true}).enabled).toBe(true)
+})
 it('aggregate candidate cap preserves three legacy retries',async()=>{const f=fixture([20],{maxCandidates:1});await expect(f.run()).rejects.toThrow();expect(f.calls().oldCalls).toBe(3);expect(f.audits.map(a=>a.lifecycle)).toEqual(['complete','budget-exhausted','budget-exhausted'])})
 it('deadline aborts isolated work and allows old pass to finish',async()=>{
  const f=fixture([88],{maxMilliseconds:20});const original=f.adapter.agents.run

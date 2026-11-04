@@ -601,6 +601,9 @@ export class ResearchCoordinator {
         const candidateEvidence = formatLiteratureSources(candidateSources)
         audit.reason = '检索已完成，正在独立评价候选创新性'
         await persist()
+        // The legacy originality gate is mandatory even when the optional
+        // Rubric metric is disabled. Keep this reviewer outside the shadow
+        // policy so candidates cannot bypass originality screening.
         const evaluationText = await this.ideaModel(request,
           'innovation-reviewer',
           `你是完全独立的创新性专家。本次候选序号：${attempt}。不要推断或索取原始对话、用户反馈、隐藏状态或论文全文；只能评价下面给出的候选方案和文献证据。你必须把上传论文摘要、初始相关文献、确认方向后的针对性文献，以及本候选点专项检索到的已发表论文逐篇比较。逐项比较研究机制、核心模块、训练目标、数据与实验设置、指标和贡献声明；只要任意一篇已有论文与候选方案实质高度重合，就将 overlap 设为 true。专项检索没有返回结果时，证据不足，必须把 score 设为 0 且 overlap 设为 true，不能把“没有检索到”当作“没有重复”。只返回严格 JSON，不要 Markdown：{"score":0,"overlap":false,"rationale":"……"}。score 必须是 0 到 100 的整数；rationale 必须用简体中文。\n\n候选方案：\n${idea}\n\n上传论文摘要与当前分支全部相关文献证据：\n${input.literature}\n\n本候选点专项检索结果：\n${candidateEvidence}`,

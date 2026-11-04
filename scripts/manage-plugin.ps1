@@ -19,7 +19,14 @@ function Invoke-DesktopCli([string[]]$Arguments) {
  try { $env:DSH_HOME=$DshHome; & $script:cli @Arguments; if($LASTEXITCODE -ne 0){throw "Desktop CLI failed (exit $LASTEXITCODE). See transaction log."} }
  finally { $env:DSH_HOME=$savedHome }
 }
-$hosts=@(Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'DeepSeek Harness.exe' -and $_.CommandLine -match 'dsh-desktop-host[\\/]lib[\\/]index.js' })
+$hosts=@()
+if(-not $InstallDir -or -not $DshHome -or -not $Profile){
+$hosts=@()
+if(-not $InstallDir -or -not $DshHome -or -not $Profile){
+ try {$hosts=@(Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'DeepSeek Harness.exe' -and $_.CommandLine -match 'dsh-desktop-host[\\/]lib[\\/]index.js' })}
+ catch {throw 'Cannot inspect running Desktop processes. Supply -InstallDir, -DshHome and -Profile explicitly, or rerun with process-query permission.'}
+}
+}
 if(-not $InstallDir){
  $locations=@($hosts | ForEach-Object { Split-Path -Parent $_.ExecutablePath } | Sort-Object -Unique)
  if($locations.Count -ne 1){throw 'Cannot identify one running official Electron Desktop. Supply -InstallDir and -DshHome -Profile explicitly.'}

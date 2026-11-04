@@ -4,7 +4,8 @@ import { rubricAssessmentSchema } from './schema.ts'
 import type { RubricAssessment } from './schema.ts'
 import type { ResearchInnovationEvaluation } from '../types.ts'
 export const shadowPolicySchema = z.object({
-  enabled: z.boolean().default(true),
+  /** Rubric is an opt-in metric; the legacy originality gate is always run separately. */
+  enabled: z.boolean().default(false),
   maxMilliseconds: z.number().int().min(1).max(900000).default(600000),
   maxStageMilliseconds: z.number().int().min(1).max(120000).default(120000),
   maxPdfPages: z.number().int().min(1).max(100).default(30),
