@@ -13,4 +13,7 @@ describe('F19 durable research DAG integrity',()=>{
  it('rejects a multi-node parent cycle',()=>{const r=row();r.state.nodes['node-1']!.parentNodeId='node-2';expect(schema.safeParse(r).success).toBe(false)})
  it('rejects a missing artifact reference',()=>{const r=row();r.state.nodes['node-2']!.artifactRefs.push('missing');expect(schema.safeParse(r).success).toBe(false)})
  it('rejects a branch containing a missing node',()=>{const r=row();r.state.branches['branch-1']!.nodeIds.push('missing');expect(schema.safeParse(r).success).toBe(false)})
+ it('rejects a node omitted from its owning branch',()=>{const r=row();r.state.branches['branch-1']!.nodeIds=[];expect(schema.safeParse(r).success).toBe(false)})
+ it('rejects duplicate branch membership and stale counters',()=>{const r=row();r.state.branches['branch-1']!.nodeIds.push('node-2');r.state.nextNodeNumber=1;expect(schema.safeParse(r).success).toBe(false)})
+ it('rejects reviewer roles outside the supported enum',()=>{const r=row();r.state.nodes['node-1']!.memorySnapshot.reviewerRoles=['unsupported'];expect(schema.safeParse(r).success).toBe(false)})
 })

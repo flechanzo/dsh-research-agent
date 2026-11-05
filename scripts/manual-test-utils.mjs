@@ -4,7 +4,7 @@ export function promptFacts(options) {
   const texts=[];
   function walk(v){if(!v||typeof v!=='object')return;if(v.type==='text'&&typeof v.text==='string')texts.push(v.text);for(const [k,x]of Object.entries(v))if(k!=='text'&&x&&typeof x==='object')walk(x);}
   walk(options.messages??[]);
-  const stage=texts.join('\n').match(/\[rubric-stage:([\w-]+)\]/u)?.[1]??'native-agent';
+  const stage=texts.join('\n').match(/\[(?:research|target-task)-stage:([\w-]+)\]/u)?.[1]??'native-agent';
   const text=JSON.stringify({messages:options.messages??[],systemPrompt:options.systemPrompt,system:options.system,tools:options.tools});
   return {stage,promptCharacters:text.length,promptSha256:createHash('sha256').update(text).digest('hex')};
 }

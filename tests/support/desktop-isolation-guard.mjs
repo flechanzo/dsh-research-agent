@@ -25,7 +25,7 @@ export function apply(ctx){
   log('before-operation',{sessionId:request.sessionId,cwd:agent.session.header.cwd});
  };
  ctx.inject(['researchController'],scope=>{
- for(const name of ['upload','confirm','resyncProject','resumeRubric']){
+ for(const name of ['upload','confirm','resyncProject']){
   const controller=scope.researchController;
   const original=controller[name];controller[name]=async function(request,...args){await check(controller,request);return original.call(this,request,...args)};
   scope.effect(()=>()=>{controller[name]=original});

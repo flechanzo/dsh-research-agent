@@ -4,7 +4,6 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { runCheckpointedReviews, abortable, type ReviewCheckpoint } from '../packages/research-agent/src/workflows/review-checkpoints.ts'
 import { acquireDataWriter } from '../packages/research-agent/src/workflows/data-writer.ts'
-import { validateInnovationMode } from '../packages/research-agent/src/innovation/mode.ts'
 const directories: string[] = []
 afterEach(() => { for (const d of directories.splice(0)) rmSync(d, { recursive: true, force: true }) })
 const works = ['method', 'novelty', 'reproducibility'].map(label => ({ label, prompt: label + ' exact evidence' }))
@@ -76,8 +75,4 @@ it('rejects a second Host writer and permits an orderly true restart', () => {
   expect(() => acquireDataWriter(directory)).toThrow('already has a writer lease')
   release(); release(); expect(existsSync(join(directory, '.research-writer.lock'))).toBe(false)
   acquireDataWriter(directory)()
-})
-it('keeps shadow enabled and refuses authority before independent calibration', () => {
-  expect(() => validateInnovationMode('shadow')).not.toThrow()
-  expect(() => validateInnovationMode('authoritative')).toThrow('calibration')
 })

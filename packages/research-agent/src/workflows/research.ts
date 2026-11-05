@@ -12,6 +12,8 @@ import type { FileAttachmentRef } from '@deepseek-ai/dsh-attachment/types'
  */
 
 import type { SessionId } from '@deepseek-ai/dsh-session'
+import { createHash } from 'node:crypto'
+import { validateResearchEvidenceBundle, type ResearchClaim, type ResearchEvidence, type ResearchSearchRun } from '../innovation/research-evidence.ts'
 
 /** Stages shown by the research workflow navigator. */
 export type ResearchStage =
@@ -37,6 +39,57 @@ export type ResearchNodeStatus =
 
 /** Human decision recorded against a stage output. */
 export type ResearchDecision = 'confirm' | 'reject' | 'feedback'
+
+/** Stable reviewer identifiers accepted by the user-facing research workflow. */
+export type ResearchReviewerRole = 'method' | 'novelty' | 'reproducibility'
+
+export const RESEARCH_REVIEWER_ROLES: readonly ResearchReviewerRole[] = [
+  'method',
+  'novelty',
+  'reproducibility',
+]
+
+/** Scientific validation state of a generated research artifact. */
+export type ResearchScientificStatus = 'unassessed' | 'insufficient' | 'provisional' | 'complete'
+
+/** Coverage status of an uploaded paper extraction. */
+export type ResearchPaperCoverage = 'complete' | 'partial'
+
+/** Structured experiment requirements; missing fields remain explicit until supplied. */
+export interface ResearchExperimentSpec {
+  readonly status: 'missing' | 'specified' | 'executed' | 'smoke-only'
+  readonly dataset: string
+  readonly datasetVersion: string
+  readonly baseline: readonly string[]
+  readonly ablations: readonly string[]
+  readonly metrics: readonly string[]
+  readonly failureCriteria: string
+  readonly statisticalMethod: string
+  readonly repetitions: number
+  readonly seeds: readonly number[]
+  readonly environment: string
+  readonly resourceBudget: string
+  readonly reproductionCommand: string
+}
+
+/** One independently testable research question extracted from the source material. */
+export interface ResearchProblemQuestion {
+  readonly questionId: string
+  readonly question: string
+  readonly priority: number
+  readonly hypothesis: string
+  readonly failureMode: string
+  readonly constraints: string
+  readonly falsifier: string
+}
+
+/** Explicit mapping from a decomposed question to the candidate artifact. */
+export interface ResearchCoverageEntry {
+  readonly questionId: string
+  readonly artifactId: string
+  readonly status: 'unverified' | 'covered' | 'partial' | 'uncovered'
+  readonly rationale: string
+}
 
 /** Search backends available to the research literature stages.
  *
@@ -119,6 +172,18 @@ export interface ResearchArtifact {
   readonly rubricAssessment?: RubricAssessment
   readonly paperRefs?: readonly FileAttachmentRef[]
   readonly evaluation?: ResearchInnovationEvaluation
+  /** Scientific validation state; separate from workflow node completion. */
+  readonly scientificStatus?: ResearchScientificStatus
+  readonly experimentSpec?: ResearchExperimentSpec
+  readonly paperCoverage?: ResearchPaperCoverage
+  readonly problemQuestions?: readonly ResearchProblemQuestion[]
+  readonly coverageMatrix?: readonly ResearchCoverageEntry[]
+  /** Structured source excerpts supporting this artifact's claims. */
+  readonly evidence?: readonly ResearchEvidence[]
+  /** Claims mapped to the structured evidence records above. */
+  readonly claims?: readonly ResearchClaim[]
+  /** Search provenance used to discover the evidence records. */
+  readonly searchRuns?: readonly ResearchSearchRun[]
   /** Stable creation time supplied by the coordinator. */
   readonly createdAt: number
 }
@@ -144,7 +209,7 @@ export interface ResearchMemorySnapshot {
   /** User feedback accumulated before this node. */
   readonly feedback: readonly string[]
   /** Selected expert roles for the next review. */
-  readonly reviewerRoles: readonly string[]
+  readonly reviewerRoles: readonly ResearchReviewerRole[]
   /** Direction emphasis copied into downstream nodes. */
   readonly directionWeights: ResearchDirectionWeights
   /** Literature backends copied into downstream nodes. */
@@ -209,6 +274,30 @@ export interface ResearchState {
   readonly nextArtifactNumber: number
 }
 
+/**
+ * Digest the part of a branch that defines the target task's scope.
+ *
+ * Downstream idea, review, simulation, and plan artifacts are deliberately
+ * excluded.  Adding a new literature artifact or changing the selected
+ * research direction therefore invalidates an older target task, while
+ * ordinary progress through the workflow does not.
+ */
+export function researchTargetScopeDigest(state: ResearchState): string {
+  const node = state.nodes[state.selectedNodeId]
+  const scopeArtifacts = (node?.memorySnapshot.artifactIds ?? [])
+    .map(id => state.artifacts[id])
+    .filter((artifact): artifact is ResearchArtifact =>
+      artifact !== undefined && (artifact.kind === 'summary' || artifact.kind === 'problem' || artifact.kind === 'literature'),
+    )
+    .map(artifact => ({ artifactId: artifact.artifactId, kind: artifact.kind, title: artifact.title, content: artifact.content }))
+  return createHash('sha256').update(JSON.stringify({
+    artifacts: scopeArtifacts,
+    directionWeights: node?.memorySnapshot.directionWeights,
+    directionFocuses: node?.memorySnapshot.directionFocuses,
+    literatureSources: node?.memorySnapshot.literatureSources,
+  })).digest('hex')
+}
+
 /** Input for appending a user-visible stage output. */
 export interface ResearchOutputInput {
   readonly stage: ResearchStage
@@ -219,6 +308,14 @@ export interface ResearchOutputInput {
   readonly rubricAssessment?: RubricAssessment
   readonly paperRefs?: readonly FileAttachmentRef[]
   readonly evaluation?: ResearchInnovationEvaluation
+  readonly scientificStatus?: ResearchScientificStatus
+  readonly experimentSpec?: ResearchExperimentSpec
+  readonly paperCoverage?: ResearchPaperCoverage
+  readonly problemQuestions?: readonly ResearchProblemQuestion[]
+  readonly coverageMatrix?: readonly ResearchCoverageEntry[]
+  readonly evidence?: readonly ResearchEvidence[]
+  readonly claims?: readonly ResearchClaim[]
+  readonly searchRuns?: readonly ResearchSearchRun[]
   readonly status?: ResearchNodeStatus
 }
 
@@ -277,6 +374,14 @@ export function appendResearchOutput(
   createdAt = 0,
 ): ResearchState {
   const parent = selectedResearchNode(state)
+  const evidenceBundle =
+    input.evidence !== undefined || input.claims !== undefined || input.searchRuns !== undefined
+      ? validateResearchEvidenceBundle({
+          evidence: input.evidence ?? [],
+          claims: input.claims ?? [],
+          searchRuns: input.searchRuns ?? [],
+        })
+      : undefined
   const artifactId = `artifact-${state.nextArtifactNumber}`
   const nodeId = `node-${state.nextNodeNumber}`
   const artifact: ResearchArtifact = {
@@ -288,6 +393,14 @@ export function appendResearchOutput(
     ...(input.rubricAssessment === undefined ? {} : { rubricAssessment: input.rubricAssessment }),
     ...(input.paperRefs === undefined ? {} : { paperRefs: input.paperRefs }),
     ...(input.evaluation === undefined ? {} : { evaluation: input.evaluation }),
+    ...(input.scientificStatus === undefined ? {} : { scientificStatus: input.scientificStatus }),
+    ...(input.experimentSpec === undefined ? {} : { experimentSpec: input.experimentSpec }),
+    ...(input.paperCoverage === undefined ? {} : { paperCoverage: input.paperCoverage }),
+    ...(input.problemQuestions === undefined ? {} : { problemQuestions: input.problemQuestions }),
+    ...(input.coverageMatrix === undefined ? {} : { coverageMatrix: input.coverageMatrix }),
+    ...(evidenceBundle === undefined ? {} : { evidence: evidenceBundle.evidence }),
+    ...(evidenceBundle === undefined ? {} : { claims: evidenceBundle.claims }),
+    ...(evidenceBundle === undefined ? {} : { searchRuns: evidenceBundle.searchRuns }),
     createdAt,
   }
   const node: ResearchNode = {
@@ -367,10 +480,15 @@ export function setResearchReviewerRoles(
 ): ResearchState {
   const node = selectedResearchNode(state)
   const roles = reviewerRoles.map(role => role.trim()).filter(role => role.length > 0)
-  if (roles.length === 0) return state
+  const supported = new Set<string>(RESEARCH_REVIEWER_ROLES)
+  if (roles.some(role => !supported.has(role))) {
+    throw new Error('research reviewer role must be one of: ' + RESEARCH_REVIEWER_ROLES.join(', '))
+  }
+  const uniqueRoles = [...new Set(roles)] as ResearchReviewerRole[]
+  if (uniqueRoles.length === 0) return state
   const updated: ResearchNode = {
     ...node,
-    memorySnapshot: { ...node.memorySnapshot, reviewerRoles: [...roles] },
+    memorySnapshot: { ...node.memorySnapshot, reviewerRoles: uniqueRoles },
   }
   return { ...state, nodes: { ...state.nodes, [node.nodeId]: updated } }
 }

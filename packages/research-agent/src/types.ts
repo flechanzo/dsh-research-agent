@@ -1,29 +1,22 @@
 export type { ShadowAudit } from './innovation/shadow.ts'
-import type { ShadowAudit } from './innovation/shadow.ts'
 import type { RubricAssessment, TargetTask } from './innovation/schema.ts'
+import type { ResearchClaim, ResearchEvidence, ResearchEvidenceBundle, ResearchSearchRun } from './innovation/research-evidence.ts'
 export type { RubricAssessment, TargetTask, TargetTaskFields } from './innovation/schema.ts'
+export type { ResearchClaim, ResearchEvidence, ResearchEvidenceBundle, ResearchSearchRun } from './innovation/research-evidence.ts'
+export type {
+  ResearchCoverageEntry,
+  ResearchExperimentSpec,
+  ResearchPaperCoverage,
+  ResearchProblemQuestion,
+  ResearchReviewerRole,
+  ResearchScientificStatus,
+} from './workflows/research.ts'
 /** Wire vocabulary for the Session-scoped automatic research controller. */
 
 import type { FileAttachmentRef } from '@deepseek-ai/dsh-attachment/types'
 export type ResearchCommandEvent = { readonly type: 'progress' } | { readonly type: 'result'; readonly value: ResearchCommandValue }
-export type ResearchRubricEvent = { readonly type: 'progress' } | { readonly type: 'result'; readonly value: ShadowAudit }
-export interface ResearchRubricResumeRequest {
-  readonly sessionId: SessionId
-  readonly expectedRevision: number
-  readonly assessmentId: string
-  readonly auditId: string
-  /** New explicitly authorized per-resume allowance, never an implicit extension of a prior run. */
-  readonly budget: {
-    readonly maxMilliseconds: number
-    readonly maxStageMilliseconds: number
-    readonly maxModelCalls: number
-    readonly maxNetworkOperations: number
-    readonly maxPromptCharacters: number
-    readonly maxPdfPages: number
-    readonly maxOcrPages: number
-  }
-}
 import type { SessionId } from '@deepseek-ai/dsh-session/types'
+import type { ResearchReviewerRole } from './workflows/research.ts'
 
 export type { SessionId } from '@deepseek-ai/dsh-session/types'
 
@@ -67,6 +60,16 @@ export interface ResearchArtifact {
   readonly rubricAssessment?: RubricAssessment
   readonly paperRefs?: readonly FileAttachmentRef[]
   readonly evaluation?: ResearchInnovationEvaluation
+  readonly scientificStatus?: import('./workflows/research.ts').ResearchScientificStatus
+  readonly experimentSpec?: import('./workflows/research.ts').ResearchExperimentSpec
+  readonly problemQuestions?: readonly import('./workflows/research.ts').ResearchProblemQuestion[]
+  readonly coverageMatrix?: readonly import('./workflows/research.ts').ResearchCoverageEntry[]
+  /** Structured source excerpts supporting this artifact's claims. */
+  readonly evidence?: readonly ResearchEvidence[]
+  /** Claims mapped to the structured evidence records above. */
+  readonly claims?: readonly ResearchClaim[]
+  /** Search provenance used to discover the evidence records. */
+  readonly searchRuns?: readonly ResearchSearchRun[]
   /** Creation timestamp. */
   readonly createdAt: number
 }
@@ -88,7 +91,7 @@ export interface ResearchMemorySnapshot {
   /** Feedback accumulated before this node. */
   readonly feedback: readonly string[]
   /** Reviewer roles selected for the next review. */
-  readonly reviewerRoles: readonly string[]
+  readonly reviewerRoles: readonly ResearchReviewerRole[]
   readonly directionWeights: ResearchDirectionWeights
   readonly literatureSources: readonly ResearchLiteratureSourceId[]
   readonly directionFocuses: readonly ResearchDirectionFocusId[]

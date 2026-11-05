@@ -9,5 +9,9 @@ it('rejects mismatched target task, date and reviewer identity',()=>{
  expect(()=>compareReviews([make('a'),make('a')])).toThrow(/Duplicate/)
 })
 it('does not convert missing score into numerical agreement',()=>{expect(compareReviews([make('a'),make('b')]).pairs[0]?.absoluteScoreDifference).toBeNull()})
+it('accepts historical numeric fields without invoking a scorer',()=>{
+ const result=compareReviews([{...make('a'),status:'complete',score:7},{...make('b'),status:'complete',score:8}])
+ expect(result.pairs[0]?.absoluteScoreDifference).toBeNull()
+ expect(result.expertCalibrationComplete).toBe(false)
+})
 
-it('rejects numerical review computed freely outside deterministic scorer',()=>{expect(()=>compareReviews([{...make('a'),status:'complete',score:7}])).toThrow(/deterministic scorer/)})

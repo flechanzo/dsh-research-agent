@@ -12,6 +12,10 @@ import {
   createSubagentResearchOcr,
   createWebLiteratureSearcher as createSharedLiteratureSearcher,
   createResearchState,
+  researchTargetScopeDigest,
+  extractResearchProblemQuestions,
+  buildCoverageMatrix,
+  renderProblemCoverage,
   rejectIdea,
   ResearchCoordinator,
   type ResearchCoordinatorAdapters,
@@ -21,6 +25,7 @@ import { FileSystem, FsTargetKey, FsVersion, type FsTarget, type FsWriteIntent }
 import { SubagentRuntime } from '@deepseek-ai/dsh-subagent'
 import { WebRuntime } from '@deepseek-ai/dsh-web'
 import type { SandboxExecutionPolicy } from '@deepseek-ai/dsh-sandbox'
+import type { ReviewCheckpoint } from '../packages/research-agent/src/workflows/review-checkpoints.ts'
 
 const createWebLiteratureSearcher = (web:WebRuntime,maxResults:number)=>createSharedLiteratureSearcher(web,maxResults,new SourceCoordinator({intervalMs:0}))
 
@@ -65,6 +70,36 @@ function confirm(state: Parameters<typeof confirmResearchNode>[0]) {
 }
 
 describe('ResearchCoordinator', () => {
+  it('reuses durable paper and summarizer checkpoints after coordinator reconstruction', async () => {
+    const rows = new Map<string, ReviewCheckpoint>()
+    const reviewCheckpoints = {
+      get: async (id: string) => rows.get(id),
+      put: async (row: ReviewCheckpoint) => { rows.set(row.id, structuredClone(row)) },
+    }
+    let paperReads = 0
+    let summarizerRuns = 0
+    const paper = { attachmentId: AttachmentId('sha256:checkpoint-paper'), name: 'checkpoint.txt', bytes: 48 } as const
+    const base = adapters()
+    const make = () => new ResearchCoordinator({
+      ...base,
+      reviewCheckpoints,
+      papers: { async read(ref) {
+        paperReads += 1
+        return { fileName: ref.name, text: 'checkpoint text', byteLength: ref.bytes, extractionMethod: 'plain-text' }
+      } },
+      agents: { async run(role) {
+        if (role === 'paper-summarizer') summarizerRuns += 1
+        return base.agents.run(role, '', parent)
+      } },
+    })
+    const first = await make().advance({ state: createResearchState(), parent, paper })
+    const second = await make().advance({ state: createResearchState(), parent, paper })
+    expect(first.artifact?.content).toBe(second.artifact?.content)
+    expect(paperReads).toBe(1)
+    expect(summarizerRuns).toBe(1)
+    expect([...rows.values()].some(row => row.status === 'succeeded')).toBe(true)
+  })
+
   it('runs the built-in numerical adapter and reports computed metrics', async () => {
     const runner = createNumericalResearchSimulationRunner()
     const content = await runner.run({
@@ -198,6 +233,51 @@ describe('ResearchCoordinator', () => {
     expect(final.artifact?.source).toBe('workspace/research-plan.md')
     expect(final.state.nodes[final.state.selectedNodeId]?.stage).toBe('final-plan')
     expect(final.state.nodes[final.state.selectedNodeId]?.status).toBe('completed')
+  })
+
+  it('marks a plan unassessed and exposes the structured experiment specification', async () => {
+    const coordinator = new ResearchCoordinator(adapters())
+    let state = createResearchState()
+    state = appendResearchOutput(state, {
+      stage: 'idea-refinement', kind: 'idea', title: '候选方案', content: '创新点：可校准检索', status: 'confirmed',
+    })
+    state = appendResearchOutput(state, {
+      stage: 'multi-agent-review', kind: 'review', title: '审查结果', content: '通过', status: 'confirmed',
+    })
+    state = appendResearchOutput(state, {
+      stage: 'simulation-or-final-plan', kind: 'decision', title: '仿真或直接输出选择', content: '选择方案', status: 'confirmed',
+    })
+
+    const result = await coordinator.advance({ state, parent, finalChoice: 'plan' })
+
+    expect(result.artifact?.scientificStatus).toBe('unassessed')
+    expect(result.artifact?.experimentSpec?.status).toBe('missing')
+    expect(result.artifact?.content).toContain('## 验证设计')
+    expect(result.artifact?.content).toContain('- 状态：missing')
+    expect(result.artifact?.content).toContain('## 科学验证状态')
+    expect(result.artifact?.content).toContain('- 状态：unassessed')
+  })
+
+  it('writes a plan without running the retired Rubric scorer', async () => {
+    const coordinator = new ResearchCoordinator(adapters())
+    let state = createResearchState()
+    state = appendResearchOutput(state, {
+      stage: 'idea-refinement', kind: 'idea', title: '候选方案', content: '创新点：可校准检索', status: 'confirmed',
+    })
+    state = appendResearchOutput(state, {
+      stage: 'multi-agent-review', kind: 'review', title: '审查结果', content: '通过', status: 'confirmed',
+    })
+    state = appendResearchOutput(state, {
+      stage: 'simulation-or-final-plan', kind: 'decision', title: '仿真或直接输出选择', content: '选择方案', status: 'confirmed',
+    })
+
+    const preview = await coordinator.advance({ state, parent, finalChoice: 'plan' })
+    expect(preview.artifact?.scientificStatus).toBe('unassessed')
+    expect(preview.state.nodes[preview.state.selectedNodeId]?.status).toBe('awaiting-confirmation')
+
+    const written = await coordinator.advance({ state: confirmResearchNode(preview.state), parent })
+    expect(written.planFile?.fileName).toBe('research-plan.md')
+    expect(written.state.nodes[written.state.selectedNodeId]?.status).toBe('completed')
   })
 
   it('gives the isolated innovation reviewer all branch evidence and candidate search results', async () => {
@@ -833,4 +913,55 @@ it('expands legacy web into five explicit indexes once without native search', a
   expect(nativeCalls).toBe(0)
   expect(urls).toHaveLength(5)
   expect(new Set(urls.map(url => new URL(url).hostname)).size).toBe(5)
+})
+
+it('keeps distinct questions and renders an explicit problem-to-idea coverage matrix', () => {
+  const questions = extractResearchProblemQuestions('1. 分布偏移下检索是否失效？\n2) 不确定性门控能否降低错误证据？')
+  expect(questions.map(question => question.questionId)).toEqual(['q1', 'q2'])
+  const matrix = buildCoverageMatrix(questions, 'artifact-idea', '创新点：不确定性门控降低错误证据')
+  expect(matrix).toHaveLength(2)
+  const content = renderProblemCoverage([
+    { artifactId: 'artifact-problem', kind: 'problem', title: '问题', content: '问题', problemQuestions: questions, createdAt: 0 },
+    { artifactId: 'artifact-idea', kind: 'idea', title: '想法', content: '创新点', coverageMatrix: matrix, createdAt: 0 },
+  ])
+  expect(content).toContain('问题—方案覆盖矩阵')
+  expect(content).toContain('q1')
+  expect(content).toContain('q2')
+})
+
+it('marks partial uploaded papers and blocks downstream problem extraction', async () => {
+  const partial = {
+    fileName: 'partial.pdf', text: 'Only the first page is available.', byteLength: 10,
+    extractionMethod: 'embedded-text' as const, pageCount: 2, processedPageCount: 1,
+    textPages: [{ pageNumber: 1, text: 'Only the first page is available.' }], missingPages: [],
+  }
+  const coordinator = new ResearchCoordinator({ ...adapters(), papers: { async read() { return partial } } })
+  const result = await coordinator.advance({
+    state: createResearchState(), parent,
+    paper: { attachmentId: AttachmentId('sha256:partial'), name: 'partial.pdf', bytes: 10 },
+  })
+  expect(result.artifact?.paperCoverage).toBe('partial')
+  const confirmed = confirmResearchNode(result.state)
+  await expect(coordinator.advance({ state: confirmed, parent })).rejects.toThrow('PAPER_COVERAGE_INSUFFICIENT')
+})
+
+it('invalidates a confirmed target task when the literature scope changes', async () => {
+  const coordinator = new ResearchCoordinator(adapters())
+  let state = appendResearchOutput(createResearchState(), {
+    stage: 'problem-summary', kind: 'problem', title: '问题', content: '原始问题', status: 'confirmed',
+  })
+  state = appendResearchOutput(state, {
+    stage: 'literature-search', kind: 'literature', title: '文献', content: '第一组文献', status: 'confirmed',
+  })
+  const node = state.nodes[state.selectedNodeId]!
+  const target = {
+    domain: '机器学习', problem: '原始问题', input: '输入', output: '输出', constraints: '约束',
+    conditions: '条件', subtaskBoundary: '边界', comparisonPoint: '2026-11-05',
+    contextDigest: researchTargetScopeDigest(state), confirmedAt: 1,
+  }
+  state = { ...state, nodes: { ...state.nodes, [node.nodeId]: { ...node, memorySnapshot: { ...node.memorySnapshot, targetTask: target } } } }
+  state = appendResearchOutput(state, {
+    stage: 'literature-search', kind: 'literature', title: '补充文献', content: '新增反例文献', status: 'confirmed',
+  })
+  await expect(coordinator.advance({ state, parent })).rejects.toThrow('TARGET_TASK_STALE')
 })

@@ -14,12 +14,13 @@ export interface ReviewCheckpointStore {
   put(row: ReviewCheckpoint): Promise<void>
 }
 export interface ReviewWork { readonly label: string; readonly prompt: string }
+export interface ReviewCheckpointOptions { readonly persistInFlight?: boolean }
 const hash = (text: string): string => createHash('sha256').update(text).digest('hex')
 
 /** Reuse only successful output for the same scope, role and complete input. */
 export async function runCheckpointedWork(
   scope: string, work: ReviewWork, run: () => Promise<string>,
-  store?: ReviewCheckpointStore, signal?: AbortSignal,
+  store?: ReviewCheckpointStore, signal?: AbortSignal, options: ReviewCheckpointOptions = {},
 ): Promise<string> {
   signal?.throwIfAborted()
   const promptSha256 = hash(work.prompt)
@@ -33,7 +34,8 @@ export async function runCheckpointedWork(
   }
   const base = { id, version: 1 as const, label: work.label, promptSha256 }
   signal?.throwIfAborted()
-  await store?.put({ ...base, status: 'running', updatedAt: Date.now() })
+  if (options.persistInFlight !== false)
+    await store?.put({ ...base, status: 'running', updatedAt: Date.now() })
   try {
     signal?.throwIfAborted()
     const result = await abortable(run(), signal)
@@ -42,7 +44,8 @@ export async function runCheckpointedWork(
     await store?.put({ ...base, status: 'succeeded', result, updatedAt: Date.now() })
     return result
   } catch (error) {
-    await store?.put({ ...base, status: signal?.aborted ? 'cancelled' : 'failed', error: String(error), updatedAt: Date.now() })
+    if (options.persistInFlight !== false || !signal?.aborted)
+      await store?.put({ ...base, status: signal?.aborted ? 'cancelled' : 'failed', error: String(error), updatedAt: Date.now() })
     throw error
   }
 }

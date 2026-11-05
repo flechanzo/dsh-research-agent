@@ -145,6 +145,51 @@ describe('ResearchController continueFromNode', () => {
     expect(records.get(sessionId)?.revision).toBe(5)
     expect(records.get(sessionId)?.state.activeBranchId).toBe('branch-2')
   })
+
+  it('serializes commands per Session without blocking an unrelated Session', async () => {
+    const firstSession = SessionId('research-controller-queue-a')
+    const secondSession = SessionId('research-controller-queue-b')
+    const records = new Map<SessionId, ResearchRecord>()
+    let releaseFirst!: () => void
+    let markFirstStarted!: () => void
+    let markSecondUpdated!: () => void
+    const firstStarted = new Promise<void>(resolve => { markFirstStarted = resolve })
+    const secondUpdated = new Promise<void>(resolve => { markSecondUpdated = resolve })
+    const table = {
+      get: (key: SessionId) => records.get(key),
+      put: vi.fn(async (key: SessionId, value: ResearchRecord) => { records.set(key, value) }),
+      update: vi.fn(async (key: SessionId, update: (row: ResearchRecord) => ResearchRecord) => {
+        if (key === firstSession) {
+          markFirstStarted()
+          await new Promise<void>(resolve => { releaseFirst = resolve })
+        }
+        const current = records.get(key)
+        if (current === undefined) throw new Error('missing durable research row')
+        const next = update(current)
+        records.set(key, next)
+        if (key === secondSession) markSecondUpdated()
+        return next
+      }),
+    }
+    const ctx = new Context()
+    contexts.push(ctx)
+    ctx.provide('storageDomain', { open: vi.fn(async () => ({ table: () => table, close: vi.fn(async () => undefined) })) } as never)
+    ctx.provide('sessionController', {
+      resolveAgent: vi.fn(async () => ({ agent: { session: { header: {} } } })),
+    } as never)
+    const controller = new ResearchController(ctx)
+
+    const first = controller.selectNode({ sessionId: firstSession, expectedRevision: 0, nodeId: 'node-1' })
+    await firstStarted
+    const second = controller.selectNode({ sessionId: secondSession, expectedRevision: 0, nodeId: 'node-1' })
+    await expect(Promise.race([
+      secondUpdated.then(() => true),
+      new Promise<boolean>(resolve => setTimeout(() => resolve(false), 100)),
+    ])).resolves.toBe(true)
+    releaseFirst()
+    await expect(first).resolves.toMatchObject({ snapshot: { sessionId: firstSession, revision: 1 } })
+    await expect(second).resolves.toMatchObject({ snapshot: { sessionId: secondSession, revision: 1 } })
+  })
 })
 
 it('F06 exports a shared artifact once and F12 preserves plans from two branches',async()=>{

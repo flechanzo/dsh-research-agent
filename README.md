@@ -8,7 +8,7 @@
 
 ## 使用方式
 
-使用 0.1.6-rc.13 配合官方 Nightly Desktop 0.2.1-rc.5。三个视图分别为科研内容、分支关系、节点详情，每次只显示选中的视图；切换时保留草稿。支持将当前科研流程保存为新会话；最终方案只输出创新方案、技术路线、审查修订及验证设计，Rubric 在完整方案生成后只评估创新性。
+使用 0.1.6-rc.13 配合官方 Nightly Desktop 0.2.1-rc.5。三个视图分别为科研内容、分支关系、节点详情，每次只显示选中的视图；切换时保留草稿。支持将当前科研流程保存为新会话；最终方案只输出创新方案、技术路线、审查修订及验证设计。自动科研流程不再运行 Rubric 数值评分；历史会话中的 Rubric 字段仅用于兼容读取。
 
 新建会话，在 Agent 选择菜单选择“自动科研”，发送任务后点击会话标题旁的“自动科研流程”。上传 PDF 或 TXT，查看摘要并逐步确认；在问题提炼处调整研究方向、权重和索引，在后续节点查看创新评分、补充文献、选择评审角色。最后先预览计划，再点击“确认并写入 Markdown 文件”。旧会话也可通过标题按钮查看对应科研状态。
 
@@ -54,7 +54,7 @@ node scripts/migrate-data.mjs D:\DeepSeekHarness\data\storages\research.json D:\
     dataDirectory: 'D:/MyResearchData'
 ```
 
-控制器其他可配置项包括 subagentProvider、planPath、maxPaperBytes、maxLiteratureResults、literatureSources、innovationScoreThreshold、maxIdeaAttempts、maxPdfPages、ocrScale、maxOcrPixels 和 `rubricEnabled`。Rubric 评估是可选指标，`rubricEnabled` 默认为 `false`，需要显式设为 `true` 才会在完整方案生成后运行；旧配置名 `shadowEnabled` 仍作为兼容别名。候选生成阶段的原创新性评估始终开启，不能通过这些开关关闭。类型与默认值以 src/controller.ts 的 Config 为准。
+控制器其他可配置项包括 subagentProvider、planPath、maxPaperBytes、maxLiteratureResults、literatureSources、innovationScoreThreshold、maxIdeaAttempts、maxPdfPages、ocrScale 和 maxOcrPixels。自动科研流程不再提供 Rubric 评分开关；候选生成阶段仍使用独立的普通创新性审查。类型与默认值以 src/controller.ts 的 Config 为准。
 
 ## 常见问题
 
